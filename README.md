@@ -8,9 +8,9 @@
 
 离线可用的英语学习桌面应用 · Windows 10 / 11 (x64) · 无需注册 · 数据只留在本机
 
-[![官方网站](https://img.shields.io/badge/%E5%AE%98%E6%96%B9%E7%BD%91%E7%AB%99-wordisle-2f6f63?style=for-the-badge)](https://1752370874-blip.github.io/wordisle/)
-[![点击此处下载](https://img.shields.io/badge/%E2%AC%87%20%E7%82%B9%E5%87%BB%E6%AD%A4%E5%A4%84%E4%B8%8B%E8%BD%BD-v3.9.3%20Enhanced-f0a05a?style=for-the-badge)](https://1752370874-blip.github.io/wordisle/#download)
-[![GitHub Release](https://img.shields.io/github/v/release/1752370874-blip/wordisle?label=GitHub%20Release&style=for-the-badge)](https://github.com/1752370874-blip/wordisle/releases/latest)
+### [⬇ 点击此处下载（官网下载区）](https://1752370874-blip.github.io/wordisle/#download)
+
+[官网](https://1752370874-blip.github.io/wordisle/) · [GitHub Releases](https://github.com/1752370874-blip/wordisle/releases/latest) · [v3.9.3 更新说明](https://github.com/1752370874-blip/wordisle/releases/tag/v3.9.3)
 
 </div>
 
