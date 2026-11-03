@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://1752370874-blip.github.io/wordisle/sitemap.xml
