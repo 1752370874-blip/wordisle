@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#f3f0e8">
+<title>词屿 · 背英语单词</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23f6f1e6'/%3E%3Crect x='7' y='7' width='50' height='50' rx='11' fill='none' stroke='%23c9beaa' stroke-width='1.5'/%3E%3Ccircle cx='48' cy='16' r='5' fill='%23c2412d'/%3E%3Ctext x='30' y='45' font-family='KaiTi,STKaiti,serif' font-size='32' fill='%231f3b36' text-anchor='middle'%3E%E8%AF%8D%3C/text%3E%3C/svg%3E">
+<link rel="stylesheet" href="styles.css">
+</head>
+<body class="lg">
+<div class="bg-layer" aria-hidden="true"></div>
+<div class="ambient" aria-hidden="true"><span></span></div>
+<aside class="rail">
+  <div class="brand">
+    <div class="brand-mark">词</div>
+    <div class="brand-text">
+      <div class="brand-name">词屿</div>
+      <div class="brand-sub">每天一点，词自成屿</div>
+    </div>
+  </div>
+
+  <nav class="nav" id="nav">
+    <button data-nav="home" class="on"><span class="nav-dot"></span>今日学习</button>
+    <button data-nav="decks"><span class="nav-dot"></span>词库</button>
+    <button data-nav="readings"><span class="nav-dot"></span>外刊阅读</button>
+    <button data-nav="dict"><span class="nav-dot"></span>查词</button>
+    <button data-nav="textmap"><span class="nav-dot"></span>文章词汇地图</button>
+    <button data-nav="wrong"><span class="nav-dot"></span>错词本</button>
+    <button data-nav="stats"><span class="nav-dot"></span>统计</button>
+    <button data-nav="settings"><span class="nav-dot"></span>设置</button>
+  </nav>
+
+  <div class="rail-foot">
+    <div class="mini-label">今日进度</div>
+    <div class="bar"><i id="railBar" style="width:0%"></i></div>
+    <div class="mini" id="railText">新词 0 · 复习 0</div>
+  </div>
+</aside>
+
+<main class="main">
+  <header class="topbar">
+    <div class="topbar-left">
+      <h1 id="viewTitle">今日学习</h1>
+      <p id="viewSub" class="sub">先复习到期的词，再学新词</p>
+    </div>
+    <div class="topbar-right">
+      <div class="chip" id="streakChip">连续 0 天</div>
+      <div class="chip ghost" id="todayChip">今日 0 词</div>
+    </div>
+  </header>
+
+  <section id="view" class="view" aria-live="polite"></section>
+</main>
+
+<div id="toast" class="toast" hidden></div>
+<div id="err" class="err" hidden></div>
+
+<noscript><div class="err" style="display:block">这个应用需要启用 JavaScript 才能运行。</div></noscript>
+
+<script src="data/dict-cet4.js"></script>
+<script src="data/dict-cet6.js"></script>
+<script src="data/dict-kaoyan.js"></script>
+<script src="data/dict-ielts.js"></script>
+<script src="data/dict-toefl.js"></script>
+<script src="data/dict-gre.js"></script>
+<script src="data/dict-oxford3000.js"></script>
+<script src="data/dict-oxford5000.js"></script>
+<script src="data/dict-collins5.js"></script>
+<script src="data/readings-a.js"></script>
+<script src="data/readings-b.js"></script>
+<script src="data/readings-c.js"></script>
+<script src="data/readings-d.js"></script>
+<script src="data/readings-e.js"></script>
+<script src="app.js"></script>
+</body>
+</html>

@@ -1,0 +1,71 @@
+{
+  "name": "wordisle-mac",
+  "productName": "词屿",
+  "version": "3.9.2",
+  "description": "词屿 · 离线背英语单词（macOS）",
+  "main": "app/main.js",
+  "private": true,
+  "scripts": {
+    "dist": "electron-builder --mac --x64 --arm64"
+  },
+  "devDependencies": {
+    "electron-builder": "^26.15.3"
+  },
+  "build": {
+    "appId": "com.wordisle.app",
+    "productName": "词屿",
+    "copyright": "词屿 · Word Isle",
+    "electronVersion": "43.3.0",
+    "directories": {
+      "output": "dist-mac",
+      "buildResources": "build-res"
+    },
+    "files": [
+      "app/**/*"
+    ],
+    "asar": true,
+    "mac": {
+      "category": "public.app-category.education",
+      "icon": "build-res/icon.png",
+      "hardenedRuntime": true,
+      "gatekeeperAssess": false,
+      "entitlements": "build-res/entitlements.mac.plist",
+      "entitlementsInherit": "build-res/entitlements.mac.plist",
+      "target": [
+        {
+          "target": "dmg",
+          "arch": [
+            "arm64",
+            "x64"
+          ]
+        },
+        {
+          "target": "zip",
+          "arch": [
+            "arm64",
+            "x64"
+          ]
+        }
+      ]
+    },
+    "dmg": {
+      "title": "词屿 ${version}",
+      "iconSize": 96,
+      "contents": [
+        {
+          "x": 150,
+          "y": 190
+        },
+        {
+          "x": 430,
+          "y": 190,
+          "type": "link",
+          "path": "/Applications"
+        }
+      ]
+    },
+    "nsis": {
+      "artifactName": "WordIsle-Setup-${version}.exe"
+    }
+  }
+}

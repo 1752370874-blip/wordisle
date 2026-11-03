@@ -1,0 +1,64 @@
+{
+    "name":  "word-master",
+    "productName":  "词屿",
+    "version":  "3.9.3",
+    "description":  "词屿 · 离线背英语单词（六本考试词库 + 每日英语新闻 + 外刊阅读）",
+    "author":  "词屿",
+    "license":  "UNLICENSED",
+    "main":  "app/main.js",
+    "private":  true,
+    "scripts":  {
+                    "sync":  "node sync.mjs",
+                    "dist":  "electron-builder --win nsis --x64"
+                },
+    "build":  {
+                  "appId":  "com.wordisle.desktop",
+                  "productName":  "词屿",
+                  "electronVersion":  "43.3.0",
+                  "electronDist":  "C:/Users/17523/Documents/deepseek-harness/default-workspace/word-master/desktop/node_modules/electron/dist",
+                  "directories":  {
+                                      "output":  "dist",
+                                      "buildResources":  "build-res"
+                                  },
+                  "files":  [
+                                "app/**/*"
+                            ],
+                  "asar":  true,
+                  "win":  {
+                              "target":  [
+                                             {
+                                                 "target":  "nsis",
+                                                 "arch":  [
+                                                              "x64"
+                                                          ]
+                                             }
+                                         ],
+                              "icon":  "build-res/icon.ico"
+                          },
+                  "nsis":  {
+                               "oneClick":  false,
+                               "perMachine":  false,
+                               "allowToChangeInstallationDirectory":  true,
+                               "createDesktopShortcut":  true,
+                               "createStartMenuShortcut":  true,
+                               "runAfterFinish":  true,
+                               "license":  "build-res/eula.txt",
+                               "installerIcon":  "build-res/icon.ico",
+                               "uninstallerIcon":  "build-res/icon.ico",
+                               "installerHeaderIcon":  "build-res/icon.ico",
+                               "deleteAppDataOnUninstall":  false,
+                               "artifactName":  "WordIsle-Setup-${version}.exe",
+                               "shortcutName":  "词屿"
+                           },
+                  "electronLanguages":  [
+                                            "zh-CN",
+                                            "en-US"
+                                        ]
+              },
+    "devDependencies":  {
+                            "electron-builder":  "^26.15.3"
+                        },
+    "dependencies":  {
+                         "@andresaya/edge-tts":  "^1.9.1"
+                     }
+}

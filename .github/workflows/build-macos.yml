@@ -1,0 +1,33 @@
+name: build-macos
+
+on:
+  workflow_dispatch:
+
+jobs:
+  mac:
+    runs-on: macos-14
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: 安装安装包依赖并同步前端数据
+        run: |
+          cd desktop/installer
+          npm install --no-audit --no-fund
+          node sync.mjs
+
+      - name: 构建 macOS DMG / ZIP
+        run: |
+          cd desktop/macos-build
+          npm install --no-audit --no-fund
+          npx electron-builder --mac --x64 --arm64
+
+      - name: 上传产物
+        uses: actions/upload-artifact@v4
+        with:
+          name: wordislemac-dmg
+          path: desktop/macos-build/dist-mac/*.dmg
+          if-no-files-found: error

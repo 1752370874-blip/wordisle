@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>词屿</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; }
+  body {
+    background: #f6f1e6;
+    color: #1f3b36;
+    font-family: "Microsoft YaHei", "Segoe UI", sans-serif;
+    display: grid;
+    place-items: center;
+    overflow: hidden;
+    border: 1px solid #d9d0bd;
+    border-radius: 14px;
+  }
+  .card { display: flex; flex-direction: column; align-items: center; gap: 12px; animation: rise .35s cubic-bezier(.2,.8,.2,1) both; }
+  @keyframes rise { from { transform: translateY(14px); } to { transform: none; } }
+  .logo { width: 132px; height: 132px; border-radius: 30px; box-shadow: 0 8px 24px rgba(31,59,54,.12); }
+  .name { font-family: "KaiTi", "STKaiti", "楷体", serif; font-size: 40px; letter-spacing: 8px; margin-top: 4px; }
+  .line { width: 132px; height: 2px; background: #c2412d; margin: 2px 0 4px; }
+  .tag { font-size: 12.5px; color: #7a7261; letter-spacing: 2px; }
+  .en { font-family: Georgia, serif; font-size: 11px; letter-spacing: 4px; color: #a49a86; }
+  .tip { position: absolute; bottom: 18px; font-size: 11.5px; color: #a49a86; letter-spacing: 1px; }
+</style>
+</head>
+<body>
+  <div class="card">
+    <img class="logo" src="splash-logo.png" alt="">
+    <div class="name">词屿</div>
+    <div class="line"></div>
+    <div class="tag">每天一点，词自成屿</div>
+    <div class="en">WORD ISLE</div>
+  </div>
+  <div class="tip">正在打开…</div>
+</body>
+</html>

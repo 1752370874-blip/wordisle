@@ -1,0 +1,33 @@
+# 依赖与构建产物
+node_modules/
+package-lock.json.bak
+desktop/installer/app/
+desktop/installer/dist/
+desktop/installer/build/
+desktop/installer/win-unpacked/
+desktop/win-unpacked/
+desktop/macos-build/dist-mac/
+desktop/macos-build/node_modules/
+
+# 二进制与安装包：一律走 GitHub Releases，不进 Git 历史
+*.exe
+*.dmg
+*.zip
+*.7z
+*.msi
+site/downloads/*.exe
+site/downloads/*.dmg
+
+# 签名私钥绝对不进仓库
+*.pfx
+*.p12
+*.pem
+*.key
+
+# 缓存
+__pycache__/
+.pytest_cache/
+*.pyc
+*.log
+.DS_Store
+Thumbs.db
