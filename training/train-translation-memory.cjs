@@ -1,0 +1,5 @@
+'use strict';
+const fs=require('node:fs'),path=require('node:path'),crypto=require('node:crypto');const core=require('./translation-memory-core');
+const output=path.resolve(process.argv[3]||path.join(__dirname,'../models/translation-memory')),input=path.resolve(process.argv[2]||path.join(output,'SOURCE-ATTRIBUTIONS.tsv'));
+const text=fs.readFileSync(input,'utf8');const source={name:'Tatoeba English-Mandarin pairs selected by ManyThings',url:'https://www.manythings.org/anki/',download:'https://www.manythings.org/anki/cmn-eng.zip',snapshot:'2026-02-13',license:'CC BY 2.0 France',sha256:crypto.createHash('sha256').update(text).digest('hex')};const result=core.train(text,source);fs.mkdirSync(output,{recursive:true});
+for(const [name,value] of Object.entries({'model.json':result.model,'training-report.json':result.model.report,'validation.json':result.validation,'test.json':result.test}))fs.writeFileSync(path.join(output,name),JSON.stringify(value));console.log(JSON.stringify(result.model.report,null,2));

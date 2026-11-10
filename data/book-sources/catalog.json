@@ -1,0 +1,307 @@
+{
+  "version": 1,
+  "source": "ECDICT via ecdict@0.0.4",
+  "url": "https://github.com/skywind3000/ECDICT",
+  "sha256": "d0ce61e560b50d9905d20de3173aa3ca80950ce235bedd21c53e025cf9f38cb0",
+  "primarySourceSha256": "7cc4f6cfc0eaffc27f593c98b918c23fbb83406b82589c7b960ed9dda880d47d",
+  "primaryWords": 843,
+  "bookCount": 42,
+  "totalEntries": 74278,
+  "uniqueWords": 16521,
+  "books": [
+    {
+      "id": "cet4",
+      "name": "CET-4 核心",
+      "level": "大学",
+      "words": 2607,
+      "source": "3.9.19 已有词库，内容与标识保留"
+    },
+    {
+      "id": "cet6",
+      "name": "CET-6 进阶",
+      "level": "大学",
+      "words": 2345,
+      "source": "3.9.19 已有词库，内容与标识保留"
+    },
+    {
+      "id": "collins5",
+      "name": "柯林斯五星词",
+      "level": "通用",
+      "words": 546,
+      "source": "3.9.19 已有词库，内容与标识保留"
+    },
+    {
+      "id": "gre",
+      "name": "GRE 词汇",
+      "level": "GRE",
+      "words": 6513,
+      "source": "3.9.19 已有词库，内容与标识保留"
+    },
+    {
+      "id": "ielts",
+      "name": "雅思词汇",
+      "level": "雅思",
+      "words": 3575,
+      "source": "3.9.19 已有词库，内容与标识保留"
+    },
+    {
+      "id": "kaoyan",
+      "name": "考研词汇",
+      "level": "大学",
+      "words": 3726,
+      "source": "3.9.19 已有词库，内容与标识保留"
+    },
+    {
+      "id": "oxford3000",
+      "name": "牛津核心 3000",
+      "level": "通用",
+      "words": 2958,
+      "source": "3.9.19 已有词库，内容与标识保留"
+    },
+    {
+      "id": "oxford5000",
+      "name": "牛津扩展 5000",
+      "level": "通用",
+      "words": 1963,
+      "source": "3.9.19 已有词库，内容与标识保留"
+    },
+    {
+      "id": "toefl",
+      "name": "托福词汇",
+      "level": "托福",
+      "words": 4264,
+      "source": "3.9.19 已有词库，内容与标识保留"
+    },
+    {
+      "id": "primary-all",
+      "name": "小学 · 生活与校园综合",
+      "level": "小学",
+      "words": 843,
+      "source": "词屿编选生活主题词书；音标参考 ECDICT。不对应具体教材版本或官方全量词表。"
+    },
+    {
+      "id": "primary-expressions",
+      "name": "小学 · 代词与常用词",
+      "level": "小学",
+      "words": 78,
+      "source": "词屿编选生活主题词书；音标参考 ECDICT。不对应具体教材版本或官方全量词表。"
+    },
+    {
+      "id": "primary-numbers",
+      "name": "小学 · 数字与颜色",
+      "level": "小学",
+      "words": 55,
+      "source": "词屿编选生活主题词书；音标参考 ECDICT。不对应具体教材版本或官方全量词表。"
+    },
+    {
+      "id": "primary-people",
+      "name": "小学 · 家人与朋友",
+      "level": "小学",
+      "words": 48,
+      "source": "词屿编选生活主题词书；音标参考 ECDICT。不对应具体教材版本或官方全量词表。"
+    },
+    {
+      "id": "primary-body",
+      "name": "小学 · 身体与感受",
+      "level": "小学",
+      "words": 54,
+      "source": "词屿编选生活主题词书；音标参考 ECDICT。不对应具体教材版本或官方全量词表。"
+    },
+    {
+      "id": "primary-school",
+      "name": "小学 · 校园与学习",
+      "level": "小学",
+      "words": 67,
+      "source": "词屿编选生活主题词书；音标参考 ECDICT。不对应具体教材版本或官方全量词表。"
+    },
+    {
+      "id": "primary-nature",
+      "name": "小学 · 动物与自然",
+      "level": "小学",
+      "words": 60,
+      "source": "词屿编选生活主题词书；音标参考 ECDICT。不对应具体教材版本或官方全量词表。"
+    },
+    {
+      "id": "primary-food",
+      "name": "小学 · 食物与饮料",
+      "level": "小学",
+      "words": 66,
+      "source": "词屿编选生活主题词书；音标参考 ECDICT。不对应具体教材版本或官方全量词表。"
+    },
+    {
+      "id": "primary-home",
+      "name": "小学 · 家居与生活",
+      "level": "小学",
+      "words": 50,
+      "source": "词屿编选生活主题词书；音标参考 ECDICT。不对应具体教材版本或官方全量词表。"
+    },
+    {
+      "id": "primary-clothes",
+      "name": "小学 · 衣物与随身用品",
+      "level": "小学",
+      "words": 44,
+      "source": "词屿编选生活主题词书；音标参考 ECDICT。不对应具体教材版本或官方全量词表。"
+    },
+    {
+      "id": "primary-time",
+      "name": "小学 · 时间与天气",
+      "level": "小学",
+      "words": 63,
+      "source": "词屿编选生活主题词书；音标参考 ECDICT。不对应具体教材版本或官方全量词表。"
+    },
+    {
+      "id": "primary-actions",
+      "name": "小学 · 日常动作",
+      "level": "小学",
+      "words": 77,
+      "source": "词屿编选生活主题词书；音标参考 ECDICT。不对应具体教材版本或官方全量词表。"
+    },
+    {
+      "id": "primary-sports",
+      "name": "小学 · 运动与兴趣",
+      "level": "小学",
+      "words": 51,
+      "source": "词屿编选生活主题词书；音标参考 ECDICT。不对应具体教材版本或官方全量词表。"
+    },
+    {
+      "id": "primary-places",
+      "name": "小学 · 城市与出行",
+      "level": "小学",
+      "words": 58,
+      "source": "词屿编选生活主题词书；音标参考 ECDICT。不对应具体教材版本或官方全量词表。"
+    },
+    {
+      "id": "primary-basics",
+      "name": "小学 · 常用描述与表达",
+      "level": "小学",
+      "words": 89,
+      "source": "词屿编选生活主题词书；音标参考 ECDICT。不对应具体教材版本或官方全量词表。"
+    },
+    {
+      "id": "junior-all",
+      "name": "初中 · 中考标签总表",
+      "level": "初中",
+      "words": 1602,
+      "source": "ECDICT 0.0.4 快照，按标签及 BNC/当代语料频率编选；非考试官方或出版社词书"
+    },
+    {
+      "id": "junior-start",
+      "name": "初中 · 常用入门",
+      "level": "初中",
+      "words": 900,
+      "source": "ECDICT 0.0.4 快照，按标签及 BNC/当代语料频率编选；非考试官方或出版社词书"
+    },
+    {
+      "id": "junior-advance",
+      "name": "初中 · 进阶积累",
+      "level": "初中",
+      "words": 702,
+      "source": "ECDICT 0.0.4 快照，按标签及 BNC/当代语料频率编选；非考试官方或出版社词书"
+    },
+    {
+      "id": "senior-all",
+      "name": "高中 · 高考标签总表",
+      "level": "高中",
+      "words": 3676,
+      "source": "ECDICT 0.0.4 快照，按标签及 BNC/当代语料频率编选；非考试官方或出版社词书"
+    },
+    {
+      "id": "senior-start",
+      "name": "高中 · 常用基础",
+      "level": "高中",
+      "words": 1500,
+      "source": "ECDICT 0.0.4 快照，按标签及 BNC/当代语料频率编选；非考试官方或出版社词书"
+    },
+    {
+      "id": "senior-advance",
+      "name": "高中 · 衔接拓展",
+      "level": "高中",
+      "words": 2123,
+      "source": "ECDICT 0.0.4 快照，按标签及 BNC/当代语料频率编选；非考试官方或出版社词书"
+    },
+    {
+      "id": "cet4-common",
+      "name": "四级 · 常用优先",
+      "level": "大学",
+      "words": 2000,
+      "source": "ECDICT 0.0.4 快照，按标签及 BNC/当代语料频率编选；非考试官方或出版社词书"
+    },
+    {
+      "id": "cet4-extension",
+      "name": "四级 · 进阶补充",
+      "level": "大学",
+      "words": 1849,
+      "source": "ECDICT 0.0.4 快照，按标签及 BNC/当代语料频率编选；非考试官方或出版社词书"
+    },
+    {
+      "id": "cet6-common",
+      "name": "六级 · 常用优先",
+      "level": "大学",
+      "words": 1500,
+      "source": "ECDICT 0.0.4 快照，按标签及 BNC/当代语料频率编选；非考试官方或出版社词书"
+    },
+    {
+      "id": "cet6-extension",
+      "name": "六级 · 进阶补充",
+      "level": "大学",
+      "words": 3907,
+      "source": "ECDICT 0.0.4 快照，按标签及 BNC/当代语料频率编选；非考试官方或出版社词书"
+    },
+    {
+      "id": "ky-common",
+      "name": "考研 · 常用优先",
+      "level": "大学",
+      "words": 2000,
+      "source": "ECDICT 0.0.4 快照，按标签及 BNC/当代语料频率编选；非考试官方或出版社词书"
+    },
+    {
+      "id": "ky-extension",
+      "name": "考研 · 进阶补充",
+      "level": "大学",
+      "words": 2801,
+      "source": "ECDICT 0.0.4 快照，按标签及 BNC/当代语料频率编选；非考试官方或出版社词书"
+    },
+    {
+      "id": "ielts-common",
+      "name": "雅思 · 常用优先",
+      "level": "雅思",
+      "words": 1500,
+      "source": "ECDICT 0.0.4 快照，按标签及 BNC/当代语料频率编选；非考试官方或出版社词书"
+    },
+    {
+      "id": "ielts-extension",
+      "name": "雅思 · 进阶补充",
+      "level": "雅思",
+      "words": 3540,
+      "source": "ECDICT 0.0.4 快照，按标签及 BNC/当代语料频率编选；非考试官方或出版社词书"
+    },
+    {
+      "id": "toefl-common",
+      "name": "托福 · 常用优先",
+      "level": "托福",
+      "words": 2000,
+      "source": "ECDICT 0.0.4 快照，按标签及 BNC/当代语料频率编选；非考试官方或出版社词书"
+    },
+    {
+      "id": "toefl-extension",
+      "name": "托福 · 进阶补充",
+      "level": "托福",
+      "words": 4974,
+      "source": "ECDICT 0.0.4 快照，按标签及 BNC/当代语料频率编选；非考试官方或出版社词书"
+    },
+    {
+      "id": "gre-common",
+      "name": "GRE · 常用优先",
+      "level": "GRE",
+      "words": 2500,
+      "source": "ECDICT 0.0.4 快照，按标签及 BNC/当代语料频率编选；非考试官方或出版社词书"
+    },
+    {
+      "id": "gre-extension",
+      "name": "GRE · 进阶补充",
+      "level": "GRE",
+      "words": 5004,
+      "source": "ECDICT 0.0.4 快照，按标签及 BNC/当代语料频率编选；非考试官方或出版社词书"
+    }
+  ]
+}

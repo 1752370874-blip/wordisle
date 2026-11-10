@@ -1,0 +1,9 @@
+{
+  "name": "wordisle-speech-runtime",
+  "private": true,
+  "version": "1.0.0",
+  "dependencies": {
+    "sherpa-onnx-node": "2.0.1",
+    "sherpa-onnx-win-x64": "2.0.1"
+  }
+}

@@ -2,7 +2,7 @@
 
 /* ============================================================
    单词本 —— 离线背单词应用
-   纯前端 + localStorage，无外部依赖
+   桌面账号通过主进程加密保存学习记录
    ============================================================ */
 
 /* ---------------- 小工具 ---------------- */
@@ -39,19 +39,19 @@ function isTyping(el) {
 }
 
 /* ---------------- 存储 ---------------- */
-const DEFAULTS = { dailyNew: 20, autoSpeak: true, direction: 'en2zh', deckIds: [], practice: 'card', ttsSource: 'youdao-us', ttsRate: 1, ttsSentenceSource: 'baidu', ttsMsVoice: 'en-US-AriaNeural', liquidGlass: true, bg: null, autoUpdate: true, updateSeen: '' };
+const DEFAULTS = { answerSounds: true, answerSoundVolume: 0.35, dailyNew: 20, autoSpeak: true, direction: 'en2zh', deckIds: ['cet4'], practice: 'card', ttsSource: 'youdao-us', ttsRate: 1, ttsSentenceSource: 'baidu', ttsMsVoice: 'en-US-AriaNeural', liquidGlass: true, bg: null, autoUpdate: false, updateSeen: '', aiEndpoint: '', aiModel: '', translationMode: 'model', aiCompanionMode: 'model' };
 // 网页版把背景图单独存一个键，避免每次自动保存都重新序列化几 MB 的 data URL
 const BG_DATA_KEY = 'wordisle.bgdata';
 
 function blankStore() {
-  return { v: 1, settings: Object.assign({}, DEFAULTS), words: {}, custom: [], days: {} };
+  return { v: 3, settings: Object.assign({}, DEFAULTS, {bookCatalogVersion:1}), words: {}, custom: [], days: {}, sources: [], sourcePractice: [], listeningPractice: [], privateDrafts: {}, reading: WordIsleReading.blank(), learningSession: null };
 }
 
 let store = blankStore();
 
 function loadStore() {
   let raw = null;
-  try { raw = localStorage.getItem(KEY); } catch (e) { raw = null; }
+  raw = AccountSession.raw;
   if (!raw) return;
   let data;
   try { data = JSON.parse(raw); } catch (e) { return; }
@@ -60,8 +60,15 @@ function loadStore() {
   store.words = (data.words && typeof data.words === 'object') ? data.words : {};
   store.custom = Array.isArray(data.custom) ? data.custom : [];
   store.days = (data.days && typeof data.days === 'object') ? data.days : {};
+  store.sources = Array.isArray(data.sources) ? data.sources.filter(function (x) { return x && typeof x.id === 'string' && typeof x.text === 'string'; }).slice(0, 50) : [];
+  store.sourcePractice = Array.isArray(data.sourcePractice) ? data.sourcePractice.filter(function (x) { return x && typeof x.sourceId === 'string' && typeof x.word === 'string'; }).slice(-2000) : [];
+  store.listeningPractice = listeningValidateHistory(data.listeningPractice);
+  store.reading = WordIsleReading.validate(data.reading);
+  store.privateDrafts = data.privateDrafts && typeof data.privateDrafts === 'object' ? data.privateDrafts : {};
+  store.learningSession = data.learningSession || null;
   store.settings = Object.assign({}, DEFAULTS, data.settings || {});
   if (!Array.isArray(store.settings.deckIds)) store.settings.deckIds = [];
+  bookPlanMigrateSettings(store.settings, data.settings);
   const bg = store.settings.bg;
   store.settings.bg = (bg && typeof bg === 'object' && typeof bg.file === 'string' && bg.file)
     ? { file: bg.file.slice(0, 40), dim: bgDim() }
@@ -78,6 +85,7 @@ function save() {
 function applyGlass() {
   const on = store.settings.liquidGlass !== false;
   document.body.classList.toggle('lg', on);
+  MotionUi.preferences();
 }
 
 /* ---------------- 背景图片 ----------------
@@ -94,7 +102,7 @@ function bgDim() {
   return clamp(isNaN(n) ? BG_DIM_DEFAULT : n, 0, 88);
 }
 function readBgData() {
-  try { return localStorage.getItem(BG_DATA_KEY) || ''; } catch (e) { return ''; }
+  return ''; // 旧版背景仅由主进程在首次注册时迁移。
 }
 function setBgCss(url) {
   bgCssUrl = url || 'none';
@@ -135,35 +143,60 @@ function bgPick() {
   const input = $('#bgFile');
   if (input) input.click();
 }
-function bgPickLocal(file) {
-  if (!file || BG_TYPES.indexOf(file.type) < 0) { toast('只支持 PNG / JPG / WebP / GIF / BMP 图片'); return; }
-  if (file.size > 2 * 1024 * 1024) { toast('网页版背景图请控制在 2 MB 以内，桌面版没有这个限制'); return; }
-  const fr = new FileReader();
-  fr.onload = function () {
-    try { localStorage.setItem(BG_DATA_KEY, String(fr.result)); }
-    catch (e) { toast('这张图太大，本机存储放不下；换小一点的或用桌面版'); return; }
-    bgApply('local');
-    toast('背景已更新');
-  };
-  fr.onerror = function () { toast('读不到这个文件'); };
-  fr.readAsDataURL(file);
-}
+function bgPickLocal(file) { toast('请在桌面版中选择加密背景图片'); }
 function bgClear() {
   const bg = store.settings.bg;
   if (!bg) return;
   if (window.wordIsle && window.wordIsle.bgClear && bg.file !== 'local') window.wordIsle.bgClear(bg.file);
-  try { localStorage.removeItem(BG_DATA_KEY); } catch (e) { /* 忽略 */ }
   bgApply(null);
   toast('已恢复默认背景');
 }
 function flushSave() {
-  try { localStorage.setItem(KEY, JSON.stringify(store)); }
-  catch (e) { toast('本地保存失败：浏览器存储不可用'); }
+  try { ProductFlow.capture(); ReadingClub.capture(false); return AccountSession.save(JSON.stringify(store)).then(function () { ProductFlow.saved(true); return true; }).catch(function (e) { ProductFlow.saved(false); toast('加密保存失败：' + e.message); return false; }); }
+  catch (e) { toast('加密保存失败：' + e.message); return Promise.resolve(false); }
 }
 
 /* ---------------- 更新检查 ----------------
    只读公开清单里的版本号，不上传任何本机信息；
    发现新版本只提示，下载与安装由用户自己点，不自动执行。 */
+function currentRunningVersion() { return state.appVersion || (WordIsleVersion.parse(state.update?.current) ? state.update.current : ''); }
+function loadAppInfo() {
+  if (!window.wordIsle?.info) { state.appInfoError = true; return Promise.resolve(); }
+  return window.wordIsle.info().then(info => {
+    if (!WordIsleVersion.parse(info?.version)) throw Error('版本信息不可用');
+    state.appVersion = info.version;
+    state.appInfoError = false;
+    if (state.view === 'settings') render();
+  }).catch(() => { state.appInfoError = true; if (state.view === 'settings') render(); });
+}
+function updateStatusText() {
+  const u = state.update;
+  if (state.updateChecking) return '正在检查公开更新清单…';
+  if (!u) return window.wordIsle ? '尚未检查更新' : '网页版不支持桌面更新检查';
+  if (!u.ok) return '更新检查失败：' + (u.error || '暂时无法连接');
+  const comparison = WordIsleVersion.compare(u.latest, currentRunningVersion());
+  if (comparison === null) return '更新清单的版本信息不可用';
+  return '公开清单版本 ' + u.latest + ' · ' + (comparison > 0 ? '有更高版本可下载' : comparison === 0 ? '当前版本与清单一致' : '当前运行版本高于清单，无需更新');
+}
+function applyUpdateResult(result, manual) {
+  const r = result || { ok:false, error:'未收到更新信息' };
+  state.updateChecking = false;
+  if (!state.appVersion && WordIsleVersion.parse(r.current)) state.appVersion = r.current;
+  const comparison = r.ok ? WordIsleVersion.compare(r.latest, currentRunningVersion()) : null;
+  state.update = Object.assign({}, r, {hasUpdate: r.ok && comparison > 0});
+  if (!r.ok || comparison === null) {
+    if (manual) toast('检查更新失败：' + (r.error || '版本号格式不对'));
+  } else if (comparison > 0) {
+    if (manual || store.settings.updateSeen !== r.latest) {
+      toast('发现新版本 ' + r.latest + '（当前 ' + currentRunningVersion() + '）');
+      store.settings.updateSeen = r.latest;
+      save();
+    }
+  } else if (manual) {
+    toast(comparison === 0 ? '当前版本与公开清单一致：' + currentRunningVersion() : '公开清单没有更高版本，当前运行 ' + currentRunningVersion());
+  }
+  if (state.view === 'settings') render();
+}
 function checkUpdate(manual) {
   if (!(window.wordIsle && window.wordIsle.updateCheck)) {
     if (manual) toast('桌面版才支持检查更新');
@@ -171,25 +204,8 @@ function checkUpdate(manual) {
   }
   if (state.updateChecking) return;
   state.updateChecking = true;
-  window.wordIsle.updateCheck().then(function (r) {
-    state.updateChecking = false;
-    state.update = r || null;
-    if (!r || !r.ok) {
-      if (manual) toast('检查更新失败' + (r && r.error ? '：' + r.error : ''));
-    } else if (r.hasUpdate) {
-      if (manual || store.settings.updateSeen !== r.latest) {
-        toast('发现新版本 ' + r.latest + '（当前 ' + r.current + '）');
-        store.settings.updateSeen = r.latest;
-        save();
-      }
-    } else if (manual) {
-      toast('已经是最新版本 ' + r.current);
-    }
-    if (state.view === 'settings') render();
-  }).catch(function () {
-    state.updateChecking = false;
-    if (manual) toast('检查更新失败');
-  });
+  if (state.view === 'settings') render();
+  window.wordIsle.updateCheck().then(r => applyUpdateResult(r, manual)).catch(() => applyUpdateResult({ok:false,error:'暂时无法连接更新服务'}, manual));
 }
 
 /* ---------------- 词库 ---------------- */
@@ -214,7 +230,9 @@ function deckActive(id) {
   const ids = store.settings.deckIds || [];
   return !ids.length || ids.indexOf(id) >= 0;
 }
+let renderPoolCache = null, renderInProgress = false;
 function poolWords(decks) {
+  if (!decks && renderPoolCache) return renderPoolCache;
   const out = [];
   const seen = Object.create(null);
   (decks || activeDeckList()).forEach(function (d) {
@@ -228,6 +246,7 @@ function poolWords(decks) {
       });
     });
   });
+  if (!decks && renderInProgress) renderPoolCache = out;
   return out;
 }
 function allPool() { return poolWords(allDecks()); }
@@ -272,11 +291,12 @@ function todayLearnedWords() {
 }
 
 /* ---------------- 单词状态 ---------------- */
-function stOf(key) { return store.words[key]; }
+function stOf(key) { return bookStateOf(key); }
 function ensureSt(key) {
-  let st = store.words[key];
+  let st = stOf(key);
   if (!st) {
     st = store.words[key] = { s: 'new', ease: 2.5, iv: 0, due: 0, reps: 0, lapses: 0, ok: 0, bad: 0, last: 0 };
+    bookStateCreated(key);
   }
   return st;
 }
@@ -316,6 +336,7 @@ function recordAnswer(word, verdict) {
   const st = ensureSt(word.key);
   const wasNew = st.s === 'new';
   const now = Date.now();
+  const planned = WordIsleCurve.plan(st, verdict, now);
   const rec = dayRec();
   st.reps = (st.reps || 0) + 1;
   st.last = now;
@@ -323,25 +344,17 @@ function recordAnswer(word, verdict) {
   if (verdict === 'good') {
     st.ok = (st.ok || 0) + 1;
     rec.ok = (rec.ok || 0) + 1;
-    st.ease = clamp((st.ease || 2.5) + 0.06, 1.3, 3.2);
-    st.iv = st.reps <= 1 ? 1 : st.reps === 2 ? 3 : Math.max(1, Math.round((st.iv || 1) * st.ease));
-    st.s = st.iv >= 21 ? 'mastered' : 'review';
-    st.due = now + st.iv * DAY;
   } else if (verdict === 'hard') {
     st.ease = clamp((st.ease || 2.5) - 0.05, 1.3, 3.2);
-    st.iv = 1;
-    st.s = 'learning';
-    st.due = now + 10 * MIN;
   } else {
     st.lapses = (st.lapses || 0) + 1;
     st.bad = (st.bad || 0) + 1;
     rec.bad = (rec.bad || 0) + 1;
     st.ease = clamp((st.ease || 2.5) - 0.2, 1.3, 3.2);
-    st.iv = 0;
-    st.s = 'learning';
-    st.due = now + 5 * MIN;
   }
 
+  Object.assign(st, planned);
+  bookInvalidateProgress();
   rec[wasNew ? 'new' : 'review'] = (rec[wasNew ? 'new' : 'review'] || 0) + 1;
   save();
   return wasNew;
@@ -609,7 +622,7 @@ function readerParaStart(pi) {
 }
 function readerSystemChunk(ch, idx, token) {
   reader.pending = false;
-  const speed = clamp(Number(store.settings.ttsRate) || 1, 0.6, 1.4);
+  const speed = ReadingClub.rate;
   reader.system = true;
   const u = new SpeechSynthesisUtterance(ch.text);
   u.lang = 'en-US';
@@ -652,7 +665,7 @@ function readerPlayChunk(idx, token) {
   }
   const sentenceSrc = SENTENCE_SOURCES[store.settings.ttsSentenceSource] ? store.settings.ttsSentenceSource : 'baidu';
   if (sentenceSrc === 'system') { readerSystemChunk(ch, idx, token); return; }
-  const speed = clamp(Number(store.settings.ttsRate) || 1, 0.6, 1.4);
+  const speed = ReadingClub.rate;
   reader.system = false;
   reader.pending = true;
   updateReaderUI(true);
@@ -750,13 +763,15 @@ function updateReaderUI(sparse) {
 const VIEW_META = {
   home: { title: '今日学习', sub: '先复习到期的词，再学新词' },
   study: { title: '学习', sub: '按真实记忆情况自评，算法决定下次出现时间' },
-  decks: { title: '词库', sub: '选择要背的词库，也可以导入自己的词表' },
-  readings: { title: '外刊阅读', sub: '原创外刊精读 · 经典原文 · 媒体直达' },
-  dict: { title: '查词', sub: '本地词典 6.5 万词 · 中英互查 · 可加入生词本' },
+  decks: { title: '词书广场', sub: '选择要背的词库，也可以导入自己的词表' },
+  readings: { title: '外刊阅读', sub: '分级选文 · 同页精读 · 读过的每一点都算数' },
+  dict: { title: '查词', sub: '离线约 77 万词条 · 中英互查 · 可加入生词本' },
+  listen: { title: '实时听译', sub: '听英语，看英文，再读中文译文' },
+  companion: { title: 'AI 伴学', sub: '带着资料提问，解释难句，检验理解' },
   textmap: { title: '文章词汇地图', sub: '把你的学习记录映射到任意英文文章' },
-  wrong: { title: '错词本', sub: '反复答错的词会集中在这里' },
+  wrong: { title: '复习巩固', sub: '反复答错的词会集中在这里' },
   stats: { title: '统计', sub: '看清节奏，比盲目刷词更重要' },
-  settings: { title: '设置', sub: '数据只保存在这台电脑的浏览器里' }
+  settings: { title: '设置', sub: '管理账号、学习节奏与本机加密数据' }
 };
 
 const PRACTICE = {
@@ -767,11 +782,17 @@ const PRACTICE = {
   dictation: { title: '听写', sub: '只听发音，拼出单词' }
 };
 
-const state = { view: 'home', deckId: null, q: '', readingId: null, readingCat: '全部', showZh: false, readingAnswers: {}, news: [], newsUpdatedAt: '', newsLoading: false, dictPop: null, dictQ: '', dictWord: null, dictLoading: false, update: null, updateChecking: false };
+const state = { view: 'home', deckId: null, q: '', readingId: null, readingCat: '全部', showZh: false, readingAnswers: {}, news: [], newsUpdatedAt: '', newsLoading: false, dictPop: null, dictQ: '', dictWord: null, dictLoading: false, update: null, updateChecking: false, appVersion: '', appInfoError: false };
 let session = null;
 
 /* ---------------- 渲染 ---------------- */
 function go(view, patch) {
+  if (state.view === 'readings' && view !== 'readings') ReadingClub.leaving();
+  ProductFlow.capture();
+  const changed = state.view !== view;
+  if (state.view === 'companion') sourceCollectDraft();
+  if (state.view === 'listen' && view !== 'listen') { sourceCollectAiConfig(); speechStop(); }
+  if (view === 'source') view = 'companion';
   if (state.view === 'readings' && view !== 'readings' && reader.playing) readerStop(false);
   if (patch) Object.assign(state, patch);
   state.view = view;
@@ -779,6 +800,10 @@ function go(view, patch) {
 }
 
 function render() {
+  if (MotionUi.deferDuringComposition()) return;
+  renderPoolCache = null;
+  renderInProgress = true;
+  const motionSnapshot = MotionUi.before();
   hideDictPop();
   const meta = VIEW_META[state.view] || VIEW_META.home;
   $('#viewTitle').textContent = meta.title;
@@ -787,12 +812,12 @@ function render() {
   for (let i = 0; i < navBtns.length; i++) {
     navBtns[i].classList.toggle('on', navBtns[i].dataset.nav === state.view);
   }
-  const views = { home: viewHome, study: viewStudy, decks: viewDecks, readings: viewReadings, dict: viewDict, textmap: viewTextMap, wrong: viewWrong, stats: viewStats, settings: viewSettings };
+  const views = { home: viewHome, study: viewStudy, decks: viewDecks, readings: viewReadings, dict: viewDict, listen: viewListening, companion: viewCompanion, textmap: viewTextMap, wrong: viewWrong, stats: viewStats, settings: viewSettings };
   const fn = views[state.view] || viewHome;
   const viewEl = $('#view');
   viewEl.dataset.view = state.view;
   viewEl.dataset.reading = (state.view === 'readings' && state.readingId) ? '1' : '0';
-  viewEl.innerHTML = fn();
+  MotionUi.commit(viewEl, fn(), motionSnapshot);
   // 只在切换页面时做位移擦入；同一页内的重绘不加动画
   viewEl.classList.remove('enter');
   if (render._lastView !== state.view) {
@@ -800,17 +825,24 @@ function render() {
     const src = glassSource();
     const first = render._lastView === undefined;
     viewEl.style.setProperty('--dir', dir);
-    void viewEl.offsetWidth;
+    if (!document.body.classList.contains('youth')) void viewEl.offsetWidth;
     viewEl.classList.add('enter');
-    if (!first) { LG.lens(src); rollTitle(dir); }
+    if (!first && !document.body.classList.contains('youth')) { LG.lens(src); rollTitle(dir); }
     render._lastView = state.view;
   }
   afterRender();
   renderChrome();
-  LG.sync();
+  if (!document.body.classList.contains('youth')) LG.sync();
+  youthSync();
+  AccountSession.sync();
+  ProductFlow.sync();
+  MotionUi.finish(motionSnapshot);
+  ReadingClub.sync();
+  renderPoolCache = null;
+  renderInProgress = false;
 }
 
-const NAV_ORDER = ['home', 'decks', 'readings', 'dict', 'textmap', 'wrong', 'stats', 'settings'];
+const NAV_ORDER = ['home', 'decks', 'readings', 'dict', 'listen', 'companion', 'textmap', 'wrong', 'stats', 'settings'];
 
 // 文章仅保存在本次运行的内存中，不参与同步、备份或网络请求。
 let mapText = '';
@@ -820,7 +852,7 @@ function viewTextMap() {
   if (mapAnalyzed) {
     const practiced = new Set();
     Object.keys(store.words).forEach(function (key) {
-      const st = store.words[key];
+      const st = stOf(key);
       if (st && (st.reps > 0 || st.chopped)) practiced.add(norm(key.slice(key.indexOf('::') + 2)));
     });
     const parts = mapText.split(/([A-Za-z]+(?:['’][A-Za-z]+)*)/g);
@@ -869,13 +901,13 @@ function afterRender() {
   if (state.view === 'readings' && state.readingId && reader.readingId === state.readingId) updateReaderUI(true);
   if (state.view !== 'study' || !session) return;
   const input = $('#answer');
-  if (input) input.focus();
+  if (input && !input.disabled && (!isTyping(document.activeElement) || document.activeElement===input)) input.focus({preventScroll:true});
   const w = currentWord();
   if (!w) return;
   const tag = w.key + '#' + session.idx;
   if (session.spokeTag === tag) return;
-  if (session.mode === 'dictation') { session.spokeTag = tag; speak(w.w, 0.9); }
-  else if (session.mode === 'card' && store.settings.autoSpeak && !session.revealed) { session.spokeTag = tag; speak(w.w, 0.95); }
+  if (['dictation','listenChoice'].includes(typeOf()) && !store.settings.youthQuiet) { session.spokeTag = tag; speak(w.w, 0.9); }
+  else if (typeOf() === 'card' && store.settings.autoSpeak && !store.settings.youthQuiet && !session.revealed) { session.spokeTag = tag; speak(w.w, 0.95); }
 }
 
 function renderChrome() {
@@ -905,121 +937,38 @@ function renderChrome() {
 
 /* ---------------- 首页 ---------------- */
 function viewHome() {
-  if (!allDecks().length) {
-    return '<section class="panel"><h3>还没有加载到词库</h3>' +
-      '<p class="muted">请确认 <b>data/</b> 目录下的词库文件存在，或者到「设置 → 导入词库」导入自己的词表。</p></section>';
-  }
-
-  const p = poolWords();
-  const now = Date.now();
-  let due = 0, avail = 0;
-  if (!p.length) {
-    return '<section class="panel"><h3>当前没有启用的词库</h3>' +
-      '<p class="muted">到「词库」页把至少一个词库打开。</p>' +
-      '<div class="btn-row" style="margin-top:14px"><button class="btn primary" data-act="goto" data-view="decks">去词库</button></div></section>';
-  }
-  p.forEach(function (w) {
-    const st = stOf(w.key);
-    if (!st || st.s === 'new') avail++;
-    else if ((st.due || 0) <= now) due++;
-  });
-
-  const today = store.days[dayKey()] || { new: 0 };
-  const dailyNew = store.settings.dailyNew || 20;
-  const quota = clamp(dailyNew - (today.new || 0), 0, dailyNew);
-  const practice = PRACTICE[store.settings.practice] ? store.settings.practice : 'card';
-  const modes = [['card', '翻卡记忆'], ['choice', '四选一'], ['cloze', '例句填空'], ['spell', '拼写'], ['dictation', '听写']];
-  const quizReady = todayLearnedWords().length;
-
-  const title = Object.keys(store.words).length === 0
-    ? '开始今天的第一组词'
-    : due
-      ? '今天还有 <b>' + due + '</b> 个词到期复习'
-      : (avail ? '复习清空了，学点新词' : '今天的词都过了一遍');
-  const note = avail
-    ? '再学 <b>' + Math.min(quota, avail) + '</b> 个新词（今日新词 ' + (today.new || 0) + ' / ' + dailyNew + '）。'
-    : '这个词库的新词都学过了，去词库加一点，或明天再来。';
-
-  return '' +
-    '<div class="hero-grid">' +
-      '<section class="panel">' +
-        '<div class="hero-kicker">今天 · ' + esc(todayLabel()) + '</div>' +
-        '<h2 class="hero-title">' + title + '</h2>' +
-        '<p class="hero-note">' + note + '</p>' +
-        '<div class="btn-row">' +
-          '<button class="btn primary" data-act="start">开始学习<span class="kbd">空格</span></button>' +
-          '<button class="btn" data-act="start" data-mode="choice">直接做题</button>' +
-          (due ? '<button class="btn ghost" data-act="start" data-mode="card" data-due="1">只复习到期词</button>' : '') +
-        '</div>' +
-      '</section>' +
-      '<aside class="panel stat-stack">' +
-        '<div class="stat"><span class="stat-label">到期复习</span><span class="stat-value accent">' + due + '</span></div>' +
-        '<div class="stat"><span class="stat-label">今日新词</span><span class="stat-value">' + (today.new || 0) + ' / ' + dailyNew + '</span></div>' +
-        '<div class="stat"><span class="stat-label">连续打卡</span><span class="stat-value">' + streak() + ' 天</span></div>' +
-      '</aside>' +
-    '</div>' +
-    '<section class="panel">' +
-      '<h3>练习方式</h3>' +
-      '<div class="seg" data-glass="practice">' + modes.map(function (m) {
-        return '<button data-act="practice" data-mode="' + m[0] + '"' + (practice === m[0] ? ' class="on"' : '') + '>' + m[1] + '</button>';
-      }).join('') + '</div>' +
-      '<div class="seg-note">当前：<b>' + PRACTICE[practice].title + '</b> · ' + PRACTICE[practice].sub +
-        (store.settings.direction === 'zh2en' ? '（四选一为 中 → 英）' : '') + '</div>' +
-    '</section>' +
-    '<section class="panel">' +
-      '<div class="spread">' +
-        '<div><h3 style="margin:0">今日小测</h3>' +
-          '<div class="muted">' + (quizReady
-            ? '从今天学过的 ' + quizReady + ' 个词里抽题：看词选义、看图选词、例句填空、听音拼写（最多 10 题，词不够就按实际数量）'
-            : '今天还没学过词，先学一组，回来做混合小测') + '</div></div>' +
-        '<button class="btn primary" data-act="quiz"' + (quizReady ? '' : ' disabled') + '>开始小测<span class="kbd">10 题</span></button>' +
-      '</div>' +
-    '</section>' +
-    '<section class="panel">' +
-      '<div class="spread"><div><h3 style="margin:0">外刊阅读</h3>' +
-        '<div class="muted">' + allReadings().length + ' 篇：每日新闻（自动更新）· 原创外刊精读 · 公版经典；任意单词可点查释义</div></div>' +
-        '<button class="btn" data-act="goto" data-view="readings">去阅读</button></div>' +
-    '</section>' +
-    '<div class="tip">键盘：<b>空格</b> 显示答案 / 继续 · <b>1</b> 认识 · <b>2</b> 模糊 · <b>3</b> 不认识 · <b>R</b> 重读发音 · <b>Esc</b> 结束本轮</div>';
+  if (!allDecks().length) return '<section class="panel"><h3>还没有加载到词库</h3><p class="muted">请到设置导入自己的词表，或确认词库文件完整。</p></section>';
+  const p = poolWords(), now = Date.now(); let due = 0, avail = 0;
+  if (!p.length) return bookPlanHomeHtml() + '<section class="panel"><h3>先选一本喜欢的词书</h3><p class="muted">在上方选择，或到词书广场逛逛。</p><button class="btn primary" data-act="goto" data-view="decks">去词书广场</button></section>';
+  p.forEach(w => { const st=stOf(w.key); if (!st || st.s==='new') avail++; else if ((st.due||0)<=now) due++; });
+  const today=store.days[dayKey()]||{new:0,review:0},dailyNew=bookPlanDaily(),quota=bookPlanQuota();
+  const practice=PRACTICE[store.settings.practice]?store.settings.practice:'card';
+  const modes=[['card','翻卡记忆'],['choice','四选一'],['cloze','例句填空'],['spell','拼写'],['dictation','听写']];
+    return ProductFlow.home({due,avail,quota,today,dailyNew,practice,modes,quizReady:todayLearnedWords().length});
 }
 
-/* ---------------- 学习会话 ---------------- */
-function currentWord() {
-  if (!session) return null;
-  return session.words[session.idx] || null;
+function buildQueue(opts = {}) {
+  const now = Date.now(), due = [], fresh = [];
+  poolWords().forEach(w => { const st = stOf(w.key); if (!st || st.s === 'new') fresh.push(w); else if ((st.due || 0) <= now) due.push(w); });
+  due.sort((a,b) => (stOf(a.key).due || 0) - (stOf(b.key).due || 0));
+  if (opts.dueOnly || opts.onlyDue || opts.due) return due.slice(0,60);
+  const quota = bookPlanQuota();
+  return due.concat(fresh.slice(0,quota)).slice(0,60);
 }
-
-function buildQueue(opts) {
-  opts = opts || {};
-  const now = Date.now();
-  const p = poolWords();
-  const due = [], fresh = [];
-  p.forEach(function (w) {
-    const st = stOf(w.key);
-    if (!st || st.s === 'new') fresh.push(w);
-    else if ((st.due || 0) <= now) due.push(w);
-  });
-  shuffle(due);
-  shuffle(fresh);
-  const today = store.days[dayKey()] || { new: 0 };
-  const quota = Math.max(0, (store.settings.dailyNew || 0) - (today.new || 0));
-  let list = opts.dueOnly ? due.slice() : due.concat(fresh.slice(0, quota));
-  if (!list.length && fresh.length) list = fresh.slice(0, Math.min(20, fresh.length));
-  return list.slice(0, 100);
-}
-
+function currentWord() { return session && session.idx < session.words.length ? session.words[session.idx] : null; }
 function startSession(mode, opts) {
   opts = opts || {};
   const m = (PRACTICE[mode] || mode === 'mixed') ? mode : (PRACTICE[store.settings.practice] ? store.settings.practice : 'card');
   const words = opts.words || buildQueue(opts);
-  if (!words.length) { toast('没有可练的词，先去「词库」里启用一个词库'); return; }
+  if (!words.length) { toast(bookPlanQuota()===0 ? '今天的新词目标已完成，可以等到期再复习，或在首页调整目标（最多 300 个）。' : '暂时没有到期词或可学的新词，去词书广场选一本吧。'); return; }
   session = {
     mode: m, words: words, idx: 0,
     correct: 0, total: 0, newCount: 0, reviewCount: 0,
     revealed: false, answered: false, choice: null, feedback: null, typed: '',
     requeued: Object.create(null), spokeTag: '',
-    types: opts.types || null
+    types: opts.types || null, memory: opts.memory || null, memoryHint: false
   };
+  ProductFlow.begin();
   go('study');
 }
 
@@ -1047,7 +996,7 @@ function viewStudy() {
     return '<section class="panel"><h3>还没有开始</h3><p class="muted">回到今日学习页开始一轮。</p>' +
       '<div class="btn-row" style="margin-top:14px"><button class="btn primary" data-act="goto" data-view="home">回今日学习</button></div></section>';
   }
-  if (session.idx >= session.words.length) return viewSummary();
+  if (session.idx >= session.words.length) return ProductFlow.summary();
 
   const w = currentWord();
   const total = session.words.length;
@@ -1055,15 +1004,15 @@ function viewStudy() {
   const head = '<div class="study-head">' +
     '<div class="bar big"><i style="width:' + pct + '%"></i></div>' +
     '<div class="study-count">' + (session.idx + 1) + ' / ' + total + '</div>' +
-    '<button class="btn ghost small" data-act="quit">结束</button>' +
+    '<button class="btn ghost small" data-act="quit">暂存并离开</button>' +
     '</div>';
 
   const t = typeOf();
   let body;
   if (t === 'card') body = cardHtml(w);
-  else if (t === 'choice') body = choiceHtml(w);
-  else body = typedHtml(w, t === 'dictation', t === 'cloze');
-  return head + body;
+  else if (['choice','reverse','listenChoice'].includes(t)) body = choiceHtml(w);
+  else body = typedHtml(w, t === 'dictation', t === 'cloze' && !!clozeOf(w));
+  return memoryStageHtml() + head + body + ProductFlow.studyTools();
 }
 
 function modeBadge(w) {
@@ -1080,7 +1029,7 @@ function gradeArea(revealed) {
       '<button class="btn hard" data-act="grade" data-v="hard">模糊<span class="kbd">2</span></button>' +
       '<button class="btn good" data-act="grade" data-v="good">认识<span class="kbd">1</span></button>' +
     '</div>' +
-    '<button class="btn chop" data-act="chop">斩掉这个词 · 之后 180 天不再出现</button>';
+    (session.memory ? '' : '<button class="btn chop" data-act="chop">斩掉这个词 · 之后 180 天不再出现</button>');
 }
 
 function cardHtml(w) {
@@ -1100,18 +1049,19 @@ function cardHtml(w) {
       '<div class="word-line"><h2 class="word">' + esc(w.w) + '</h2>' +
         '<button class="icon-btn" data-act="speak" data-text="' + esc(w.w) + '" title="发音 (R)">🔊</button></div>' +
       (w.p ? '<div class="phon">' + esc(w.p) + '</div>' : '') +
-      revealHtml +
+      revealHtml + (session.revealed ? memoryNoteHtml(w) : '') +
     '</div>' + actions;
 }
 
 function ensureChoice(w) {
   if (session.choice) return session.choice;
-  const dir = store.settings.direction === 'zh2en' ? 'zh2en' : 'en2zh';
-  const p = poolWords();
+  const dir = typeOf() === 'reverse' ? 'zh2en' : typeOf() === 'listenChoice' ? 'en2zh' : store.settings.direction === 'zh2en' ? 'zh2en' : 'en2zh';
+  const active = poolWords();
+  const p = active.length < 4 ? active.concat(allPool()) : active;
   const val = function (x) { return dir === 'zh2en' ? x.w : x.m; };
   const seen = Object.create(null);
   seen[norm(val(w))] = 1;
-  const cands = shuffle(p.filter(function (x) { return x.key !== w.key; }));
+  const cands = shuffle(p.filter(function (x) { return x.key !== w.key && norm(x.w) !== norm(w.w); }));
   const picks = [];
   for (let i = 0; i < cands.length && picks.length < 8; i++) {
     const v = val(cands[i]);
@@ -1129,7 +1079,8 @@ function ensureChoice(w) {
 
 function choiceHtml(w) {
   const c = ensureChoice(w);
-  const prompt = c.dir === 'zh2en'
+  const listening = typeOf() === 'listenChoice';
+  const prompt = listening ? '<div class="dict-hint"><button class="icon-btn big" data-act="speak" data-text="' + esc(w.w) + '">🔊 听一听</button><p class="muted">选择听到的单词含义</p></div>' : c.dir === 'zh2en'
     ? '<div class="meaning big">' + esc(w.m) + '</div>'
     : '<div class="word-line"><h2 class="word">' + esc(w.w) + '</h2>' +
       '<button class="icon-btn" data-act="speak" data-text="' + esc(w.w) + '" title="发音 (R)">🔊</button></div>' +
@@ -1152,10 +1103,10 @@ function choiceHtml(w) {
     : '';
 
   return '<div class="word-card">' +
-      '<div class="card-top">' + modeBadge(w) + '<span class="badge soft">' + (c.dir === 'zh2en' ? '选单词' : '选释义') + '</span></div>' +
-      prompt + (c.dir === 'zh2en' ? exampleClue(w) : exampleFull(w)) +
+      '<div class="card-top">' + modeBadge(w) + '<span class="badge soft">' + (listening ? '听音选义' : c.dir === 'zh2en' ? '中文选词' : '英文选义') + '</span></div>' +
+      prompt + (c.answered ? '<div class="meaning">' + esc(w.w) + ' · ' + esc(w.m) + '</div>' + exampleFull(w) + memoryNoteHtml(w) : (session.memory || session.memoryFocus || listening ? '' : c.dir === 'zh2en' ? exampleClue(w) : exampleFull(w))) +
     '</div>' +
-    '<div class="opts">' + opts + '</div>' + fb +
+    '<div class="opts">' + opts + '</div>' + fb + ((session.memory || session.memoryFocus) && !c.answered ? '<button class="btn ghost small" data-memory-action="skip">暂时想不起来</button>' : '') +
     '<div class="btn-row"><button class="btn ' + (c.answered ? 'primary' : '') + '" data-act="next"' + (c.answered ? '' : ' disabled') + '>下一个<span class="kbd">回车</span></button></div>';
 }
 
@@ -1174,10 +1125,10 @@ function typedHtml(w, dictation, clozeMode) {
     : dictation
       ? '<div class="dict-hint">' +
           '<button class="icon-btn big" data-act="speak" data-text="' + esc(w.w) + '">🔊 再听一次</button>' +
-          '<div class="muted">' + esc(w.pos) + ' ' + esc(w.m) + '</div>' +
+          ((session.memory || session.memoryFocus) && !answered ? '<div class="muted">先听声音，再独立写出单词</div>' : '<div class="muted">' + esc(w.pos) + ' ' + esc(w.m) + '</div>') +
         '</div>'
       : '<div class="meaning big"><span class="pos">' + esc(w.pos) + '</span>' + esc(w.m) + '</div>' +
-        '<div class="hint">' + esc(maskHint(w.w)) + '</div>';
+        (session.memory || session.memoryFocus ? '' : '<div class="hint">' + esc(maskHint(w.w)) + '</div>');
 
   let fb = '';
   if (answered && session.feedback) {
@@ -1189,25 +1140,27 @@ function typedHtml(w, dictation, clozeMode) {
 
   const clue = answered
     ? exampleFull(w)
-    : (dictation ? '' : exampleClue(w));
+    : (dictation || session.memory || session.memoryFocus ? '' : exampleClue(w));
 
   return '<div class="word-card">' +
-      '<div class="card-top">' + modeBadge(w) + '<span class="badge soft">' + (clozeMode ? '例句填空' : dictation ? '听写' : '拼写') + '</span></div>' +
-      prompt + clue +
+      '<div class="card-top">' + modeBadge(w) + '<span class="badge soft">' + (clozeMode ? '例句填空' : dictation ? '听写' : typeOf()==='cloze' ? '拼写 · 本词暂无填空例句' : '拼写') + '</span></div>' +
+      prompt + clue + (answered ? '<p class="meaning">' + esc(w.w) + ' · ' + esc(w.m) + '</p>' + memoryNoteHtml(w) : '') +
     '</div>' +
     '<div class="answer-row">' +
       '<input id="answer" class="answer" autocomplete="off" autocapitalize="off" autocorrect="off" spellcheck="false"' +
-        ' placeholder="输入英文后按回车"' + (answered ? ' disabled value="' + esc(session.typed) + '"' : '') + '>' +
+        ' placeholder="输入英文后按回车" value="' + esc(session.typed || '') + '"' + (answered ? ' disabled' : '') + '>' +
       '<button class="btn primary" data-act="submit"' + (answered ? ' disabled' : '') + '>检查</button>' +
-    '</div>' + fb +
+    '</div>' + fb + memoryHintHtml(w) +
     '<div class="btn-row"><button class="btn ' + (answered ? 'primary' : '') + '" data-act="next"' + (answered ? '' : ' disabled') + '>下一个<span class="kbd">回车</span></button></div>';
 }
 
 function viewSummary() {
+  if (session.memory) return memorySummaryHtml();
+  if (session.memoryFocus) return memoryFocusSummaryHtml();
   const total = session.total || 0;
   const correct = session.correct || 0;
   const acc = total ? Math.round(correct / total * 100) : 0;
-  return '<section class="panel">' +
+  return '<section class="panel youth-summary">' + youthSummaryLead() +
       '<div class="hero-kicker">本轮完成</div>' +
       '<h2 class="hero-title">做了 ' + total + ' 题，正确率 <b>' + acc + '%</b></h2>' +
       '<div class="sum-grid">' +
@@ -1226,43 +1179,12 @@ function viewSummary() {
 
 /* ---------------- 词库页 ---------------- */
 function viewDecks() {
-  const decks = allDecks();
   if (state.deckId) {
     const d = deckById(state.deckId);
-    if (!d) { state.deckId = null; return viewDecks(); }
-    return viewDeckDetail(d);
+    if (d) return viewDeckDetail(d);
+    state.deckId = null;
   }
-  if (!decks.length) {
-    return '<section class="panel"><h3>还没有词库</h3><p class="muted">到「设置 → 导入词库」导入一个 CSV，或恢复一个 JSON 备份。</p></section>';
-  }
-
-  const cards = decks.map(function (d) {
-    let learned = 0, mastered = 0;
-    d.words.forEach(function (w) {
-      const st = stOf(d.id + '::' + w.w);
-      if (st && st.s !== 'new') learned++;
-      if (st && st.s === 'mastered') mastered++;
-    });
-    const pct = d.words.length ? Math.round(learned / d.words.length * 100) : 0;
-    const on = deckActive(d.id);
-    return '<div class="deck-card' + (on ? ' on' : '') + '">' +
-        '<div class="deck-head"><span class="deck-name">' + esc(d.name) + '</span>' +
-          '<label class="switch"><input type="checkbox" data-set="deck" data-deck="' + esc(d.id) + '"' + (on ? ' checked' : '') + '>' +
-          '<span class="track"></span></label></div>' +
-        '<div class="deck-meta">' + d.words.length + ' 词 · 已学 ' + learned + ' · 掌握 ' + mastered + '</div>' +
-        '<div class="bar"><i style="width:' + pct + '%"></i></div>' +
-        '<div class="deck-actions">' +
-          '<button class="btn small" data-act="open-deck" data-deck="' + esc(d.id) + '">浏览词表</button>' +
-          '<button class="btn small primary" data-act="train-deck" data-deck="' + esc(d.id) + '">练这个库</button>' +
-        '</div>' +
-      '</div>';
-  }).join('');
-
-  return '<section class="panel">' +
-      '<div class="spread"><h3 style="margin:0">全部词库</h3>' +
-        '<span class="muted">关掉的词库不会出现新词，也不参与复习</span></div>' +
-      '<div class="deck-grid" style="margin-top:12px">' + cards + '</div>' +
-    '</section>';
+  return bookPlanLibrary();
 }
 
 function viewDeckDetail(d) {
@@ -1301,14 +1223,14 @@ function viewDeckDetail(d) {
 /* ---------------- 错词本 ---------------- */
 function viewWrong() {
   const rows = [];
-  allPool().forEach(function (w) {
+  memoryHistoricalWords().forEach(function (w) {
     const st = stOf(w.key);
     if (st && (st.bad || 0) > 0) rows.push({ w: w, st: st });
   });
   rows.sort(function (a, b) { return (b.st.bad || 0) - (a.st.bad || 0) || (b.st.last || 0) - (a.st.last || 0); });
 
   if (!rows.length) {
-    return '<section class="panel"><h3>错词本是空的</h3><p class="muted">答错或标「不认识」的词会自动进这里。继续保持。</p></section>';
+    return memoryWeakPanelHtml() + '<section class="panel"><h3>暂无历史答错记录</h3><p class="muted">答错或标“不认识”的词会保留在这里；使用过提示的词也可在上方补练。</p></section>';
   }
 
   const list = rows.slice(0, 300).map(function (r) {
@@ -1320,8 +1242,8 @@ function viewWrong() {
     '</tr>';
   }).join('');
 
-  return '<section class="panel">' +
-      '<div class="spread"><div><h3 style="margin:0">共 ' + rows.length + ' 个错词</h3>' +
+  return memoryWeakPanelHtml() + '<section class="panel">' +
+      '<div class="spread"><div><h3 style="margin:0">历史答错 · ' + rows.length + ' 个词</h3>' +
         '<div class="muted">按错误次数排序，前 40 个可以集中重练</div></div>' +
         '<button class="btn primary" data-act="train-wrong">重练这些词</button></div>' +
       '<div class="table-wrap" style="margin-top:14px"><table><thead><tr><th>单词</th><th>释义</th><th>错误</th><th>状态</th></tr></thead>' +
@@ -1459,7 +1381,7 @@ const MEDIA_LINKS = [
 ];
 
 function allReadings() {
-  return (state.news || []).concat(window.READINGS || []);
+  return ReadingClub.all();
 }
 function currentReading() {
   if (!state.readingId) return null;
@@ -1487,11 +1409,13 @@ function lexIndex() {
   return lexCache;
 }
 function lookupWord(raw) {
-  const lex = lexIndex();
   const w = String(raw || '').toLowerCase().replace(/^[^a-z]+|[^a-z]+$/g, '');
   if (!w) return null;
-  if (lex[w]) return lex[w];
+  const direct = dictFind(w) || lexIndex()[w];
+  if (direct) return direct;
   const tries = [];
+  const irregular = { went: 'go', gone: 'go', children: 'child', men: 'man', women: 'woman', mice: 'mouse', geese: 'goose', teeth: 'tooth', feet: 'foot', better: 'good', best: 'good', worse: 'bad', worst: 'bad', brought: 'bring', thought: 'think', taught: 'teach', bought: 'buy', written: 'write', spoken: 'speak' };
+  if (irregular[w]) tries.push(irregular[w]);
   if (/ies$/.test(w)) tries.push(w.slice(0, -3) + 'y');
   ['ing', 'ed', 'er', 'est', 'ly', 'es', 's', 'd'].forEach(function (suf) {
     if (w.length > suf.length + 2 && w.slice(-suf.length) === suf) tries.push(w.slice(0, -suf.length));
@@ -1503,7 +1427,10 @@ function lookupWord(raw) {
       tries.push(stem + 'e');
     }
   });
-  for (let i = 0; i < tries.length; i++) { if (lex[tries[i]]) return lex[tries[i]]; }
+  for (let i = 0; i < tries.length; i++) {
+    const entry = dictFind(tries[i]) || lexIndex()[tries[i]];
+    if (entry) return entry;
+  }
   return null;
 }
 function wordWrap(text, vocab) {
@@ -1541,11 +1468,10 @@ function addToReadingDeck(entry) {
   if (!exists) {
     deck.words.push({ w: entry.w, p: entry.p || '', pos: entry.pos || '', m: entry.m || '', e: entry.e || '', t: entry.t || '' });
   }
-  if (store.settings.deckIds.length && store.settings.deckIds.indexOf(id) < 0) store.settings.deckIds.push(id);
   save();
   toast(exists ? '这个词已经在「阅读生词」里了' : '已加入「阅读生词」，可在词库中练习');
 }
-function showDictPop(raw, entry, rect) {
+function showDictPop(raw, entry, rect, pending) {
   hideDictPop();
   const el = document.createElement('div');
   el.className = 'dict-pop';
@@ -1558,7 +1484,7 @@ function showDictPop(raw, entry, rect) {
       '<div class="dp-actions"><button class="btn small primary" data-dp="add">加入生词库</button>' +
       '<button class="btn small ghost" data-dp="close">关闭</button></div>'
     : '<div class="dp-head"><b>' + esc(raw) + '</b></div>' +
-      '<div class="dp-mean muted">词库里暂时没有收录这个词。</div>' +
+      '<div class="dp-mean muted">' + (pending ? '正在查扩展词典…' : '离线词典暂未收录这个词。') + '</div>' +
       '<div class="dp-actions"><button class="btn small ghost" data-dp="close">关闭</button></div>';
   document.body.appendChild(el);
 
@@ -1580,7 +1506,7 @@ function showDictPop(raw, entry, rect) {
       ev.stopPropagation();
       const act = btns[i].dataset.dp;
       if (act === 'speak') speak(entry ? entry.w : raw);
-      else if (act === 'add' && entry) addToReadingDeck(entry);
+      else if (act === 'add' && entry) { addToReadingDeck(Object.assign({}, entry, state.readingLookupContext ? {e:state.readingLookupContext.slice(0,800),t:''} : {})); ReadingClub.rememberWord(entry); render(); }
       else hideDictPop();
     });
   }
@@ -1594,160 +1520,55 @@ function formatNewsTime(iso) {
   if (isNaN(d.getTime())) return '';
   return (d.getMonth() + 1) + '月' + d.getDate() + '日 ' + pad2(d.getHours()) + ':' + pad2(d.getMinutes());
 }
-async function loadNews(force) {
-  if (!window.wordIsle || state.newsLoading) return;
-  state.newsLoading = true;
-  state.newsTried = true;
-  render();
-  try {
-    const data = await window.wordIsle.news(!!force);
-    if (data && Array.isArray(data.items)) {
-      state.news = data.items;
-      state.newsUpdatedAt = data.updatedAt || '';
-    }
-  } catch (e) { /* 忽略，保留旧缓存 */ }
-  state.newsLoading = false;
-  render();
-}
+async function loadNews(force) { return ReadingNews.refresh(!!force); }
 function viewReadings() {
-  const all = allReadings();
-  if (!all.length) return '<section class="panel"><h3>还没有阅读材料</h3><p class="muted">data/readings-*.js 没有加载成功。</p></section>';
   const r = currentReading();
-  if (r) return viewReadingArticle(r);
-
-  const cats = ['全部'].concat(readingCats());
-  const list = all.filter(function (x) { return state.readingCat === '全部' || x.category === state.readingCat; });
-  const cards = list.map(function (x) {
-    const hasZh = x.translation && x.translation.length;
-    const excerpt = (x.paragraphs && x.paragraphs[0] || '').slice(0, 120);
-    const time = x.category === '新闻' ? formatNewsTime(x.date) : '';
-    return '<article class="reading-card' + (x.category === '新闻' ? ' news' : '') + '">' +
-        '<div class="rc-top"><span class="badge">' + esc(x.category || '阅读') + '</span>' +
-        '<span class="badge soft">' + esc(x.level || '') + '</span></div>' +
-        '<h4 class="rc-title">' + esc(x.title) + '</h4>' +
-        '<p class="rc-excerpt">' + esc(excerpt) + '…</p>' +
-        '<div class="rc-meta">' + wordCountOf(x) + ' 词 · ' + (hasZh ? '双语' : '原文') + ' · ' + esc(x.source || '') +
-        (time ? ' · ' + esc(time) : '') + '</div>' +
-        '<button class="btn small primary" data-act="r-open" data-id="' + esc(x.id) + '">开始阅读</button>' +
-      '</article>';
-  }).join('');
-
-  const bridge = !!window.wordIsle;
-  if (bridge && !state.news.length && !state.newsTried) setTimeout(function () { loadNews(false); }, 60);
-
-  return '<section class="panel">' +
-      '<div class="spread"><div>' +
-        '<h3 style="margin:0">选一篇开始读（' + all.length + ' 篇）</h3>' +
-        '<div class="muted">点任意单词看中文释义 · 逐段朗读 · ' +
-          (bridge ? ('每日新闻自动更新' + (state.newsUpdatedAt ? '（上次更新 ' + formatNewsTime(state.newsUpdatedAt) + '）' : '')) : '网页版不支持每日新闻自动更新') +
-        '</div></div>' +
-        (bridge ? '<button class="btn" data-act="news-refresh"' + (state.newsLoading ? ' disabled' : '') + '>' +
-          (state.newsLoading ? '更新中…' : '更新每日新闻') + '</button>' : '') +
-      '</div>' +
-      '<div class="seg" data-glass="cat" style="margin-top:12px">' + cats.map(function (c) {
-        return '<button data-act="r-filter" data-cat="' + esc(c) + '"' + (state.readingCat === c ? ' class="on"' : '') + '>' + esc(c) + '</button>';
-      }).join('') + '</div>' +
-    '</section>' +
-    '<div class="reading-grid">' + cards + '</div>' +
-    '<section class="panel">' +
-      '<h3>主流媒体直达</h3>' +
-      '<p class="muted" style="margin-bottom:10px">受版权限制，这里不转载原文，只提供官方入口（用系统浏览器打开，需联网）。</p>' +
-      '<div class="link-grid">' + MEDIA_LINKS.map(function (m) {
-        return '<a class="media-link" href="' + esc(m.url) + '" target="_blank" rel="noopener">' +
-          '<b>' + esc(m.name) + '</b><span>' + esc(m.tone) + '</span></a>';
-      }).join('') + '</div>' +
-    '</section>';
+  return r ? viewReadingArticle(r) : ReadingClub.library();
 }
-
-function viewReadingArticle(r) {
-  const zh = !!state.showZh;
-  if (reader.readingId !== r.id || !reader.chunks.length) readerBuild(r);
-  const firstChunk = reader.chunks[0];
-  if (firstChunk) {
-    setTimeout(function () {
-      try {
-        const src = store.settings.ttsSentenceSource || 'baidu';
-        if (src === 'msedge') msEdgeSrc(firstChunk.text);
-        else if (src === 'baidu') audioSrc(baiduUrl(firstChunk.text)).catch(function () { /* 忽略 */ });
-      } catch (e) { /* 忽略 */ }
-    }, 350);
-  }
-  const paras = (r.paragraphs || []).map(function (p, i) {
-    const trans = (r.translation || [])[i] || '';
-    return '<div class="rd-para">' +
-        '<p class="rd-en">' + wordWrap(p, r.vocab) + '</p>' +
-        (zh && trans ? '<p class="rd-zh">' + esc(trans) + '</p>' : '') +
-        '<div class="rd-tools"><button class="btn small ghost" data-act="r-speak" data-i="' + i + '">🔊 读这段</button></div>' +
-      '</div>';
-  }).join('');
-
-  const vocab = (r.vocab || []).length ? '<section class="panel"><h3>本篇生词（' + r.vocab.length + '）</h3>' +
-      '<div class="table-wrap" style="max-height:none"><table><thead><tr><th>单词</th><th>音标</th><th>释义</th><th></th></tr></thead><tbody>' +
-      r.vocab.map(function (v) {
-        return '<tr><td class="w">' + esc(v.w) + '</td><td class="phon">' + esc(v.p) + '</td><td class="mn">' + esc(v.m) + '</td>' +
-          '<td><button class="icon-btn" style="width:26px;height:26px;font-size:12px" data-act="speak" data-text="' + esc(v.w) + '">🔊</button></td></tr>';
-      }).join('') + '</tbody></table></div></section>' : '';
-
-  const qs = (r.questions || []).length ? '<section class="panel"><h3>理解题（' + r.questions.length + '）</h3>' +
-      r.questions.map(function (q, qi) {
-        const picked = state.readingAnswers[qi];
-        const answered = picked !== undefined;
-        const opts = (q.options || []).map(function (o, oi) {
-          let cls = 'opt';
-          if (answered) {
-            if (oi === q.answer) cls += ' right';
-            else if (oi === picked) cls += ' wrong';
-            else cls += ' dim';
-          }
-          return '<button class="' + cls + '" data-act="r-answer" data-q="' + qi + '" data-i="' + oi + '"' + (answered ? ' disabled' : '') + '>' +
-            '<span class="opt-idx">' + String.fromCharCode(65 + oi) + '</span><span>' + esc(o) + '</span></button>';
-        }).join('');
-        const fb = answered
-          ? '<div class="feedback ' + (picked === q.answer ? 'ok' : 'no') + '">' +
-            (picked === q.answer ? '答对了' : '正确答案：' + String.fromCharCode(65 + q.answer)) +
-            (q.explain ? ' · ' + esc(q.explain) : '') + '</div>'
-          : '';
-        return '<div class="rd-q"><div class="rd-q-title">' + (qi + 1) + '. ' + esc(q.q) + '</div>' +
-          '<div class="opts">' + opts + '</div>' + fb + '</div>';
-      }).join('') + '</section>' : '';
-
-  return '<section class="panel">' +
-      '<div class="spread"><div>' +
-        '<div class="rc-top"><span class="badge">' + esc(r.category || '阅读') + '</span>' +
-          '<span class="badge soft">' + esc(r.level || '') + '</span>' +
-          '<span class="badge soft">' + wordCountOf(r) + ' 词</span></div>' +
-        '<h2 class="rd-title">' + esc(r.title) + '</h2>' +
-        '<div class="muted">' + esc(r.source || '') + ' · ' + esc(r.license === 'original' ? '原创' : '公有领域') +
-          (r.category === '新闻' && r.date ? ' · ' + esc(formatNewsTime(r.date)) : '') +
-          ' · 点任意单词看释义</div>' +
-      '</div>' +
-      '<div class="btn-row">' +
-        ((r.translation && r.translation.length) ? '<button class="btn small" data-act="r-zh">' + (zh ? '隐藏中文' : '显示中文') + '</button>' : '') +
-        '<button class="btn small ghost" data-act="r-back">返回列表</button>' +
-      '</div></div>' +
-    '</section>' +
-    '<section class="panel reader-panel">' +
-      '<div class="reader-bar" id="readerBar">' +
-        '<button class="btn small primary reader-play" data-act="reader-toggle">▶ 朗读全文</button>' +
-        '<input type="range" id="readerRange" class="reader-range" min="0" max="' + reader.total + '" value="' + reader.pos + '" step="1" aria-label="朗读进度">' +
-        '<span class="reader-info" id="readerInfo">' + readerLabel() + '</span>' +
-        '<button class="btn small ghost" data-act="reader-stop">停止</button>' +
-      '</div>' +
-      '<div class="reader-note">整句朗读用百度翻译朗读（有道只支持单词发音）；拖动进度条可以跳到任意位置，朗读时对应段落会高亮。</div>' +
-    '</section>' +
-    '<section class="panel">' + paras + '</section>' + vocab + qs;
-}
+function viewReadingArticle(r) { return ReadingClub.article(r); }
 
 /* ---------------- 查词（本地词典，懒加载） ---------------- */
 function ensureDict() {
-  if (window.SEARCH_DICT) return;
-  if (state.dictLoading) return;
+  if (window.SEARCH_DICT) return Promise.resolve(true);
+  if (ensureDict.pending) return ensureDict.pending;
   state.dictLoading = true;
-  const s = document.createElement('script');
-  s.src = 'data/search-dict.js';
-  s.onload = function () { state.dictLoading = false; render(); };
-  s.onerror = function () { state.dictLoading = false; toast('词典加载失败，请确认 data/search-dict.js 存在'); render(); };
-  document.body.appendChild(s);
+  ensureDict.pending = new Promise(function (resolve) {
+    const s = document.createElement('script');
+    s.src = 'data/search-dict.js';
+    s.onload = function () { state.dictLoading = false; ensureDict.pending = null; if (state.view === 'readings' && state.readingId) ReadingClub.dictionaryReady(); else render(); resolve(true); };
+    s.onerror = function () { state.dictLoading = false; ensureDict.pending = null; toast('常用词典加载失败'); if (!(state.view === 'readings' && state.readingId)) render(); resolve(false); };
+    document.body.appendChild(s);
+  });
+  return ensureDict.pending;
+}
+const extendedPromises = Object.create(null);
+const extendedMaps = Object.create(null);
+function dictPart(word) {
+  const first = String(word || '').toLowerCase()[0];
+  return /[a-z]/.test(first || '') ? first : '_';
+}
+function ensureExtended(letter) {
+  const parts = window.EXT_DICT_PARTS || {};
+  if (parts[letter]) return Promise.resolve(true);
+  if (extendedPromises[letter]) return extendedPromises[letter];
+  extendedPromises[letter] = new Promise(function (resolve) {
+    const s = document.createElement('script');
+    s.src = 'data/extended-dict/' + letter + '.js';
+    s.onload = function () { delete extendedPromises[letter]; if (state.view === 'dict') render(); resolve(!!(window.EXT_DICT_PARTS || {})[letter]); };
+    s.onerror = function () { delete extendedPromises[letter]; resolve(false); };
+    document.body.appendChild(s);
+  });
+  return extendedPromises[letter];
+}
+function extendedMap(letter) {
+  const rows = (window.EXT_DICT_PARTS || {})[letter];
+  if (!rows) return null;
+  if (!extendedMaps[letter]) {
+    const map = new Map();
+    rows.forEach(function (r) { if (!map.has(r[0])) map.set(r[0], r); });
+    extendedMaps[letter] = map;
+  }
+  return extendedMaps[letter];
 }
 let dictDeckMap = null;
 function deckWordMap() {
@@ -1757,10 +1578,20 @@ function deckWordMap() {
   return dictDeckMap;
 }
 function dictFind(word) {
-  const all = window.SEARCH_DICT || [];
-  const q = String(word || '').toLowerCase();
-  for (let i = 0; i < all.length; i++) if (all[i].w.toLowerCase() === q) return all[i];
-  return null;
+  const q = String(word || '').trim().toLowerCase();
+  if (!q) return null;
+  if (window.SEARCH_DICT) {
+    if (!dictFind.core) {
+      dictFind.core = new Map();
+      window.SEARCH_DICT.forEach(function (e) { dictFind.core.set(e.w.toLowerCase(), e); });
+    }
+    if (dictFind.core.has(q)) return dictFind.core.get(q);
+  }
+  const deck = deckWordMap()[q];
+  if (deck) return deck;
+  const part = extendedMap(dictPart(q));
+  const row = part && part.get(q);
+  return row ? { w: row[0], p: row[1], m: row[2], pos: '', e: '', t: '' } : null;
 }
 function dictSearch(q) {
   const all = window.SEARCH_DICT || [];
@@ -1772,6 +1603,7 @@ function dictSearch(q) {
     return out;
   }
   const ql = q.toLowerCase();
+  dictFind(ql);
   const exact = [], prefix = [], contains = [];
   for (let i = 0; i < all.length; i++) {
     const e = all[i];
@@ -1779,6 +1611,20 @@ function dictSearch(q) {
     if (w === ql) exact.push(e);
     else if (w.indexOf(ql) === 0) { if (prefix.length < 80) prefix.push(e); }
     else if (w.indexOf(ql) > 0) { if (contains.length < 30) contains.push(e); }
+  }
+  const part = (window.EXT_DICT_PARTS || {})[dictPart(ql)] || [];
+  let left = 0, right = part.length;
+  while (left < right) { const mid = (left + right) >> 1; if (part[mid][0] < ql) left = mid + 1; else right = mid; }
+  for (let i = left; i < part.length && prefix.length < 80; i++) {
+    const row = part[i];
+    if (!row[0].startsWith(ql)) break;
+    if (!dictFind.core.has(row[0])) prefix.push({ w: row[0], p: row[1], m: row[2], pos: '', e: '', t: '' });
+  }
+  const own = deckWordMap()[ql];
+  if (own && !exact.length) exact.push(own);
+  if (!exact.length && !prefix.length) {
+    const lemma = lookupWord(ql);
+    if (lemma && lemma.w.toLowerCase() !== ql) exact.push(lemma);
   }
   return exact.concat(prefix, contains).slice(0, 80);
 }
@@ -1819,7 +1665,7 @@ function dictRowHtml(e) {
     '</button>';
 }
 function viewDictWord(word) {
-  const e = dictFind(word);
+  const e = dictFind(word) || lookupWord(word);
   if (!e) {
     return '<section class="panel"><h3>没有找到这个词</h3><p class="muted">词典未收录「' + esc(word) + '」。</p>' +
       '<div class="btn-row" style="margin-top:12px"><button class="btn" data-act="dict-back">返回搜索</button></div></section>';
@@ -1829,6 +1675,7 @@ function viewDictWord(word) {
       '<div class="btn-row" style="margin-bottom:6px"><button class="btn small ghost" data-act="dict-back">← 返回搜索</button></div>' +
       '<div class="dd-head"><h2 class="word">' + esc(e.w) + '</h2>' +
         '<button class="icon-btn" data-act="speak" data-text="' + esc(e.w) + '" title="发音">🔊</button></div>' +
+      (e.w.toLowerCase() !== word.toLowerCase() ? '<p class="muted">查询词形：' + esc(word) + ' · 对应原形</p>' : '') +
       (e.p ? '<div class="phon">' + esc(e.p) + '</div>' : '') +
       '<div class="dd-mean">' + (e.pos ? '<i class="pos">' + esc(e.pos) + '</i>' : '') + esc(e.m) + '</div>' +
       (e.e ? '<div class="example">' + esc(e.e) + ' <button class="icon-btn" style="width:24px;height:24px;font-size:11px;vertical-align:1px" data-act="speak" data-text="' + esc(e.e) + '" title="朗读例句">🔊</button></div>' : '') +
@@ -1842,17 +1689,21 @@ function viewDictWord(word) {
 function viewDict() {
   if (!window.SEARCH_DICT) {
     if (!state.dictLoading) setTimeout(ensureDict, 0);
-    return '<section class="panel"><h3>正在载入本地词典…</h3>' +
-      '<p class="muted">65,000 词条，只需要载入一次（约 7.6 MB）。</p></section>';
+    return '<section class="panel"><h3>正在载入离线词典…</h3>' +
+      '<p class="muted">先载入常用词，更多词条按字母加载。</p></section>';
   }
   if (state.dictWord) return viewDictWord(state.dictWord);
   const q = state.dictQ.trim();
+  const letter = q && !/[\u4e00-\u9fff]/.test(q) ? dictPart(q) : '';
+  const partReady = letter && !!(window.EXT_DICT_PARTS || {})[letter];
+  if (letter && !partReady && !extendedPromises[letter]) setTimeout(function () { ensureExtended(letter); }, 0);
+  const total = (window.EXT_DICT_META && window.EXT_DICT_META.count) || 65000;
   const head = '<section class="panel">' +
       '<div class="dict-search-row">' +
         '<input id="dictQuery" class="dict-input" placeholder="输入英文单词或中文释义，例如 abandon / 放弃" autocomplete="off" spellcheck="false" value="' + esc(state.dictQ) + '">' +
         '<button class="btn primary" data-act="dict-go">查词</button>' +
       '</div>' +
-      '<div class="muted dict-hint">本地 65,000 词条 · 英文支持前缀/包含搜索，中文可直接反查 · 回车打开第一条结果</div>' +
+      '<div class="muted dict-hint">离线约 ' + Math.round(total / 10000) + ' 万词条 · 英文词头与词形查询 · 中文可反查常用词</div>' +
     '</section>';
   if (!q) {
     const recent = (store.dictRecent || []).slice(0, 10);
@@ -1865,14 +1716,15 @@ function viewDict() {
       '<section class="panel"><h3>字母索引</h3><div class="dict-alpha">' +
         'abcdefghijklmnopqrstuvwxyz'.split('').map(function (c) { return '<button data-act="dict-alpha" data-c="' + c + '">' + c.toUpperCase() + '</button>'; }).join('') +
       '</div></section>' +
-      '<section class="panel"><h3>关于这本词典</h3><p class="muted">数据来自开源 ECDICT（MIT License），按使用频率筛出 65,000 条，不是牛津词典原文。音标来自词库 IPA + CMUdict，词性/中文释义齐全；词库里学过的词会带例句。</p></section>';
+      '<section class="panel"><h3>关于这本词典</h3><p class="muted">基于开源 ECDICT（MIT License）。常用 65,000 条即时检索，扩展词条按首字母载入；词库里的部分词条带例句。英文词汇不断变化，专业新词和拼写变体仍可能缺失；释义请结合原文核对。</p></section>';
   }
   const list = dictSearch(q);
   return head + '<section class="panel">' +
       '<div class="spread"><h3 style="margin:0">搜索结果（' + list.length + '）</h3><span class="muted">' + esc(q) + '</span></div>' +
+      (letter && !partReady ? '<p class="muted">正在查扩展词典…</p>' : '') +
       (list.length
         ? '<div class="dict-list" id="dictResults">' + list.map(dictRowHtml).join('') + '</div>'
-        : '<p class="muted">没找到「' + esc(q) + '」，试试更短的前缀或中文释义。</p>') +
+        : (letter && !partReady ? '' : '<p class="muted">没找到「' + esc(q) + '」，试试更短的前缀或中文释义。</p>')) +
     '</section>';
 }
 
@@ -1880,13 +1732,11 @@ function viewDict() {
 function viewSettings() {
   const s = store.settings;
   const u = state.update;
-  return '<section class="panel">' +
+  return AccountSession.settingsHtml() + youthSettingsHtml() + LearnerExperience.settingsHtml() + '<section class="panel">' +
       '<h3>学习节奏</h3>' +
       '<div class="form">' +
-        '<div class="field"><div><div class="field-label">每日新词</div><div class="field-note">到期的复习永远优先，新词只是补足每天的量。</div></div>' +
-          '<select data-set="dailyNew">' + [10, 20, 30, 50, 80].map(function (n) {
-            return '<option value="' + n + '"' + (s.dailyNew === n ? ' selected' : '') + '>' + n + ' 个/天</option>';
-          }).join('') + '</select></div>' +
+        '<div class="field"><div><div class="field-label">每日新词 · 1—300 个</div><div class="field-note">所有词书共用每日新词目标，到期复习另计。</div></div>' +
+          '<input type="number" inputmode="numeric" min="1" max="300" step="1" data-set="dailyNew" aria-label="设置每日新词数" value="' + bookPlanDaily() + '"></div>' +
         '<div class="field"><div><div class="field-label">进入新词时自动发音</div><div class="field-note">用下面选择的音源朗读；关掉可以自己点 🔊。</div></div>' +
           '<label class="switch"><input type="checkbox" data-set="autoSpeak"' + (s.autoSpeak ? ' checked' : '') + '><span class="track"></span></label></div>' +
         '<div class="field"><div><div class="field-label">四选一方向</div><div class="field-note">看英文选中文，还是看中文选英文。</div></div>' +
@@ -1924,12 +1774,12 @@ function viewSettings() {
     '<section class="panel">' +
       '<h3>外观</h3>' +
       '<div class="form">' +
-        '<div class="field"><div><div class="field-label">液态玻璃效果</div>' +
-          '<div class="field-note">半透明玻璃面、环境光和随指针流动的高光；低配电脑可关闭以省性能。</div></div>' +
+        '<div class="field"><div><div class="field-label">轻互动效</div>' +
+          '<div class="field-note">按钮按压、页面进入与小里程碑的轻量动效；关闭后保持静态。</div></div>' +
           '<label class="switch"><input type="checkbox" data-set="liquidGlass"' + (s.liquidGlass !== false ? ' checked' : '') + '><span class="track"></span></label></div>' +
         '<div class="field"><div><div class="field-label">背景图片</div>' +
           '<div class="field-note">' + (window.wordIsle
-            ? '选一张图铺在玻璃后面。图片会复制一份到本机用户目录，原图删掉也不影响。'
+            ? '选一张图铺在玻璃后面，副本会加密存入当前账号，原图删掉也不影响。'
             : '网页版只能把不超过 2 MB 的图存在浏览器里；桌面版支持 15 MB 以内的任意图片。') + '</div></div>' +
           '<div class="row">' +
             (s.bg ? '<span class="bg-thumb" aria-hidden="true"></span>' : '') +
@@ -1947,12 +1797,11 @@ function viewSettings() {
       '<h3>更新</h3>' +
       '<div class="form">' +
         '<div class="field"><div><div class="field-label">自动检查更新</div>' +
-          '<div class="field-note">启动时读一次公开的版本清单，只取版本号，不上传任何本机数据。发现新版本只提示你，下载和安装都由你自己点。</div></div>' +
+          '<div class="field-note">启动时查询公开发布信息，不上传学习记录。发现更高版本只提示，下载和安装由你选择。</div></div>' +
           '<label class="switch"><input type="checkbox" data-set="autoUpdate"' + (s.autoUpdate !== false ? ' checked' : '') + '><span class="track"></span></label></div>' +
-        '<div class="field"><div><div class="field-label">当前版本</div>' +
-          '<div class="field-note">' + (u && u.ok
-            ? ('最新 ' + esc(u.latest) + (u.hasUpdate ? ' · 有新版本可下载' : ' · 已是最新'))
-            : (window.wordIsle ? '尚未检查' : '桌面版才支持自动检查')) + '</div></div>' +
+        '<div class="field"><div><div class="field-label">当前运行版本</div>' +
+          '<div class="field-note" id="appCurrentVersion"><b>' + esc(currentRunningVersion() || (state.appInfoError ? '版本信息暂不可用' : '正在读取版本信息…')) + '</b></div>' +
+          '<div class="field-note" id="appUpdateStatus" role="status">' + esc(updateStatusText()) + '</div></div>' +
           '<div class="row"><button class="btn small" data-act="update-check"' + (state.updateChecking ? ' disabled' : '') + '>' + (state.updateChecking ? '检查中…' : '检查更新') + '</button>' +
           (u && u.ok && u.hasUpdate && u.url ? '<a class="btn small primary" href="' + esc(u.url) + '" target="_blank" rel="noopener">下载新版本</a>' : '') +
           '</div></div>' +
@@ -1966,23 +1815,27 @@ function viewSettings() {
           '<div class="field-note">CSV 每行：单词,音标,词性,释义,例句,例句翻译（至少要有单词和释义）。也可以直接导入本应用导出的 JSON 备份。</div></div>' +
           '<div class="row"><button class="btn" data-act="import">选择文件</button>' +
           '<input type="file" id="importFile" accept=".csv,.tsv,.txt,.json" style="display:none"></div></div>' +
-        '<div class="field"><div><div class="field-label">导出备份</div><div class="field-note">进度、设置、自定义词库打包成一个 JSON，换电脑时导入继续。</div></div>' +
+        '<div class="field"><div><div class="field-label">导出学习 JSON（明文）</div><div class="field-note">用于手动交换学习记录，文件含个人学习内容。换机或备份请优先使用上方「导出加密账号备份」。</div></div>' +
           '<button class="btn" data-act="export">导出 JSON</button></div>' +
         '<div class="field"><div><div class="field-label">清空学习记录</div><div class="field-note">清空所有词的进度和每日统计，自定义词库会保留。</div></div>' +
           '<button class="btn danger" data-act="reset">清空</button></div>' +
       '</div>' +
     '</section>' +
-    '<div class="tip">数据存在本机：<b>桌面版 exe</b>、<b>启动.bat（http://127.0.0.1:8765）</b>、<b>直接双击 index.html</b> 是三套独立的存储空间，建议固定用同一种。换电脑前到上面「导出备份」。</div>';
+    '<div class="tip">学习记录按本机账号加密保存。登录页可选择记住密码或自动登录；锁定后需手动输入密码。换机前请导出加密账号备份，忘记密码时使用注册时的恢复密钥。</div>';
 }
 
 /* ---------------- 答题动作 ---------------- */
 function applyResult(w, verdict) {
+  if (memoryLoopResult(w, verdict)) return;
+  if (session.memoryHint && verdict === 'good') verdict = 'hard';
+  memoryEvidence(w, verdict, typeOf());
   const wasNew = recordAnswer(w, verdict);
   session.total += 1;
   if (verdict === 'good') session.correct += 1;
   if (wasNew) session.newCount += 1;
   else session.reviewCount += 1;
   if (verdict === 'again') requeue(w);
+  youthHandleResult(w, verdict);
 }
 
 function requeue(w) {
@@ -1999,6 +1852,7 @@ function advance() {
   session.choice = null;
   session.feedback = null;
   session.typed = '';
+  session.memoryHint = false;
   render();
 }
 
@@ -2009,6 +1863,7 @@ function reveal() {
 }
 
 function gradeCard(verdict) {
+  if (!session || !session.revealed) return;
   const w = currentWord();
   if (!w) return;
   applyResult(w, verdict);
@@ -2025,6 +1880,7 @@ function chopWord() {
   st.s = 'mastered';
   st.iv = 180;
   st.due = Date.now() + 180 * DAY;
+  st.curve = {version:1,stage:WordIsleCurve.minutes.length-1,lastAdvance:Date.now()};
   save();
   advance();
 }
@@ -2032,6 +1888,7 @@ function chopWord() {
 function pickChoice(i) {
   if (!session || session.answered) return;
   const w = currentWord();
+  if (!w) return;
   const c = ensureChoice(w);
   const opt = c.options[i];
   if (!opt) return;
@@ -2040,6 +1897,8 @@ function pickChoice(i) {
   c.correct = !!opt.ok;
   session.answered = true;
   applyResult(w, c.correct ? 'good' : 'again');
+  stopSpeak();
+  FeedbackSound.play(c.correct ? 'correct' : 'wrong');
   render();
 }
 
@@ -2061,11 +1920,10 @@ function submitTyped() {
 /* ---------------- 词库开关 ---------------- */
 function toggleDeck(id) {
   const all = allDecks().map(function (d) { return d.id; });
-  let ids = (store.settings.deckIds || []).length ? store.settings.deckIds.slice() : all.slice();
+  let ids = (store.settings.deckIds || []).length ? store.settings.deckIds.filter(x=>all.includes(x)) : all.slice();
   const i = ids.indexOf(id);
   if (i >= 0) ids.splice(i, 1); else ids.push(id);
-  if (ids.length === all.length) ids = [];
-  store.settings.deckIds = ids;
+  store.settings.deckIds = ids.length === all.length ? [] : ids.length ? ids : ['__none'];
   save();
   render();
 }
@@ -2137,10 +1995,18 @@ function restoreBackup(data) {
   store.words = (data.words && typeof data.words === 'object') ? data.words : {};
   store.custom = Array.isArray(data.custom) ? data.custom : [];
   store.days = (data.days && typeof data.days === 'object') ? data.days : {};
+  store.sources = Array.isArray(data.sources) ? data.sources.filter(function (x) { return x && typeof x.id === 'string' && typeof x.text === 'string'; }).slice(0, 50) : [];
+  store.sourcePractice = Array.isArray(data.sourcePractice) ? data.sourcePractice.filter(function (x) { return x && typeof x.sourceId === 'string' && typeof x.word === 'string'; }).slice(-2000) : [];
+  store.listeningPractice = listeningValidateHistory(data.listeningPractice);
+  store.reading = WordIsleReading.validate(data.reading);
   store.settings = Object.assign({}, DEFAULTS, data.settings || {});
   if (!Array.isArray(store.settings.deckIds)) store.settings.deckIds = [];
-  flushSave();
+  bookPlanMigrateSettings(store.settings, data.settings);
   session = null;
+  state.view = 'home';
+  store.learningSession = data.learningSession || null;
+  ProductFlow.restore();
+  flushSave();
   go('home');
   toast('备份已恢复');
 }
@@ -2184,16 +2050,18 @@ function exportBackup() {
 }
 
 function resetProgress() {
-  if (!window.confirm('确定清空所有学习记录吗？自定义词库会保留，但进度统计会归零，且不能撤销。')) return;
+  if (!window.confirm('确定清空学习进度统计吗？自定义词库、阅读剪藏和笔记会保留，进度与阅读日历会归零，且不能撤销。')) return;
   const custom = store.custom;
+  const reading = WordIsleReading.resetProgress(store.reading);
   const ids = (store.settings.deckIds || []).filter(function (id) {
     return custom.some(function (d) { return d.id === id; });
   });
   store = blankStore();
   store.custom = custom;
+  store.reading = reading;
   store.settings.deckIds = ids;
-  flushSave();
   session = null;
+  flushSave();
   state.deckId = null;
   go('home');
   toast('学习记录已清空');
@@ -2240,7 +2108,7 @@ const LG = (function () {
   const mqReduce = window.matchMedia('(prefers-reduced-motion: reduce)');
   let raf = 0, last = 0;
 
-  function on() { return document.body.classList.contains('lg') && !mqReduce.matches; }
+  function on() { return document.body.classList.contains('lg') && !document.body.classList.contains('youth') && !mqReduce.matches; }
   function clamp(v, a, b) { return v < a ? a : v > b ? b : v; }
 
   function Spring(x, k) { this.x = x; this.v = 0; this.k = k; this.d = DAMP; }
@@ -2531,13 +2399,21 @@ document.addEventListener('click', function (e) {
   const rdw = target.closest('.rd-w');
   if (rdw) {
     const raw = rdw.dataset.w || rdw.textContent;
-    showDictPop(raw, lookupWord(raw), rdw.getBoundingClientRect());
+    state.readingLookupContext = rdw.closest('.rd-para')?.querySelector('.rd-en')?.textContent || ''; 
+    const entry = lookupWord(raw);
+    const part = dictPart(raw);
+    const pending = !entry && !(window.EXT_DICT_PARTS || {})[part];
+    const token = state.dictPopRequest = (state.dictPopRequest || 0) + 1;
+    showDictPop(raw, entry, rdw.getBoundingClientRect(), pending);
+    if (pending) ensureExtended(part).then(function () {
+      if (state.dictPopRequest === token && rdw.isConnected && $('#dictPop')) showDictPop(raw, lookupWord(raw), rdw.getBoundingClientRect(), false);
+    });
     return;
   }
-  if ($('#dictPop') && !target.closest('.dict-pop')) hideDictPop();
+  if ($('#dictPop') && !target.closest('.dict-pop')) { state.dictPopRequest = (state.dictPopRequest || 0) + 1; hideDictPop(); }
 
   const nav = target.closest('[data-nav]');
-  if (nav) { session = null; go(nav.dataset.nav); return; }
+  if (nav) { go(nav.dataset.nav); return; }
 
   const el = target.closest('[data-act]');
   if (!el) return;
@@ -2574,8 +2450,7 @@ document.addEventListener('click', function (e) {
   } else if (act === 'speak') {
     speak(el.dataset.text, 0.9);
   } else if (act === 'quit') {
-    session = null;
-    go('home');
+    ProductFlow.pause();
   } else if (act === 'again-mode') {
     const mode = session ? session.mode : store.settings.practice;
     session = null;
@@ -2590,10 +2465,7 @@ document.addEventListener('click', function (e) {
     readerStop(false);
     reader.readingId = null;
     reader.chunks = [];
-    state.readingId = el.dataset.id;
-    state.readingAnswers = {};
-    state.showZh = false;
-    render();
+    ReadingClub.open(el.dataset.id);
   } else if (act === 'r-back') {
     readerStop(false);
     state.readingId = null;
@@ -2650,7 +2522,9 @@ document.addEventListener('click', function (e) {
   } else if (act === 'r-answer') {
     const qi = parseInt(el.dataset.q, 10);
     const oi = parseInt(el.dataset.i, 10);
-    if (state.readingAnswers[qi] === undefined) { state.readingAnswers[qi] = oi; render(); }
+    const r = currentReading();
+    const a = r && WordIsleReading.record(store.reading,r);
+    if (a && r.questions?.[qi]?.options[oi] && a.answers[qi] === undefined) { a.answers[qi] = oi; state.readingAnswers = a.answers; stopSpeak(); FeedbackSound.play(oi === r.questions[qi].answer ? 'correct' : 'wrong'); save(); render(); }
   } else if (act === 'open-deck') {
     state.deckId = el.dataset.deck;
     state.q = '';
@@ -2668,10 +2542,10 @@ document.addEventListener('click', function (e) {
     const fresh = words.filter(function (w) { const st = stOf(w.key); return !st || st.s === 'new'; });
     shuffle(due);
     shuffle(fresh);
-    startSession(store.settings.practice, { words: due.concat(fresh.slice(0, 20)).slice(0, 60) });
+    startSession(store.settings.practice, { words: due.concat(fresh.slice(0, bookPlanQuota())).slice(0, 60) });
   } else if (act === 'train-wrong') {
     const words = [];
-    allPool().forEach(function (w) {
+    memoryHistoricalWords().forEach(function (w) {
       const st = stOf(w.key);
       if (st && (st.bad || 0) > 0) words.push({ w: w, bad: st.bad || 0 });
     });
@@ -2734,7 +2608,7 @@ document.addEventListener('change', function (e) {
     applyBackground();
     save();
   } else if (set === 'dailyNew') {
-    store.settings.dailyNew = clamp(parseInt(t.value, 10) || 20, 5, 200);
+    store.settings.dailyNew = bookPlanLimit(t.value);
     save();
     render();
   } else if (set === 'direction') {
@@ -2778,6 +2652,7 @@ document.addEventListener('input', function (e) {
 
   if (t.id === 'dictQuery') {
     state.dictQ = t.value;
+    if (e.isComposing) return;
     const caret = t.selectionStart;
     render();
     const inp = $('#dictQuery');
@@ -2819,11 +2694,13 @@ document.addEventListener('input', function (e) {
 });
 
 document.addEventListener('keydown', function (e) {
+  if (e.key !== 'Escape' && e.target.closest?.('summary')) return;
+  if (e.key !== 'Escape' && e.target.closest && e.target.closest('[data-youth-action],[data-youth-mood],[data-memory-action],[data-memory-filter],[data-account-action],[data-product-action],[data-learner-action],[data-guide-action],[data-guide-answer]')) return;
   if (e.key === 'Escape') {
     if ($('#dictPop')) { hideDictPop(); return; }
     if (state.view === 'dict' && state.dictWord) { state.dictWord = null; render(); return; }
+    if (state.view === 'study' && session) { e.preventDefault(); ProductFlow.pause(); return; }
     if (isTyping(e.target)) { e.target.blur(); return; }
-    if (state.view === 'study' && session) { session = null; go('home'); return; }
     if (state.view === 'readings' && state.readingId) { state.readingId = null; render(); return; }
     if (state.deckId) { state.deckId = null; state.q = ''; render(); return; }
     return;
@@ -2841,19 +2718,20 @@ document.addEventListener('keydown', function (e) {
   if (!w) return;
   const t = typeOf();
   const selfRate = t === 'card';
-  if (e.key === 'r' || e.key === 'R') { speak(w.w, 0.9); return; }
+  if (e.target.dataset && e.target.dataset.memoryNote) return;
+  if (!isTyping(e.target) && (e.key === 'r' || e.key === 'R')) { speak(w.w, 0.9); return; }
   if (isTyping(e.target)) {
     if (e.key === 'Enter') { e.preventDefault(); if (session.answered) advance(); else submitTyped(); }
     return;
   }
   if (e.key === ' ' || e.code === 'Space') {
     e.preventDefault();
-    if (selfRate) { session.revealed ? advance() : reveal(); }
+    if (selfRate) { if (!session.revealed) reveal(); else toast('请选择认识、模糊或不认识，记录这次回想'); }
     else if (session.answered) advance();
     return;
   }
   if (e.key === 'Enter') {
-    if (selfRate) { session.revealed ? advance() : reveal(); }
+    if (selfRate) { if (!session.revealed) reveal(); else toast('请选择认识、模糊或不认识，记录这次回想'); }
     else if (session.answered) advance();
     return;
   }
@@ -2862,16 +2740,20 @@ document.addEventListener('keydown', function (e) {
     if (e.key === '2') { gradeCard('hard'); return; }
     if (e.key === '3') { gradeCard('again'); return; }
   }
-  if ((t === 'choice') && !session.answered) {
+  if (['choice','reverse','listenChoice'].includes(t) && !session.answered) {
     const i = parseInt(e.key, 10);
     if (i >= 1 && i <= 4) pickChoice(i - 1);
   }
 });
 
-/* ---------------- 启动 ---------------- */
+/* ---------------- 登录后启动 ---------------- */
+AccountSession.start(function () {
 loadStore();
+ProductFlow.restore();
 if (!PRACTICE[store.settings.practice]) store.settings.practice = 'card';
 applyGlass();
 applyBackground(true);
 render();
+loadAppInfo();
 if (store.settings.autoUpdate !== false) setTimeout(function () { checkUpdate(false); }, 5000);
+});

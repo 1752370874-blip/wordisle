@@ -1,0 +1,161 @@
+{
+  "version": "3.9.34-preview",
+  "passed": true,
+  "target": "Windows desktop WordIsle.exe",
+  "suites": {
+    "desktopUi": {
+      "passed": true,
+      "application": "WordIsle.exe, Windows desktop 3.9.34-preview",
+      "checks": [
+        "The actual Windows executable displays real article entries under all 16 source filters, offline",
+        "Screenshot case reproduced: choosing NPR from the full-text tab with stale topic/difficulty now displays 10 articles and correct original full links",
+        "Desktop subscription count distinguishes feed entries from full bodies; direct channel button works",
+        "Legacy desktop NPR notes/bookmarks survive encrypted reload; old summary never becomes full body",
+        "Native full reader still renders final paragraph and preserved unobstructed speaking highlight"
+      ],
+      "channels": [
+        {
+          "id": "nasa",
+          "visibleCards": 24,
+          "totalLabel": "108 篇 · 站内全文与原站全文分开标注 重置筛选"
+        },
+        {
+          "id": "noaa",
+          "visibleCards": 11,
+          "totalLabel": "11 篇 · 站内全文与原站全文分开标注 重置筛选"
+        },
+        {
+          "id": "nsf",
+          "visibleCards": 7,
+          "totalLabel": "7 篇 · 站内全文与原站全文分开标注 重置筛选"
+        },
+        {
+          "id": "npr",
+          "visibleCards": 10,
+          "totalLabel": "10 篇 · 站内全文与原站全文分开标注 重置筛选"
+        },
+        {
+          "id": "npr-world",
+          "visibleCards": 10,
+          "totalLabel": "10 篇 · 站内全文与原站全文分开标注 重置筛选"
+        },
+        {
+          "id": "npr-books",
+          "visibleCards": 10,
+          "totalLabel": "10 篇 · 站内全文与原站全文分开标注 重置筛选"
+        },
+        {
+          "id": "npr-education",
+          "visibleCards": 10,
+          "totalLabel": "10 篇 · 站内全文与原站全文分开标注 重置筛选"
+        },
+        {
+          "id": "smithsonian",
+          "visibleCards": 10,
+          "totalLabel": "10 篇 · 站内全文与原站全文分开标注 重置筛选"
+        },
+        {
+          "id": "smithsonian-culture",
+          "visibleCards": 4,
+          "totalLabel": "4 篇 · 站内全文与原站全文分开标注 重置筛选"
+        },
+        {
+          "id": "smithsonian-history",
+          "visibleCards": 16,
+          "totalLabel": "16 篇 · 站内全文与原站全文分开标注 重置筛选"
+        },
+        {
+          "id": "smithsonian-travel",
+          "visibleCards": 13,
+          "totalLabel": "13 篇 · 站内全文与原站全文分开标注 重置筛选"
+        },
+        {
+          "id": "mit",
+          "visibleCards": 24,
+          "totalLabel": "50 篇 · 站内全文与原站全文分开标注 重置筛选"
+        },
+        {
+          "id": "sn-explores",
+          "visibleCards": 20,
+          "totalLabel": "20 篇 · 站内全文与原站全文分开标注 重置筛选"
+        },
+        {
+          "id": "sciencedaily-society",
+          "visibleCards": 24,
+          "totalLabel": "50 篇 · 站内全文与原站全文分开标注 重置筛选"
+        },
+        {
+          "id": "sciencedaily-health",
+          "visibleCards": 24,
+          "totalLabel": "50 篇 · 站内全文与原站全文分开标注 重置筛选"
+        },
+        {
+          "id": "sciencedaily-mind",
+          "visibleCards": 24,
+          "totalLabel": "50 篇 · 站内全文与原站全文分开标注 重置筛选"
+        }
+      ],
+      "testedAt": "2026-11-10T04:32:01.928Z"
+    },
+    "nativeBackend": {
+      "passed": true,
+      "checks": [
+        "Native backend loads all 16 channels offline; counts match verified cache and distinguish 150 full articles from original links",
+        "Real HTTPS refresh through the same native backend used by WordIsle.exe succeeds for all four NPR feeds",
+        "An empty local cache does not send stale conditional headers or turn a 304 response into false update success"
+      ],
+      "liveNprChannels": [
+        {
+          "id": "npr",
+          "count": 10,
+          "fullCount": 0,
+          "lastSuccess": "2026-11-10T04:33:59.576Z"
+        },
+        {
+          "id": "npr-world",
+          "count": 10,
+          "fullCount": 0,
+          "lastSuccess": "2026-11-10T04:33:59.576Z"
+        },
+        {
+          "id": "npr-books",
+          "count": 10,
+          "fullCount": 0,
+          "lastSuccess": "2026-11-10T04:33:59.576Z"
+        },
+        {
+          "id": "npr-education",
+          "count": 10,
+          "fullCount": 0,
+          "lastSuccess": "2026-11-10T04:33:59.576Z"
+        }
+      ],
+      "testedAt": "2026-11-10T04:33:59.598Z"
+    },
+    "executable": {
+      "version": "3.9.34-preview",
+      "passed": true,
+      "iconFrames": 10,
+      "groups": 1,
+      "fileVersion": "3.9.34.0",
+      "productVersion": "3.9.34-preview",
+      "signature": "NotSigned",
+      "obsoleteCertificatesRemoved": 0,
+      "sha256": "F5C05ED0547E4168F7F2C322B879566EF53D91B72E2E0AD4EA9BBB962A96D49A",
+      "checkedAt": "2026-11-10T12:31:58.6661572+08:00"
+    },
+    "fullTextRegression": {
+      "passed": true,
+      "checks": [
+        "Actual NASA 43-paragraph and MIT 28-paragraph pages match first through final paragraph with SHA-256; MIT subtitle and byline retained",
+        "120-paragraph synthetic article has no 8/80 paragraph truncation; late notes, position and complete private snapshot persist; invalid indices rejected",
+        "Tables/captions and long paragraph splits preserve all text; embedded scripts and resources are not executed or fetched",
+        "Paywalls, missing body, unsupported sources, oversize and tampered bodies fail without summary substitution",
+        "RSS contains metadata only; verified cache survives feed updates; coalesced worker parsing/persist, authenticated-ID-oriented service, redirect allowlist and cancellation tested",
+        "Release seed verifies 150 full articles, 14 pending links and zero RSS summary bodies"
+      ],
+      "testedAt": "2026-11-10T04:33:17.35Z"
+    }
+  },
+  "checkedAt": "2026-11-10T12:34:53.6337667+08:00"
+}

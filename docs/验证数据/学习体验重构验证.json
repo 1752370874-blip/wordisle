@@ -1,0 +1,93 @@
+{
+  "version": "3.9.27-preview",
+  "passed": true,
+  "suites": {
+    "flow": {
+      "passed": true,
+      "checks": [
+        "single prominent home action above fold",
+        "plan controls progressively disclosed",
+        "42-book and daily plan compatibility",
+        "10-word unit supports smaller remaining quota",
+        "focused study and keyboard input",
+        "cross-book restart resume with partial answer",
+        "no duplicate grading after restart",
+        "mixed-stage resume retains committed schedule",
+        "card self-rating not mislabeled as accuracy",
+        "exact word-to-reading matching",
+        "return from companion to unfinished lesson",
+        "390/960/1280 layouts",
+        "no renderer errors"
+      ],
+      "testedAt": "2026-11-09T09:43:51.547Z"
+    },
+    "tools": {
+      "passed": true,
+      "checks": [
+        "real offline in-context word explanation",
+        "help hidden before answer reveal",
+        "late AI result does not appear under another word",
+        "AI explanation not silently persisted as dictionary fact",
+        "focused lesson returns from AI companion",
+        "listening controls remain available with progressive instructions",
+        "real native audio recognition still works",
+        "390 and 1280 listening layouts"
+      ],
+      "aiAnswerCharacters": 141,
+      "recognizedCharacters": 106,
+      "testedAt": "2026-11-09T09:38:24.788Z"
+    },
+    "executable": {
+      "version": "3.9.27-preview",
+      "passed": true,
+      "iconFrames": 10,
+      "groups": 1,
+      "fileVersion": "3.9.27.0",
+      "productVersion": "3.9.27-preview",
+      "signature": "NotSigned",
+      "obsoleteCertificatesRemoved": 0,
+      "sha256": "78E2FA93CB6C3A4913E019DB43B66BBC77BD285F55469D3424637B6A74D7B137",
+      "checkedAt": "2026-11-09T17:37:35.2730926+08:00"
+    },
+    "login": {
+      "passed": true,
+      "checks": [
+        "real Windows OS encryption",
+        "checkbox linkage and default opt-out",
+        "remembered password never returned to renderer or written as plaintext",
+        "remember only requires a click after restart",
+        "automatic login after graceful close",
+        "manual lock requires password across restart",
+        "explicit logout disables automatic login",
+        "password change invalidates remembered credential",
+        "automatic login cancellation",
+        "Windows screen-lock protection",
+        "unchecking remember deletes credential immediately",
+        "390 and 1280 layouts"
+      ],
+      "testedAt": "2026-11-09T09:39:40.049Z"
+    },
+    "lifecycle": {
+      "passed": true,
+      "checks": [
+        "isolated actual legacy localStorage migration",
+        "legacy background encrypted and served",
+        "legacy personal model encrypted",
+        "old migrated copies removed after commit",
+        "Windows lock event flushes and locks",
+        "login blocked while screen locked",
+        "graceful window close saves unsaved draft",
+        "fresh process requires login",
+        "restart restores progress"
+      ],
+      "testedAt": "2026-11-09T09:43:55Z"
+    }
+  },
+  "additionalRegressions": [
+    "checkpoint validation and cross-book keys",
+    "mixed memory loop, notes and independent practice",
+    "11-stage time-based review curve"
+  ],
+  "checkedAt": "2026-11-09T17:46:43.7521825+08:00",
+  "environment": "Windows x64; synthetic accounts; native model and recognition runs; responsive viewport checks, not a live consumer study"
+}

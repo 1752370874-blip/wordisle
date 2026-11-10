@@ -32,11 +32,13 @@ site/
 `config.js` 里只有一个关键字段：
 
 ```js
-winDownload: 'https://github.com/1752370874-blip/wordisle/releases/latest/download/WordIsle-Enhanced-Setup-3.9.3.exe'
+winDownload: 'https://github.com/1752370874-blip/wordisle/releases/latest/download/WordIsle-3.9.35-preview-win-x64.zip',
+winSize: '293 MB',
+models: { qwen: {...}, hy: {...} }   // 可选本地模型包
 ```
 
 - `latest/download/<文件名>` 是 GitHub 的固定跳转链接：永远指向**最新的正式 Release**，所以页面上的「点击此处下载」不需要跟着版本号改地址。
-- 发新版本时：上传新 Release → 如果文件名变了，只改 `config.js` 的这一行 → 重新发布 `gh-pages`。
+- 发新版本时：上传新 Release → 如果文件名变了，只改 `config.js` 的这几行（主包直链 + 模型包直链 + 体积文字） → 重新发布 `gh-pages`。
 - 直链失效（比如文件名写错）时，`site.js` 会退回到 `winDownloadFallback`（Releases 列表页）。
 
 ## 发布官网到 GitHub Pages

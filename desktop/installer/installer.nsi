@@ -7,7 +7,7 @@ Unicode true
 !define APP_NAME "词屿"
 ; 版本由 build.mjs 用 /DAPP_VERSION=x.y.z 传入，避免多处写死不一致
 !ifndef APP_VERSION
-  !define APP_VERSION "3.9.2"
+  !define APP_VERSION "3.9.35"
 !endif
 !define APP_EXE "WordIsle.exe"
 !define UNINST_KEY "Software\Microsoft\Windows\CurrentVersion\Uninstall\${APP_NAME}"

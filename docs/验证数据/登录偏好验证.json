@@ -1,0 +1,47 @@
+{
+  "version": "3.9.26-preview",
+  "passed": true,
+  "suites": {
+    "options": {
+      "passed": true,
+      "checks": [
+        "real Windows OS encryption",
+        "checkbox linkage and default opt-out",
+        "remembered password never returned to renderer or written as plaintext",
+        "remember only requires a click after restart",
+        "automatic login after graceful close",
+        "manual lock requires password across restart",
+        "explicit logout disables automatic login",
+        "password change invalidates remembered credential",
+        "automatic login cancellation",
+        "Windows screen-lock protection",
+        "unchecking remember deletes credential immediately",
+        "390 and 1280 layouts"
+      ],
+      "testedAt": "2026-11-09T06:07:17.902Z"
+    },
+    "unavailable": {
+      "passed": true,
+      "checks": [
+        "OS protection failure disables storage",
+        "no plaintext or local-key fallback",
+        "unavailable native environment keeps manual sign-in usable"
+      ],
+      "testedAt": "2026-11-09T06:04:55.566Z"
+    },
+    "executable": {
+      "version": "3.9.26-preview",
+      "passed": true,
+      "iconFrames": 10,
+      "groups": 1,
+      "fileVersion": "3.9.26.0",
+      "productVersion": "3.9.26-preview",
+      "signature": "NotSigned",
+      "obsoleteCertificatesRemoved": 0,
+      "sha256": "A53D6BC5483DF79A51AAB3E82CA3A2419E0B0FDE882504C6FA1AD6ADFB5A438C",
+      "checkedAt": "2026-11-09T14:02:22.8074844+08:00"
+    }
+  },
+  "checkedAt": "2026-11-09T14:10:13.4117318+08:00",
+  "environment": "Windows x64; independent synthetic accounts; OS encryption tested in normal Windows user context"
+}

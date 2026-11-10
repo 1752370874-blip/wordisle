@@ -1,0 +1,3 @@
+f3e23e95ecd04dc85cc2d8dea120fbb48ec4983c2eb38154c3e11e485ae50095  WordIsle-3.9.35-preview-win-x64.zip  (307432218 bytes)
+6f99f9d2b299a31c48b1e6beb76b2250ae1abbbbfa5987d550c66b028a862304  WordIsle-3.9.35-models-qwen3-1.7b.zip  (1282452441 bytes)
+ccc4c773a1aff85da5c30a9f522cf78ee7a2df755f40f6accfbf4a23292c3638  WordIsle-3.9.35-models-hy-mt2.zip  (1133109755 bytes)

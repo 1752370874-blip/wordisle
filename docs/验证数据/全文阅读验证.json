@@ -1,0 +1,1514 @@
+{
+  "version": "3.9.32-preview",
+  "passed": true,
+  "suites": {
+    "fullTextExtractorAndService": {
+      "passed": true,
+      "checks": [
+        "Actual NASA 43-paragraph and MIT 28-paragraph pages match first through final paragraph with SHA-256; MIT subtitle and byline retained",
+        "120-paragraph synthetic article has no 8/80 paragraph truncation; late notes, position and complete private snapshot persist; invalid indices rejected",
+        "Tables/captions and long paragraph splits preserve all text; embedded scripts and resources are not executed or fetched",
+        "Paywalls, missing body, unsupported sources, oversize and tampered bodies fail without summary substitution",
+        "RSS contains metadata only; verified cache survives feed updates; coalesced worker parsing/persist, authenticated-ID-oriented service, redirect allowlist and cancellation tested",
+        "Release seed verifies 150 full articles, 14 pending links and zero RSS summary bodies"
+      ],
+      "testedAt": "2026-11-09T16:21:42.803Z"
+    },
+    "actualFullArticleSeed": {
+      "passed": true,
+      "version": 3,
+      "mode": "full-text-only",
+      "fetchedAt": "2026-11-09T16:09:41.915Z",
+      "metadataCount": 164,
+      "fullArticles": 150,
+      "pendingArticles": 14,
+      "curatedMaterials": 52,
+      "paragraphs": 2747,
+      "characters": 691098,
+      "sources": [
+        {
+          "credit": "NASA",
+          "domains": [
+            "nasa.gov"
+          ],
+          "home": "https://www.nasa.gov/",
+          "policy": "https://www.nasa.gov/nasa-brand-center/images-and-media/",
+          "mode": "full",
+          "id": "nasa",
+          "provider": "nasa",
+          "name": "NASA",
+          "topic": "航天科技",
+          "group": "science",
+          "url": "https://www.nasa.gov/feed/",
+          "level": "CET-6",
+          "fullText": true,
+          "bodySelectors": [
+            "article .entry-content",
+            ".entry-content"
+          ],
+          "recommended": true
+        },
+        {
+          "credit": "NOAA",
+          "domains": [
+            "noaa.gov"
+          ],
+          "home": "https://www.noaa.gov/",
+          "policy": "https://www.noaa.gov/rss-feeds",
+          "mode": "full",
+          "id": "noaa",
+          "provider": "noaa",
+          "name": "NOAA",
+          "topic": "自然环境",
+          "group": "science",
+          "url": "https://www.noaa.gov/rss.xml",
+          "level": "CET-6",
+          "fullText": true,
+          "bodySelectors": [
+            "article .field--name-body",
+            "article .field--name-field-body"
+          ],
+          "recommended": true
+        },
+        {
+          "credit": "NSF",
+          "domains": [
+            "nsf.gov"
+          ],
+          "home": "https://www.nsf.gov/",
+          "policy": "https://www.nsf.gov/",
+          "mode": "full",
+          "id": "nsf",
+          "provider": "nsf",
+          "name": "NSF",
+          "topic": "科学研究",
+          "group": "science",
+          "url": "https://www.nsf.gov/rss/rss_www_news.xml",
+          "level": "TOEFL",
+          "fullText": true,
+          "bodySelectors": [
+            "article .field--name-body",
+            "article .field--name-field-body"
+          ],
+          "recommended": true
+        },
+        {
+          "credit": "MIT News",
+          "domains": [
+            "news.mit.edu"
+          ],
+          "home": "https://news.mit.edu/",
+          "policy": "https://news.mit.edu/terms-of-use",
+          "mode": "full",
+          "timeoutMs": 35000,
+          "id": "mit",
+          "provider": "mit",
+          "name": "MIT News",
+          "topic": "大学与创新",
+          "group": "learning",
+          "url": "https://news.mit.edu/rss/feed",
+          "level": "CET-6",
+          "fullText": true,
+          "bodySelectors": [
+            "[itemprop=articleBody]",
+            ".news-article--content--body--inner"
+          ],
+          "recommended": true,
+          "footer": "Reprinted with permission of MIT News"
+        }
+      ],
+      "success": [
+        {
+          "id": "news-9192c11ff85a",
+          "source": "nasa",
+          "paragraphs": 43,
+          "characters": 7698,
+          "sha256": "df8fca005a05227084663a418ca407764f7eeb9a49c52bf0517a3c3c9e68e84d",
+          "url": "https://www.nasa.gov/centers-and-facilities/johnson/chapea-mission-2-crew-reflects-after-378-days-on-simulated-mars/"
+        },
+        {
+          "id": "news-de7f772dfc8f",
+          "source": "nasa",
+          "paragraphs": 10,
+          "characters": 1502,
+          "sha256": "188af9f99ec7a0c5d2b5ef3a45bd64a55ab2cec766760fd0a7c50a279660ad6e",
+          "url": "https://science.nasa.gov/image-article/apod-2026-november-9-rigel-and-the-witch-head-nebula/"
+        },
+        {
+          "id": "news-8422634c9a06",
+          "source": "mit",
+          "paragraphs": 28,
+          "characters": 7252,
+          "sha256": "87cf583f4d3418d14f0dad883cecba9c9e447b5b6d82cfddc14e309ba96fd009",
+          "url": "https://news.mit.edu/2026/single-ai-model-simulates-many-substances-behavior-1109"
+        },
+        {
+          "id": "news-aac00f5f941f",
+          "source": "mit",
+          "paragraphs": 23,
+          "characters": 7074,
+          "sha256": "dd4abc7a95f134df30e86fe424d61da64b7d6f921df4b5f92d5b99ade09c1063",
+          "url": "https://news.mit.edu/2026/ai-assisted-learning-platform-helps-robots-reason-beyond-literal-commands-1109"
+        },
+        {
+          "id": "news-33121b8cb496",
+          "source": "nasa",
+          "paragraphs": 72,
+          "characters": 6949,
+          "sha256": "2e5fb749471574316f5906ba42d72b1ac315ad9748af7332f37a3a3b3584fbeb",
+          "url": "https://science.nasa.gov/earth/earth-observatory/ozone-hole-reaches-its-2026-maximum/"
+        },
+        {
+          "id": "news-6662e17f843a",
+          "source": "nasa",
+          "paragraphs": 11,
+          "characters": 1695,
+          "sha256": "ae6541f46d50aa9cd8bf01607a01c60c9e3127c7c1a1f4797458cba05a9fe8cd",
+          "url": "https://science.nasa.gov/image-article/apod-2026-november-8-major-fireball-meteor/"
+        },
+        {
+          "id": "news-616c0e514806",
+          "source": "nasa",
+          "paragraphs": 15,
+          "characters": 3728,
+          "sha256": "15483b38517eaf53210f6b82420c554051f01bfc8d97d39c6a8ff2d1fa21ea59",
+          "url": "https://www.nasa.gov/news-release/nasa-announces-1-million-to-students-for-moon-base-challenge/"
+        },
+        {
+          "id": "news-aff8c97b0bc1",
+          "source": "nasa",
+          "paragraphs": 30,
+          "characters": 5509,
+          "sha256": "e88bfad599df204d3624620dff112d059b117e202d39ea768dd49993cfe48fdb",
+          "url": "https://www.nasa.gov/news-release/nasa-seeks-next-generation-of-explorers-to-join-astronaut-corps/"
+        },
+        {
+          "id": "news-8a4cc8d29532",
+          "source": "nasa",
+          "paragraphs": 42,
+          "characters": 10620,
+          "sha256": "d92320e5ad76224ecea4f7ba462e1c0513de0bb3975b06104c02e09d1907bae9",
+          "url": "https://www.nasa.gov/news-release/nasa-awards-moon-base-transportation-technology-science-projects/"
+        },
+        {
+          "id": "news-06407556cd7c",
+          "source": "nasa",
+          "paragraphs": 11,
+          "characters": 1462,
+          "sha256": "56676375302678cda818376bdc22f26f4277befb16879857c217e536180e039a",
+          "url": "https://science.nasa.gov/image-article/apod-2026-november-7-de-gerlache-kocher-massif/"
+        },
+        {
+          "id": "news-5b82e36c02c0",
+          "source": "mit",
+          "paragraphs": 32,
+          "characters": 8674,
+          "sha256": "4b1b6fbaacd2f9f45d429476c5b17278a9b35fcc94466036b79bd343fb5493d2",
+          "url": "https://news.mit.edu/2026/fabric-molds-could-bring-material-saving-concrete-beams-within-reach-1106"
+        },
+        {
+          "id": "news-ba5f1cdb14f5",
+          "source": "mit",
+          "paragraphs": 15,
+          "characters": 6258,
+          "sha256": "32103833a52cdd8fe047fcfc20095affe4b33fecb07a4d201860838436a9fd99",
+          "url": "https://news.mit.edu/2026/how-to-predict-molecule-behavior-with-scant-data-1106"
+        },
+        {
+          "id": "news-9ee29b170407",
+          "source": "nasa",
+          "paragraphs": 4,
+          "characters": 612,
+          "sha256": "ad5ed719463804c2475311a1d5f6d40de30fde38995d7e83b07e7bbc5c029c02",
+          "url": "https://www.nasa.gov/image-article/m30s-sparkling-stars/"
+        },
+        {
+          "id": "news-7a3513031f56",
+          "source": "nasa",
+          "paragraphs": 8,
+          "characters": 1735,
+          "sha256": "5e2288b4c1e1e9117e39d931c64fc1544fdf09c85628c9b63674ad3e3f2b17d5",
+          "url": "https://science.nasa.gov/earth/supercomputing-tech-demo-schedule/"
+        },
+        {
+          "id": "news-f41b71e63a27",
+          "source": "mit",
+          "paragraphs": 24,
+          "characters": 7211,
+          "sha256": "8941502fa054d9aa5a7491b68009a00321e936ae674afdf9a34d4be113677bc3",
+          "url": "https://news.mit.edu/2026/mit-affiliates-elected-agu-fellows-1106"
+        },
+        {
+          "id": "news-96f57585333e",
+          "source": "mit",
+          "paragraphs": 16,
+          "characters": 2634,
+          "sha256": "4dfc95276e068acad08bce127f882c764a71a038e51944ac2f8b9c20bc921b99",
+          "url": "https://news.mit.edu/2026/scene-mit-beautiful-intricate-creative-quilts-1106"
+        },
+        {
+          "id": "news-dfb0cd15dded",
+          "source": "nasa",
+          "paragraphs": 11,
+          "characters": 1702,
+          "sha256": "99d9505d97fbd6a63390d5510c161a6f9cd3fc6eab3c38def41a0cdaae509410",
+          "url": "https://science.nasa.gov/image-article/apod-2026-november-6-a-farewell-to-swift/"
+        },
+        {
+          "id": "news-2e2e88a15428",
+          "source": "nasa",
+          "paragraphs": 17,
+          "characters": 3750,
+          "sha256": "a4179d0090b14d06cc4f3280a4d36712779d1dd1f562a6f3d8b4eeffd3c82354",
+          "url": "https://science.nasa.gov/earth/earth-observatory/taking-a-gander-at-utahs-goosenecks/"
+        },
+        {
+          "id": "news-8ccf2d7fb9da",
+          "source": "mit",
+          "paragraphs": 33,
+          "characters": 8067,
+          "sha256": "f79bd112d63ce98e3dc28e29b53af62f268b0d6bc55b1f16e581dc2cd79a704a",
+          "url": "https://news.mit.edu/2026/studying-bacteria-and-cells-they-infect-rebecca-lamason-1106"
+        },
+        {
+          "id": "news-066c38930025",
+          "source": "mit",
+          "paragraphs": 24,
+          "characters": 7384,
+          "sha256": "527515795a43b536f01a1d6f8b8f0ef97f72e38be858b663b579a6fe046d9223",
+          "url": "https://news.mit.edu/2026/pinning-down-quark-gluon-plasma-structure-1105"
+        },
+        {
+          "id": "news-3ca8426259f2",
+          "source": "nasa",
+          "paragraphs": 3,
+          "characters": 422,
+          "sha256": "7e3d715f15d34bbc9c61e836706757211433fe273a98310e325d37baaa6df59a",
+          "url": "https://www.nasa.gov/image-article/midwestern-city-lights/"
+        },
+        {
+          "id": "news-1d342b24619c",
+          "source": "nasa",
+          "paragraphs": 15,
+          "characters": 4004,
+          "sha256": "5d98ca357e443955022d79ba432a5268bb8e1e284ac06f869954d169b205caa6",
+          "url": "https://science.nasa.gov/missions/hubble/hubble-learns-galactic-history-from-stars/"
+        },
+        {
+          "id": "news-03704c694ed3",
+          "source": "nasa",
+          "paragraphs": 11,
+          "characters": 1395,
+          "sha256": "668d6b5c31a2f64c30a4ec2c6ef442870407532cf72f45cd4e137ff2b4811a60",
+          "url": "https://science.nasa.gov/image-article/apod-2026-november-5-enceladus-in-silhouette/"
+        },
+        {
+          "id": "news-28f1c898c691",
+          "source": "nasa",
+          "paragraphs": 8,
+          "characters": 1490,
+          "sha256": "067e71eb4c2e671e21e0f2fa896370aa65395d2f5cc5a7a47724aba41f5775c5",
+          "url": "https://www.nasa.gov/learning-resources/nasa-astronauts-to-answer-questions-from-florida-students-2/"
+        },
+        {
+          "id": "news-67a6209eeeba",
+          "source": "nasa",
+          "paragraphs": 26,
+          "characters": 5552,
+          "sha256": "a09dab6e79a4f50e527175ebb191cb378a861be8b302e61bd3e7662ccc6c525e",
+          "url": "https://science.nasa.gov/earth/earth-observatory/cyprus-island-of-snakes-cats-and-ophiolites/"
+        },
+        {
+          "id": "news-32f654e7a58b",
+          "source": "nasa",
+          "paragraphs": 12,
+          "characters": 2818,
+          "sha256": "4697513079bd5934ec81349be63f341332261e3619eba89d021c73ba414f5d19",
+          "url": "https://www.nasa.gov/news-release/nasa-announces-x-70-experimental-aircraft-to-advance-flight-research/"
+        },
+        {
+          "id": "news-16de4ca3c25d",
+          "source": "mit",
+          "paragraphs": 30,
+          "characters": 6415,
+          "sha256": "0614e616a6cb49cc1d6258f6e274ca85711eed381476dba3a4bcf55d79f2d254",
+          "url": "https://news.mit.edu/2026/clearing-up-robot-fuzzy-memory-1105"
+        },
+        {
+          "id": "news-3285fd735bda",
+          "source": "nasa",
+          "paragraphs": 18,
+          "characters": 4926,
+          "sha256": "a328dd6c3bcb5abaf287df3d2f5f73935f338cf613e5d4046c05aff4dd13d2f6",
+          "url": "https://www.nasa.gov/missions/artemis/nasa-shares-plans-to-accelerate-artemis-return-to-moon/"
+        },
+        {
+          "id": "news-fcfa6cba7caf",
+          "source": "mit",
+          "paragraphs": 32,
+          "characters": 8676,
+          "sha256": "04a487daebda720ae08f3f25042d40a32560a891b8fb29af6c64b86d8f8a1911",
+          "url": "https://news.mit.edu/2026/sharing-remembrances-susumu-tonegawa-1104"
+        },
+        {
+          "id": "news-2e62bc2ded66",
+          "source": "nasa",
+          "paragraphs": 13,
+          "characters": 1990,
+          "sha256": "102b9ce45b22945949ccd33f9ba636e6bafa91cb95148d35221db42682a27a2c",
+          "url": "https://www.nasa.gov/news-release/nasa-announces-ka-band-satellite-relay-awards-for-space-communications/"
+        },
+        {
+          "id": "news-2c2a12276f0f",
+          "source": "nasa",
+          "paragraphs": 11,
+          "characters": 4723,
+          "sha256": "d78a04cc4a8018966cd3d6e4e6e937f9b3c07aa599b102c5881217126003d21e",
+          "url": "https://www.nasa.gov/centers-and-facilities/armstrong/nasa-navigation-experiment-shows-promise-for-planetary-landings/"
+        },
+        {
+          "id": "news-225ef2e7db64",
+          "source": "nasa",
+          "paragraphs": 14,
+          "characters": 5158,
+          "sha256": "6b88a924b5a44613bb3f68ff411ab60ac8d8307b041d4f0fd22f57c0d23b459f",
+          "url": "https://www.nasa.gov/learning-resources/nasa-space-grant-students-fuel-agencys-inspiration-tour/"
+        },
+        {
+          "id": "news-e199d2bf8a7e",
+          "source": "nasa",
+          "paragraphs": 4,
+          "characters": 789,
+          "sha256": "e3ec87b00b3a4c238450b07ce18091267c28090df255a69cc6c8e49b2155e25a",
+          "url": "https://www.nasa.gov/image-article/hubble-reveals-cosmic-mystery/"
+        },
+        {
+          "id": "news-4c5ce045bfbc",
+          "source": "nasa",
+          "paragraphs": 11,
+          "characters": 1511,
+          "sha256": "0ea7aeb5767d65895e2f0a07844982f9553c31384d49a74a30668234e317a1cc",
+          "url": "https://science.nasa.gov/image-article/apod-2026-november-4-the-not-so-hidden-galaxy-ic-342/"
+        },
+        {
+          "id": "news-a18234610a07",
+          "source": "mit",
+          "paragraphs": 20,
+          "characters": 5323,
+          "sha256": "9c5062842aa89cfc3cb86f1702e8472dcad303955e6aa64027654a6cdc2bbe89",
+          "url": "https://news.mit.edu/2026/mit-led-team-receives-funding-for-early-disease-detection-wearable-monitor-1104"
+        },
+        {
+          "id": "news-31aecbbdf5e8",
+          "source": "nasa",
+          "paragraphs": 17,
+          "characters": 3716,
+          "sha256": "d452f075cd588a80d3a625287250ae50e3bb2c00ff6f51fc6da6258bd61e8c65",
+          "url": "https://science.nasa.gov/earth/earth-observatory/before-the-dawn-in-americas-heartland/"
+        },
+        {
+          "id": "news-bb14e08357ab",
+          "source": "mit",
+          "paragraphs": 15,
+          "characters": 4339,
+          "sha256": "49cbec8e6990c126dd1c5ebe11676d6cfd61eb3a3208a7bb693118f31e0f32e6",
+          "url": "https://news.mit.edu/2026/dream-build-destroy-repeat-combat-robotics-club-1104"
+        },
+        {
+          "id": "news-bd30e0f1ee8a",
+          "source": "mit",
+          "paragraphs": 18,
+          "characters": 7254,
+          "sha256": "03a87cf4e8410bc054e4f1f389fcf2d746ad6072a0e51f0a08ff306f46a7d362",
+          "url": "https://news.mit.edu/2026/3-questions-building-more-resilient-minerals-supply-chains-1103"
+        },
+        {
+          "id": "news-05117db772b0",
+          "source": "mit",
+          "paragraphs": 11,
+          "characters": 3399,
+          "sha256": "91be9523f5483eea3a2895c33c0efbe8a8b6a60867e53f89a60d0984bbc41e01",
+          "url": "https://news.mit.edu/2026/featured-video-changing-conversation-about-endometriosis-1103"
+        },
+        {
+          "id": "news-12feaf67ddae",
+          "source": "mit",
+          "paragraphs": 28,
+          "characters": 8494,
+          "sha256": "8114e83423948fe6411c9a644f83456e54f0714c50c2c0047076ebbc07ed68ca",
+          "url": "https://news.mit.edu/2026/building-connections-across-research-infrastructure-1103"
+        },
+        {
+          "id": "news-bd41b4d05cab",
+          "source": "nasa",
+          "paragraphs": 3,
+          "characters": 585,
+          "sha256": "d27214f6166f81e76711c1fa6f3caf5119f0977f0513faba8421a0739e7e0c00",
+          "url": "https://www.nasa.gov/image-article/astronaut-and-earth/"
+        },
+        {
+          "id": "news-f435ac555b03",
+          "source": "nasa",
+          "paragraphs": 20,
+          "characters": 5493,
+          "sha256": "7f6e863046a2509a78638c0411ce398ff30a8fbbd2ee3c7c6ea7b5fae011abe7",
+          "url": "https://www.nasa.gov/centers-and-facilities/nesc/tb-26-10-printed-circuit-board-assembly-chip-resistor-body-cracking/"
+        },
+        {
+          "id": "news-84049460ae87",
+          "source": "nasa",
+          "paragraphs": 11,
+          "characters": 2670,
+          "sha256": "738361d2557aafa019586af73f29fe6a80195ffcbb3db307ef04255d5d2e8bcb",
+          "url": "https://www.nasa.gov/learning-resources/nasa-astronaut-stem-creator-connect-with-students-for-stem-day/"
+        },
+        {
+          "id": "news-dad84c615e9e",
+          "source": "nasa",
+          "paragraphs": 11,
+          "characters": 1676,
+          "sha256": "c13ea38ec64a2ec38e10d40919e0e2061c4f58216ce403569846057a4d0bd2bc",
+          "url": "https://science.nasa.gov/image-article/apod-2026-november-3-comet-panstarrs-and-rainbow-meteor/"
+        },
+        {
+          "id": "news-8e21ccbfd5fa",
+          "source": "nasa",
+          "paragraphs": 31,
+          "characters": 6277,
+          "sha256": "756119a4d509e810a240199926869851fc5a4e03f2706f11492da2b55eec0d0a",
+          "url": "https://science.nasa.gov/earth/earth-observatory/the-pacifics-busy-storm-season/"
+        },
+        {
+          "id": "news-999100798dd2",
+          "source": "mit",
+          "paragraphs": 20,
+          "characters": 5164,
+          "sha256": "a406c4ac26babb09d63e9214a7004122fb791fe7e43a2bf000df696f229417bc",
+          "url": "https://news.mit.edu/2026/lemelson-mit-brings-invention-education-classrooms-kindergarten-college-1102"
+        },
+        {
+          "id": "news-c54a4c29d744",
+          "source": "mit",
+          "paragraphs": 17,
+          "characters": 5993,
+          "sha256": "b1f02f96cc801d79585ca4557fc097da75dadb34d77d6e3d9daca789be7432d3",
+          "url": "https://news.mit.edu/2026/faces-of-mit-vera-grbic-1102"
+        },
+        {
+          "id": "news-53e416a7ff75",
+          "source": "mit",
+          "paragraphs": 24,
+          "characters": 6648,
+          "sha256": "3044add9eb510fc49e92ebe0e51f25ef72ec50edb75228bf72d00e868db45150",
+          "url": "https://news.mit.edu/2026/flexible-new-route-designer-materials-from-nanoparticles-1102"
+        },
+        {
+          "id": "news-b91db1d100bf",
+          "source": "mit",
+          "paragraphs": 31,
+          "characters": 9906,
+          "sha256": "346e1cd37f33185a3acd322161ed21bbea64fb47b147848b1c0dac376121b8e6",
+          "url": "https://news.mit.edu/2026/powering-up-for-pivotal-moment-1102"
+        },
+        {
+          "id": "news-624e23d0cdf0",
+          "source": "mit",
+          "paragraphs": 8,
+          "characters": 3326,
+          "sha256": "0a71d2389a7e0cb8611a0ce485d9c2b828dec56d0841637e8c0bf3f395a34ecf",
+          "url": "https://news.mit.edu/2026/regina-barzilay-jim-collins-win-pritzker-prize-ai-and-science-research-excellence-1102"
+        },
+        {
+          "id": "news-bb94c8f8023f",
+          "source": "mit",
+          "paragraphs": 26,
+          "characters": 7501,
+          "sha256": "79f88119ed160ae474f485c6844b89ea71d5ace9850cd7ea8d34200df55ee5ea",
+          "url": "https://news.mit.edu/2026/mit-engineers-design-safer-more-efficient-vaccination-system-farmed-fish-1102"
+        },
+        {
+          "id": "news-0b1df573667b",
+          "source": "mit",
+          "paragraphs": 32,
+          "characters": 4868,
+          "sha256": "56bf582c7147a1ea2797c65bef89b3752013e75ebcdd03b573650f42dc28b228",
+          "url": "https://news.mit.edu/2026/mit-media-unpack-my-cambridge-president-sally-kornbluth"
+        },
+        {
+          "id": "news-de7eef275564",
+          "source": "mit",
+          "paragraphs": 8,
+          "characters": 5931,
+          "sha256": "65d1f9ce386f50976ba83667d943916b066473fc0f31730ec951dd770fe3f513",
+          "url": "https://news.mit.edu/2026/mit-affiliates-named-schmidt-sciences-ai2050-fellows-1030"
+        },
+        {
+          "id": "news-d5af49b42524",
+          "source": "nasa",
+          "paragraphs": 32,
+          "characters": 5085,
+          "sha256": "7b4702ccde96d9d8314841746292e4755b4f639f372617e13da5cfdd775122b4",
+          "url": "https://www.nasa.gov/news-release/nasa-releases-max-power-key-events-for-media-participants/"
+        },
+        {
+          "id": "news-d7d67016a7ee",
+          "source": "mit",
+          "paragraphs": 6,
+          "characters": 2723,
+          "sha256": "53ba9a8f5932274232505e784547a331ac478a94fddbf6ca2b84785a778c2c13",
+          "url": "https://news.mit.edu/2026/study-pinpoints-states-with-steepest-warming-trends-1030"
+        },
+        {
+          "id": "news-2ff5f216b81b",
+          "source": "mit",
+          "paragraphs": 10,
+          "characters": 5593,
+          "sha256": "e257dcabf74cbda07df4b1119a09f615381877fdeb5ff61b91515ab194f0d67a",
+          "url": "https://news.mit.edu/2026/j-pal-north-america-launches-artemis-train-early-career-researchers-1030"
+        },
+        {
+          "id": "news-d20dd0f99f28",
+          "source": "nasa",
+          "paragraphs": 3,
+          "characters": 619,
+          "sha256": "5b5713699298b773a505375e4cbd4d0503ee479cabb320a5dabb06b4a97ab0ef",
+          "url": "https://www.nasa.gov/image-article/nasas-james-webb-space-telescope-captures-eerie-cats-head/"
+        },
+        {
+          "id": "news-226d6d5c25cb",
+          "source": "mit",
+          "paragraphs": 28,
+          "characters": 11370,
+          "sha256": "cc2bb1a44b889dad0798a857756e52e981e5c2f1c9ceae96e52d4673c3d52ca5",
+          "url": "https://news.mit.edu/2026/qa-hey-ai-who-should-i-vote-for-this-year-1030"
+        },
+        {
+          "id": "news-2254c23f5d00",
+          "source": "nasa",
+          "paragraphs": 7,
+          "characters": 3083,
+          "sha256": "1283296cca5161a641106b419eac9c2b9de857b7ee174607de9d0327e4c8a253",
+          "url": "https://science.nasa.gov/missions/hubble/nasa-explores-potential-commercial-servicing-for-hubble-telescope/"
+        },
+        {
+          "id": "news-b490500e7e88",
+          "source": "nasa",
+          "paragraphs": 12,
+          "characters": 3233,
+          "sha256": "1a681c1fd1c595f87f97e0a984e8ce0fa4819b7258695e0cc47f069a88342d9a",
+          "url": "https://science.nasa.gov/solar-system/skywatching/night-sky-network/novembers-night-sky-notes-light-day-away/"
+        },
+        {
+          "id": "news-a8e8c3d040c3",
+          "source": "nasa",
+          "paragraphs": 11,
+          "characters": 1612,
+          "sha256": "1bbcacb12b7eff6a9eb9e87261dac858721856be4b12914c11bde88c53b2d59c",
+          "url": "https://science.nasa.gov/image-article/apod-2026-october-30-haunting-the-cepheus-flare/"
+        },
+        {
+          "id": "news-072e5999ff91",
+          "source": "mit",
+          "paragraphs": 26,
+          "characters": 6753,
+          "sha256": "bd7dfd55ae6042e388ee7f5f975ddb62ee91dc35ba6b6dc57849d632d47b3ad1",
+          "url": "https://news.mit.edu/2026/mit-engineers-create-nanoparticles-delivering-personalized-cancer-vaccines-1030"
+        },
+        {
+          "id": "news-68d2bbf598bd",
+          "source": "nasa",
+          "paragraphs": 30,
+          "characters": 5156,
+          "sha256": "16a4007cf4716d3ec8b0d8fe5c08d697a282fc28916da0d2e0e70758249692d1",
+          "url": "https://science.nasa.gov/earth/earth-observatory/vega-island-frozen-in-fright/"
+        },
+        {
+          "id": "news-92feff1a759f",
+          "source": "nasa",
+          "paragraphs": 6,
+          "characters": 764,
+          "sha256": "a28b111b619637b050ceb1e3adf398963ff5500caa2892bdbee075ab293a0fdc",
+          "url": "https://science.nasa.gov/photojournal/map-showing-potential-origins-of-martian-meteorite-teghaza-001/"
+        },
+        {
+          "id": "news-8a058a74053f",
+          "source": "nasa",
+          "paragraphs": 9,
+          "characters": 854,
+          "sha256": "a629a8636e146f30a0f59c6fc30654e6bad043ca17c4c3eda91809cbfc478f0c",
+          "url": "https://science.nasa.gov/photojournal/slice-of-martian-meteorite-teghaza-001/"
+        },
+        {
+          "id": "news-422040b63e25",
+          "source": "nasa",
+          "paragraphs": 16,
+          "characters": 2561,
+          "sha256": "be09ef2623f1785e31a14df2a1a19e45ce438a44d1f7ae068e8e1422b7ffc8ce",
+          "url": "https://www.nasa.gov/centers-and-facilities/johnson/halloween-aboard-the-international-space-station/"
+        },
+        {
+          "id": "news-3156bfd3578c",
+          "source": "mit",
+          "paragraphs": 16,
+          "characters": 4506,
+          "sha256": "f9fa6fcaabd57c92da7323ad1de78d865434fbb255dfaf1e2bb4264481f5ac60",
+          "url": "https://news.mit.edu/2026/next-haunt-scary-problem-set-basement-next-house-1029"
+        },
+        {
+          "id": "news-5a66ae7188d6",
+          "source": "nasa",
+          "paragraphs": 24,
+          "characters": 6318,
+          "sha256": "f1d9727965277d8c8395756a20a230fc60b32a2152c4cd9e81cbf1e92fb394fb",
+          "url": "https://www.nasa.gov/solar-system/planets/mars/nasa-funded-study-details-one-of-oldest-mars-meteorites-ever-found/"
+        },
+        {
+          "id": "news-437490b8c3c6",
+          "source": "mit",
+          "paragraphs": 33,
+          "characters": 6816,
+          "sha256": "5e257878c6b376bf97bcfee11529d374b8196304597d4c77865bd82d59a87509",
+          "url": "https://news.mit.edu/2026/new-system-gives-users-more-control-over-online-experience-1029"
+        },
+        {
+          "id": "news-c7bad90634bc",
+          "source": "mit",
+          "paragraphs": 27,
+          "characters": 7314,
+          "sha256": "f4138f9b75a47c05f09bfc805cefdd56810d2f7ef630fe6eb8da947d625be0a7",
+          "url": "https://news.mit.edu/2026/magnetic-sensors-track-muscle-movement-better-prosthetic-limb-control-1029"
+        },
+        {
+          "id": "news-bbddd73f5d3c",
+          "source": "nasa",
+          "paragraphs": 14,
+          "characters": 4881,
+          "sha256": "1bb8ba45277b6d4996819bc4be83b1ba05104ed3519fc42c15c6df43609b473f",
+          "url": "https://www.nasa.gov/centers-and-facilities/jpl/caltech-names-artemis-ii-commander-reid-wiseman-as-nasa-jpl-deputy/"
+        },
+        {
+          "id": "news-af53f1e2976f",
+          "source": "nasa",
+          "paragraphs": 11,
+          "characters": 2811,
+          "sha256": "13fa2c4e67c5cee5e352b3bcae191fda02832879cc423cec597d541dec7658fa",
+          "url": "https://www.nasa.gov/organizations/oiir/nasa-welcomes-vietnam-as-newest-artemis-accords-signatory/"
+        },
+        {
+          "id": "news-a70a0f7a37cd",
+          "source": "nasa",
+          "paragraphs": 9,
+          "characters": 2230,
+          "sha256": "cabd274e4452c16f4c4cfc4981fd2c5d613d56f25712c529827d35f32b0a805e",
+          "url": "https://www.nasa.gov/image-article/artemis-iii-sls-core-stage-joins-boosters-at-kennedy/"
+        },
+        {
+          "id": "news-3233d3061a19",
+          "source": "mit",
+          "paragraphs": 15,
+          "characters": 3911,
+          "sha256": "91a7af3ae1a56fc8f4888cdd4cd7984994b686cef38382dc28a6b2a58f628b9b",
+          "url": "https://news.mit.edu/2026/mit-affiliates-elected-national-academy-medicine-1028"
+        },
+        {
+          "id": "news-6b410a9fdd53",
+          "source": "nasa",
+          "paragraphs": 27,
+          "characters": 5568,
+          "sha256": "1444f48a5caf72d7f8e9b68dcf4305d627b0929db633a8896787ea6cccb8afef",
+          "url": "https://www.nasa.gov/aeronautics/nasa-challenge-drone-entrepreneur/"
+        },
+        {
+          "id": "news-d72684dc43e2",
+          "source": "nasa",
+          "paragraphs": 41,
+          "characters": 13302,
+          "sha256": "53a932bfd9528c1631ae208ff7faba6e45224978cda84014d0d9d68d77c3a459",
+          "url": "https://science.nasa.gov/get-involved/citizen-science/nasa-selects-19-new-citizen-science-proposals-in-2026/"
+        },
+        {
+          "id": "news-36b161bb40a0",
+          "source": "mit",
+          "paragraphs": 27,
+          "characters": 5887,
+          "sha256": "3d4835d6b9053accb593d32ea9120797f15460e2b3c780939f400fc5af567f41",
+          "url": "https://news.mit.edu/2026/soft-robot-could-help-doctors-diagnose-treat-small-intestine-disorders-1028"
+        },
+        {
+          "id": "news-d518830cd5d6",
+          "source": "nasa",
+          "paragraphs": 5,
+          "characters": 753,
+          "sha256": "13d6b38446d6f873fb195e3fc70967e41c07a3081a8aabcd5c1f70b379e1cf75",
+          "url": "https://www.nasa.gov/image-article/webb-sees-turbulent-star-nursery/"
+        },
+        {
+          "id": "news-61bae4d50665",
+          "source": "nasa",
+          "paragraphs": 12,
+          "characters": 5299,
+          "sha256": "162cddeec39fa0c04b9aa9236fca446aa8e61716723e74b6a79a897dea1630d1",
+          "url": "https://science.nasa.gov/blog/curiosity-blog-sols-5043-5049-preparing-to-drill-at-nazca/"
+        },
+        {
+          "id": "news-42d7a3e217ca",
+          "source": "nasa",
+          "paragraphs": 13,
+          "characters": 1699,
+          "sha256": "ffeb88e187d1eaed82dcb69beb28b45517471e0110e55d0b07680b94bfea9e62",
+          "url": "https://science.nasa.gov/image-article/apod-2026-october-28-the-mutual-occultation-of-ganymede-and-io/"
+        },
+        {
+          "id": "news-bba4470f1d39",
+          "source": "nasa",
+          "paragraphs": 19,
+          "characters": 3743,
+          "sha256": "1057f78c03d8b3f79acd700ee433743ecfd852af28a65d3ff8a8c037dabe07f0",
+          "url": "https://science.nasa.gov/earth/earth-observatory/the-land-of-the-standing-up-rocks/"
+        },
+        {
+          "id": "news-2a05fc2547e0",
+          "source": "nasa",
+          "paragraphs": 13,
+          "characters": 2826,
+          "sha256": "afca4f060e12c4d378074bf400e1b2d23961f9bcd90c417f01f71b40194fa03d",
+          "url": "https://www.nasa.gov/news-release/nasa-invites-media-to-crew-completion-of-yearlong-mars-simulation/"
+        },
+        {
+          "id": "news-9e57b3c7cb0d",
+          "source": "mit",
+          "paragraphs": 55,
+          "characters": 10015,
+          "sha256": "5438bf75f4f23e139de1e099e6ee37ff1a62bae1768a164c55cdb8235ef26cb4",
+          "url": "https://news.mit.edu/2026/making-machines-that-can-listen-paris-smaragdis-1028"
+        },
+        {
+          "id": "news-a8e684ce560e",
+          "source": "nasa",
+          "paragraphs": 5,
+          "characters": 757,
+          "sha256": "ac0f881cc2df7fa7d52e949bac9aa779b0d147751ec7305cbcfcedf008f0a657",
+          "url": "https://www.nasa.gov/image-article/nasas-neo-surveyor-sunshade/"
+        },
+        {
+          "id": "news-ba39248fe626",
+          "source": "nasa",
+          "paragraphs": 15,
+          "characters": 3635,
+          "sha256": "798f5c5526cfa59f631d31c3eec4a0ae6b522a4c199962ae0f540d00bdd4f172",
+          "url": "https://www.nasa.gov/general/how-a-johnson-mentor-shapes-the-next-generation-of-nasa-talent/"
+        },
+        {
+          "id": "news-71c246cb8a67",
+          "source": "nasa",
+          "paragraphs": 11,
+          "characters": 1680,
+          "sha256": "37253c754a49dfb57abf7b429a4eda289634ef0d504404d71ebfb3876266948f",
+          "url": "https://science.nasa.gov/image-article/apod-2026-october-27-noctilucent-clouds-over-sweden/"
+        },
+        {
+          "id": "news-41d16c65bf4c",
+          "source": "mit",
+          "paragraphs": 30,
+          "characters": 7301,
+          "sha256": "5d419984d089f36de846f71a4ac7d28b131748e8b4603f2d58395b09d2ffc3f6",
+          "url": "https://news.mit.edu/2026/origami-based-construction-method-yields-lightweight-load-bearing-structures-architecture-1027"
+        },
+        {
+          "id": "news-bdcea22402e1",
+          "source": "nasa",
+          "paragraphs": 15,
+          "characters": 3328,
+          "sha256": "3235a72f3136d5dfe8b8fccc16b949226cd270b8fedd6607f67fb94ab69fa1f7",
+          "url": "https://science.nasa.gov/earth/earth-observatory/a-81-reaches-south-georgia/"
+        },
+        {
+          "id": "news-abf236ae8eb6",
+          "source": "nasa",
+          "paragraphs": 7,
+          "characters": 1066,
+          "sha256": "6019f9cdfec1c97f79c29dea8a52ffe3278f87ca0b0069ce0aff41c24ca7fd42",
+          "url": "https://science.nasa.gov/photojournal/nasas-perseverance-views-dust-at-neretva-vallis/"
+        },
+        {
+          "id": "news-7eb03437a445",
+          "source": "mit",
+          "paragraphs": 13,
+          "characters": 4310,
+          "sha256": "4293e27d9c33704f33af9ec4001d7ac55fe1f0a6d2b5cee0f9844d2519d63ce3",
+          "url": "https://news.mit.edu/2026/j-pal-north-america-launches-homelessness-evaluation-resource-hub-1026"
+        },
+        {
+          "id": "news-d481264fb552",
+          "source": "nasa",
+          "paragraphs": 29,
+          "characters": 7804,
+          "sha256": "e318cda9246cdfeb4e140b7c6a94e0d7670fd3b6a43780ca26e7158bc8f3a55d",
+          "url": "https://www.nasa.gov/missions/mars-2020-perseverance/nasas-perseverance-offers-clues-to-protect-crews-from-mars-dust/"
+        },
+        {
+          "id": "news-653a518b11e8",
+          "source": "nasa",
+          "paragraphs": 10,
+          "characters": 1469,
+          "sha256": "44f29e3d7256e6cb1d1b744f35feb2dc7b3d41f48233e8aad37c3c6778cb8d7a",
+          "url": "https://science.nasa.gov/photojournal/neo-surveyors-sunshade-gets-inspected/"
+        },
+        {
+          "id": "news-a827506fd0dd",
+          "source": "nasa",
+          "paragraphs": 9,
+          "characters": 1012,
+          "sha256": "81872374e91d33911db5e85e443fb076c6352a04ec77c4d83d9c7cf1ca78823b",
+          "url": "https://science.nasa.gov/photojournal/solar-cells-inspected-on-nasas-neo-surveyor/"
+        },
+        {
+          "id": "news-f4efc119ed8c",
+          "source": "nasa",
+          "paragraphs": 16,
+          "characters": 5482,
+          "sha256": "7c7d90467302cc5a70442525750f3465ddfc2cdb473fc850c0147eb4ccb73921",
+          "url": "https://science.nasa.gov/learning-resources/science-activation/nasa-sees-interns-tackle-real-world-challenges-in-lunar-exploration/"
+        },
+        {
+          "id": "news-31859a849501",
+          "source": "nasa",
+          "paragraphs": 10,
+          "characters": 1728,
+          "sha256": "53693a65a0ee08a52d187d347c8f038826ffe15f67a2c171992ca7015a63052c",
+          "url": "https://www.nasa.gov/news-release/nasa-invites-media-to-moon-landing-simulation-experience-in-california/"
+        },
+        {
+          "id": "news-b43ae5b52b3b",
+          "source": "nasa",
+          "paragraphs": 5,
+          "characters": 634,
+          "sha256": "5eb5fc0a5e9088dd2f28dc9ca9c389d48327bebcd610098304450f7ce9b5b0d7",
+          "url": "https://www.nasa.gov/image-article/nasas-x-59-aircraft-and-test-pilot/"
+        },
+        {
+          "id": "news-665e5ed2eb02",
+          "source": "mit",
+          "paragraphs": 32,
+          "characters": 10439,
+          "sha256": "07be77f802605e8b491f3a378fd121bf134067a13959d0f21c7824f9b6cca954",
+          "url": "https://news.mit.edu/2026/hashim-sarkis-steps-down-dean-school-architecture-planning-1026"
+        },
+        {
+          "id": "news-c071b14c9efc",
+          "source": "nasa",
+          "paragraphs": 12,
+          "characters": 2988,
+          "sha256": "6cdef384cf48489b59c8fb0c1425a6af6c2a1ed9c57258b5b87043f68ae2d331",
+          "url": "https://www.nasa.gov/news-release/nasa-usda-sign-agreement-advancing-earth-science-agriculture/"
+        },
+        {
+          "id": "news-1867de242b8f",
+          "source": "nasa",
+          "paragraphs": 11,
+          "characters": 1593,
+          "sha256": "74a4194237be7fb5e3f911b6c7a2eb7b02caf5f1c1a3ca04b64e83b9ecb8ab0d",
+          "url": "https://science.nasa.gov/image-article/apod/2026-october-26-m42-the-great-nebula-in-orion/"
+        },
+        {
+          "id": "news-1a80a05275bb",
+          "source": "nasa",
+          "paragraphs": 44,
+          "characters": 9698,
+          "sha256": "8e9d37b5dab54139581c97f9f862ffdb517ea15bd39d5bd67c92b8b76605d522",
+          "url": "https://science.nasa.gov/earth/earth-observatory/hunting-red-leaves-with-satellites/"
+        },
+        {
+          "id": "news-6347d189a892",
+          "source": "mit",
+          "paragraphs": 31,
+          "characters": 8714,
+          "sha256": "683b8c2182dcb5af59eeced090ba6ed05675ca211c51759224cdf41fac85de2d",
+          "url": "https://news.mit.edu/2026/watch-universe-emerge-from-dark-ages-with-lumina-1026"
+        },
+        {
+          "id": "news-6af2a14871ce",
+          "source": "mit",
+          "paragraphs": 24,
+          "characters": 6166,
+          "sha256": "ff451c433dfce221b82236787c9ebb33586f3e8281ff0be63da7b17098cf7399",
+          "url": "https://news.mit.edu/2026/implantable-device-uses-ultrasound-improve-drug-delivery-brain-1026"
+        },
+        {
+          "id": "news-e8892bef5fd1",
+          "source": "nasa",
+          "paragraphs": 11,
+          "characters": 1827,
+          "sha256": "3155a7d2460e8f05ef43ec4e8f24ef495db9dd0500bded8f247b20e2909c3a9d",
+          "url": "https://science.nasa.gov/image-article/apod-2026-october-25-dark-matter-in-a-simulated-universe/"
+        },
+        {
+          "id": "news-da9d3cf85173",
+          "source": "nasa",
+          "paragraphs": 11,
+          "characters": 1613,
+          "sha256": "6ad6dddb01794c20a2069d40f4f9d721be1a41dc899f7d184b88f7457b85d3d3",
+          "url": "https://science.nasa.gov/image-article/apod-2026-october-24-rosettas-selfie/"
+        },
+        {
+          "id": "news-7e9b86a23e3d",
+          "source": "nasa",
+          "paragraphs": 28,
+          "characters": 8659,
+          "sha256": "256b7b52848afa9b3b29b1172a035874d2330f1cedfc846f53b649728a51d930",
+          "url": "https://www.nasa.gov/missions/artemis/nasa-partners-accelerate-lander-development-for-2028-moon-missions/"
+        },
+        {
+          "id": "news-31e9312f4ecd",
+          "source": "nasa",
+          "paragraphs": 18,
+          "characters": 5245,
+          "sha256": "0c6afab74d06282d9a1c57c1193389bf11b8c67c6b474647f20f4133b5d476cc",
+          "url": "https://science.nasa.gov/missions/swift/nasas-swift-mission-ends/"
+        },
+        {
+          "id": "news-b9c415694360",
+          "source": "nasa",
+          "paragraphs": 37,
+          "characters": 10457,
+          "sha256": "aae493eabae712814db493bc78811698ffe50d46b3511a25d0d3cd2c26f54f5f",
+          "url": "https://www.nasa.gov/missions/artemis/nasas-artemis-iii-mission-to-test-future-moon-lander-operations/"
+        },
+        {
+          "id": "news-c636a8319993",
+          "source": "mit",
+          "paragraphs": 26,
+          "characters": 7015,
+          "sha256": "9559f9caf18012dd4d30d56ee14b84f3f7fc271a3484070cbe20d6310ab90d1a",
+          "url": "https://news.mit.edu/2026/martha-minow-speaks-on-sustaining-democracy-using-overcoming-ai-1023"
+        },
+        {
+          "id": "news-53fa3607052a",
+          "source": "mit",
+          "paragraphs": 17,
+          "characters": 7677,
+          "sha256": "33a51f5b6a0094d2c5a08df4c17f6ea68aeafb6e37edeaa71cd3db329f5a420d",
+          "url": "https://news.mit.edu/2026/gunter-stein-control-systems-theory-expert-dies-1023"
+        },
+        {
+          "id": "news-58812ea796c9",
+          "source": "nasa",
+          "paragraphs": 14,
+          "characters": 3722,
+          "sha256": "7cac5131b4bdaa50330ddd53f5c58abe06db406fbfcc380e0139dfbf0dcdc5ef",
+          "url": "https://www.nasa.gov/centers-and-facilities/langley/nasa-power-energy-partnership/"
+        },
+        {
+          "id": "news-8ad48a4cdbd5",
+          "source": "nasa",
+          "paragraphs": 4,
+          "characters": 811,
+          "sha256": "97107a4c35ddbca5bcaa0076546063f0823da2fd4dfb6d95cf4c3e2bf4c42753",
+          "url": "https://www.nasa.gov/image-article/rs-25-engine-tests-at-nasa-stennis/"
+        },
+        {
+          "id": "news-cdc12eccab21",
+          "source": "nasa",
+          "paragraphs": 11,
+          "characters": 1512,
+          "sha256": "1db3f512cc1125cfe04ba8f643ab6c70485da1fa6af7dabe6a13f00b7d311f80",
+          "url": "https://science.nasa.gov/image-article/apod-2026-october-23-andromeda-in-southern-spring/"
+        },
+        {
+          "id": "news-0a7e7bfac503",
+          "source": "mit",
+          "paragraphs": 22,
+          "characters": 5502,
+          "sha256": "505c478c292d5d76bf712d98a3563cb50817b8baf7108e183d79a301a4935494",
+          "url": "https://news.mit.edu/2026/persistence-teamwork-healthy-competition-veronica-calzadilla-sosa-1023"
+        },
+        {
+          "id": "news-690aea53d2bd",
+          "source": "mit",
+          "paragraphs": 17,
+          "characters": 6693,
+          "sha256": "ef5d1ea09261fe0eb89291ad67b304d512fec8cdee216d97d3b76fd322db38d1",
+          "url": "https://news.mit.edu/2026/qa-how-ai-came-to-model-messy-human-mind-1023"
+        },
+        {
+          "id": "news-fcb69f1e5229",
+          "source": "nasa",
+          "paragraphs": 16,
+          "characters": 1828,
+          "sha256": "ced90b0810ea1ec2b4f85f558e9a0d1e090f35073c5f7613fae52144f598c1b3",
+          "url": "https://www.nasa.gov/news-release/nasa-invites-media-to-2026-von-braun-space-exploration-symposium/"
+        },
+        {
+          "id": "news-ad67f76de1bd",
+          "source": "nasa",
+          "paragraphs": 3,
+          "characters": 848,
+          "sha256": "1eb39a1140e443464e6cae31e35e4f671a7827a6897cb962dd1ccbc45d973f94",
+          "url": "https://www.nasa.gov/image-article/spirals-edge/"
+        },
+        {
+          "id": "news-864a753b84f4",
+          "source": "nasa",
+          "paragraphs": 20,
+          "characters": 4482,
+          "sha256": "563f5a7f82defe5462dda12d3a3b6bd8934d1a952951f5ad4cc69f0d7db04213",
+          "url": "https://science.nasa.gov/missions/hubble/nasas-hubble-charts-path-for-roman-with-gravitational-lenses/"
+        },
+        {
+          "id": "news-2d35605baeb3",
+          "source": "nasa",
+          "paragraphs": 11,
+          "characters": 1654,
+          "sha256": "f99d13dc437fdc33b0e4b2ffbc465b6865af6a097c2c7f079de8468639b13c8a",
+          "url": "https://science.nasa.gov/image-article/apod-2026-october-22-the-first-green-star-wd-j13306435/"
+        },
+        {
+          "id": "news-35e42ab2e634",
+          "source": "nasa",
+          "paragraphs": 30,
+          "characters": 6396,
+          "sha256": "631535ef813354d99cc7fad78f786181ba5bfd33db2f92611adb2c0d1104d028",
+          "url": "https://science.nasa.gov/earth/earth-observatory/fires-char-new-guinea/"
+        },
+        {
+          "id": "news-a54d1aa6de41",
+          "source": "nasa",
+          "paragraphs": 36,
+          "characters": 8580,
+          "sha256": "f9309c28ad50d2a9500bf6a7316861ed977c940f6a12fe60c72ac76b248dff5f",
+          "url": "https://science.nasa.gov/directorates/smd/faster-to-science-a-letter-to-the-science-community/"
+        },
+        {
+          "id": "news-771decc50095",
+          "source": "mit",
+          "paragraphs": 24,
+          "characters": 7869,
+          "sha256": "1ab0c7435c311d9be060d548b1cedefb86106d916de5c5500eab45a6b81e5f8f",
+          "url": "https://news.mit.edu/2026/startup-rejuvenates-nuclear-power-industry-new-manufacturing-approach-1022"
+        },
+        {
+          "id": "news-cf37dcb56b3d",
+          "source": "nasa",
+          "paragraphs": 11,
+          "characters": 1885,
+          "sha256": "490fb41f584d48571e4eb48fa89ef58ac7d6d33c3938ed23968f99d787fdc325",
+          "url": "https://www.nasa.gov/image-article/rs-25-engine-test-in-support-of-future-artemis-missions/"
+        },
+        {
+          "id": "news-5a5a80893552",
+          "source": "nasa",
+          "paragraphs": 18,
+          "characters": 5808,
+          "sha256": "cf843b7642fdb0005e497bd525feca201ca63e5067f38ffe127bb7db4a92a028",
+          "url": "https://www.nasa.gov/centers-and-facilities/jpl/nasa-jpl-looks-to-next-90-years-of-innovation-exploration/"
+        },
+        {
+          "id": "news-2f4faef021e8",
+          "source": "nasa",
+          "paragraphs": 15,
+          "characters": 2685,
+          "sha256": "dfcc1e7ea07277317cb2fcfa5a8a35a454049b4bcc5c906007edf0c053fb4c4f",
+          "url": "https://www.nasa.gov/news-release/nasa-to-conduct-ncaa-flyover-engage-fans-at-university-of-alabama/"
+        },
+        {
+          "id": "news-e2800801f178",
+          "source": "nasa",
+          "paragraphs": 11,
+          "characters": 3936,
+          "sha256": "eebd541e9a48947a70426c8f34e7b63c8e340699e75fa792ad18c61ef2d4e4d2",
+          "url": "https://science.nasa.gov/blog/tracks-along-the-longest-drive-on-another-world/"
+        },
+        {
+          "id": "news-ec019517f3cb",
+          "source": "nasa",
+          "paragraphs": 4,
+          "characters": 661,
+          "sha256": "c531a57e0bbe4508a4d2cead9c7a87fcfbdae9887a5446619aeeff8a8874b606",
+          "url": "https://www.nasa.gov/image-article/science-on-the-space-station-with-nasa-astronaut-jessica-watkins/"
+        },
+        {
+          "id": "news-072358b4428d",
+          "source": "nasa",
+          "paragraphs": 23,
+          "characters": 5325,
+          "sha256": "22070d9284ae0de140d38f098d2c4147341630e81a09f5254729d9ea2a5dff58",
+          "url": "https://science.nasa.gov/science-research/science-enabling-technology/technology-highlights/nasas-casals-instrument-bridges-gaps-in-3d-maps-of-earths-surface/"
+        },
+        {
+          "id": "news-9420c8fb921a",
+          "source": "nasa",
+          "paragraphs": 11,
+          "characters": 1810,
+          "sha256": "77d23f0b7b7a5d9939fac0e14cbe23851e4d205fb7b9f990bafc4ad211c60869",
+          "url": "https://science.nasa.gov/image-article/apod-2026-october-21-new-ghosts-revealed-in-cassiopeia/"
+        },
+        {
+          "id": "news-6c0c8a7191e5",
+          "source": "nasa",
+          "paragraphs": 16,
+          "characters": 2703,
+          "sha256": "29d7bad6d00980f67f54e61d06b69907d94e5f4c7b88be57d5ad1fd3610f82d0",
+          "url": "https://science.nasa.gov/earth/earth-observatory/extratropical-cyclone-whips-past-iceland/"
+        },
+        {
+          "id": "news-eb8ae8da944a",
+          "source": "nasa",
+          "paragraphs": 9,
+          "characters": 1451,
+          "sha256": "f7b8b32f30bde85015144a2219c5ab54b76529725fb09a35056492ade8166598",
+          "url": "https://www.nasa.gov/general/nasa-to-conduct-low-altitude-flights-over-texas-farmland/"
+        },
+        {
+          "id": "news-3831e49cc943",
+          "source": "mit",
+          "paragraphs": 24,
+          "characters": 8016,
+          "sha256": "a5f436df052fe2f49872bb693160b5ea35544c2a86a60a32135f115181ed60cf",
+          "url": "https://news.mit.edu/2026/tod-machover-new-symphony-plays-ai-while-reflecting-democracy-1021"
+        },
+        {
+          "id": "news-d76e80717001",
+          "source": "nasa",
+          "paragraphs": 9,
+          "characters": 3166,
+          "sha256": "86b3a74f7c21157ab2655f915c3fea1b89dcf7170dd84ddcb753f16c97214769",
+          "url": "https://www.nasa.gov/centers-and-facilities/glenn/sr-1-freedom-advances-with-progress-on-nuclear-power-module/"
+        },
+        {
+          "id": "news-f1b3456c3ac7",
+          "source": "nasa",
+          "paragraphs": 6,
+          "characters": 3820,
+          "sha256": "d0468e0fe68b1a2020bbd862edeb3748d8a9add5f00125aa83016ff1e3156394",
+          "url": "https://www.nasa.gov/science-research/aeronautics-research/nasa-experimental-mars-helicopter-blade-designs-target-longer-flights/"
+        },
+        {
+          "id": "news-c5c47b11231b",
+          "source": "nasa",
+          "paragraphs": 30,
+          "characters": 7416,
+          "sha256": "eda6efb0388a0d81be19220f6cc20cb601a6fa88568a21ece408071414821dac",
+          "url": "https://www.nasa.gov/missions/moon-base/nasa-provides-progress-update-on-moon-base-rovers/"
+        },
+        {
+          "id": "news-419686aeb995",
+          "source": "nasa",
+          "paragraphs": 4,
+          "characters": 748,
+          "sha256": "bd4f54e7c49b6d94b5fade8f179ba979d0ee53f24778d8f4bf9799a5752f0b01",
+          "url": "https://www.nasa.gov/image-article/webb-captures-stellar-jets/"
+        },
+        {
+          "id": "news-29c1268b76f8",
+          "source": "nasa",
+          "paragraphs": 11,
+          "characters": 2696,
+          "sha256": "13538ef324b0c35a9b65d7636e05dd8a92d5afc5871694117cf08aedbf570987",
+          "url": "https://www.nasa.gov/organizations/oiir/artemis-accords/nasa-welcomes-uzbekistan-as-newest-artemis-accords-signatory/"
+        },
+        {
+          "id": "news-0a03ff04e98f",
+          "source": "nasa",
+          "paragraphs": 11,
+          "characters": 1434,
+          "sha256": "563287b23a8fb917c8767eabf47f9126dcc359a1fe6aef658af5f10af2bfa4bd",
+          "url": "https://science.nasa.gov/image-article/apod-2026-october-20-an-anticrepuscular-rainbow-fan/"
+        },
+        {
+          "id": "news-a3516bf0dea7",
+          "source": "nasa",
+          "paragraphs": 23,
+          "characters": 7725,
+          "sha256": "0742f3047f73a8f429e8ee60cf71eab33e3a514e86a5fd989ad02d32f149f096",
+          "url": "https://science.nasa.gov/earth/earth-observatory/the-human-fingerprint-on-earths-water-cycle/"
+        },
+        {
+          "id": "news-6edbd8e0c59c",
+          "source": "mit",
+          "paragraphs": 21,
+          "characters": 5612,
+          "sha256": "c492fb1b679e91b79a3686ac51aeabdf5a0d7ffc97dbd8edbfd0ff2cecd25f69",
+          "url": "https://news.mit.edu/2026/sanaheal-makes-surgical-stitching-more-like-applying-sticky-note-1020"
+        },
+        {
+          "id": "news-ce6725e0d98d",
+          "source": "nasa",
+          "paragraphs": 9,
+          "characters": 3039,
+          "sha256": "b65b8001d810ff2662b3c50550e0bf38ac80701f81b9f6591e6abeb6d9fdf5c7",
+          "url": "https://science.nasa.gov/blog/curiosity-blog-sols-5036-5042-watching-the-clouds-go-by/"
+        },
+        {
+          "id": "news-66ed15b5ccaa",
+          "source": "nasa",
+          "paragraphs": 26,
+          "characters": 6292,
+          "sha256": "da76dd57a608385cd5404d6922d9fe505cae64fb81ca9e4f4c013306a22b356d",
+          "url": "https://www.nasa.gov/centers-and-facilities/glenn/acoustics-software/"
+        },
+        {
+          "id": "news-ff1f34b4a523",
+          "source": "nasa",
+          "paragraphs": 30,
+          "characters": 10613,
+          "sha256": "3f1d70bacfb2c9e11ff4b96963daca4af63409356e8679b74959e99964b89e92",
+          "url": "https://www.nasa.gov/centers-and-facilities/glenn/acoustics-experimental-facilities/"
+        },
+        {
+          "id": "news-c4df2f137fe1",
+          "source": "nasa",
+          "paragraphs": 16,
+          "characters": 5237,
+          "sha256": "62cabbdf981ecd53b2c973f57d830dbbd16a65c41c814f6dc26bb90daebc9bee",
+          "url": "https://www.nasa.gov/centers-and-facilities/kennedy/nasa-improves-shock-vibration-analysis/"
+        },
+        {
+          "id": "news-e5a6a9cb3da6",
+          "source": "nasa",
+          "paragraphs": 18,
+          "characters": 4544,
+          "sha256": "fe9ee388154e717ed6c05395300930bb55002d19db90a7c8833517f874b1166e",
+          "url": "https://www.nasa.gov/humans-in-space/nasas-simulated-mars-crew-marks-one-year-inside-habitat/"
+        },
+        {
+          "id": "news-ed6a8c89d801",
+          "source": "nasa",
+          "paragraphs": 16,
+          "characters": 2953,
+          "sha256": "70f64f267d50d1701fd97823639ab50c194667e49281bad088314f84902690e7",
+          "url": "https://www.nasa.gov/centers-and-facilities/glenn/acoustics-instrumentation/"
+        },
+        {
+          "id": "news-631c78f18e27",
+          "source": "mit",
+          "paragraphs": 20,
+          "characters": 5672,
+          "sha256": "6cc2cc762242f64877978e41ed99ca725df4cfa28f8aaf549dd5742616710e8d",
+          "url": "https://news.mit.edu/2026/giving-ai-crystal-clear-view-of-materials-world-1018"
+        },
+        {
+          "id": "news-68b02ba462b0",
+          "source": "mit",
+          "paragraphs": 13,
+          "characters": 4248,
+          "sha256": "fa6c836fa45d24d6cebe8694fb7dedc8262a06621c4268f27d7e8c2e3a0e5eea",
+          "url": "https://news.mit.edu/2026/fostering-community-amid-kendall-square-innovation-1016"
+        },
+        {
+          "id": "news-ff86c3dd2a78",
+          "source": "mit",
+          "paragraphs": 28,
+          "characters": 6592,
+          "sha256": "d368941f3fb687ba6cb4872eae2c6bd3b48f4097045c57769b7f52dae1d4a537",
+          "url": "https://news.mit.edu/2026/satellite-data-reveal-how-antarcticas-ice-cliffs-behave-over-time-1015"
+        },
+        {
+          "id": "news-bdb5f9d6d099",
+          "source": "mit",
+          "paragraphs": 18,
+          "characters": 7343,
+          "sha256": "d457e79d16e10583f9fbb68561d9e30326755bd1ff89571ea7f366f265460640",
+          "url": "https://news.mit.edu/2026/collision-between-ai-your-brain-and-society-eric-so-book-1015"
+        },
+        {
+          "id": "news-378737ffe80d",
+          "source": "mit",
+          "paragraphs": 26,
+          "characters": 8241,
+          "sha256": "85a5c08ecb6b78de5c9b0d93fe70a772291a956d9df8a75329cf80e29aaf9351",
+          "url": "https://news.mit.edu/2026/researchers-improve-weather-forecasts-looking-two-six-weeks-out-1014"
+        }
+      ],
+      "failures": [
+        {
+          "id": "news-eaa0e987b37e",
+          "source": "noaa",
+          "url": "https://www.noaa.gov/news/noaa-voices-at-2026-oral-history-association-annual-meeting-ext",
+          "error": "原站暂未允许读取正文，请在原站阅读。"
+        },
+        {
+          "id": "news-5ee01b803f32",
+          "source": "noaa",
+          "url": "https://www.noaa.gov/news/project-jukebox-ext",
+          "error": "原站暂未允许读取正文，请在原站阅读。"
+        },
+        {
+          "id": "news-5703ea75e93e",
+          "source": "noaa",
+          "url": "https://www.noaa.gov/news-release/noaa-weather-modeling-hits-key-milestone-with-rapid-refresh-forecast-system-debut",
+          "error": "原站暂未允许读取正文，请在原站阅读。"
+        },
+        {
+          "id": "news-e0917e775ac6",
+          "source": "noaa",
+          "url": "https://www.noaa.gov/news-release/noaa-nasa-release-measurements-of-2026-ozone-hole",
+          "error": "原站暂未允许读取正文，请在原站阅读。"
+        },
+        {
+          "id": "news-d38efcab3d1d",
+          "source": "nsf",
+          "url": "https://www.nsf.gov/news/new-dwarf-planet-candidate-discovered-nsf-doe-rubin",
+          "error": "原站暂未允许读取正文，请在原站阅读。"
+        },
+        {
+          "id": "news-90a23845ace6",
+          "source": "noaa",
+          "url": "https://www.noaa.gov/office-education/hollings-scholarship/stories/kittiwake-committee-monitoring-black-legged-kittiwakes-in-homer-alaska",
+          "error": "原站暂未允许读取正文，请在原站阅读。"
+        },
+        {
+          "id": "news-ec0651845491",
+          "source": "noaa",
+          "url": "https://www.noaa.gov/office-education/hollings-scholarship/stories/quantifying-primary-productivity-in-freshwater-estuary-in-huron-ohio",
+          "error": "原站暂未允许读取正文，请在原站阅读。"
+        },
+        {
+          "id": "news-cd926f9f90c6",
+          "source": "noaa",
+          "url": "https://www.noaa.gov/office-education/hollings-scholarship/stories/mariculture-in-alaska-reflecting-on-my-time-spent-in-hatchery-and-creating-home-in-juneau-alaska",
+          "error": "原站暂未允许读取正文，请在原站阅读。"
+        },
+        {
+          "id": "news-a6818e81106c",
+          "source": "nsf",
+          "url": "https://www.nsf.gov/news/nsf-lays-foundation-next-generation-technologies-support",
+          "error": "原站暂未允许读取正文，请在原站阅读。"
+        },
+        {
+          "id": "news-89d5881b4587",
+          "source": "nsf",
+          "url": "https://www.nsf.gov/news/nsf-ukri-metascience-statement",
+          "error": "原站暂未允许读取正文，请在原站阅读。"
+        },
+        {
+          "id": "news-a1ea1e679902",
+          "source": "nsf",
+          "url": "https://www.nsf.gov/news/nsf-invests-translating-low-dimensional-semiconductor",
+          "error": "原站暂未允许读取正文，请在原站阅读。"
+        },
+        {
+          "id": "news-383d8c4f7c93",
+          "source": "nsf",
+          "url": "https://www.nsf.gov/news/nsf-announces-3-additional-topics-part-nsf-x-labs-initiative",
+          "error": "原站暂未允许读取正文，请在原站阅读。"
+        },
+        {
+          "id": "news-ff4f2e91f062",
+          "source": "nsf",
+          "url": "https://www.nsf.gov/news/nsf-launches-20m-pilot-accelerate-commercialization",
+          "error": "原站暂未允许读取正文，请在原站阅读。"
+        },
+        {
+          "id": "news-f6779ff4adc9",
+          "source": "nsf",
+          "url": "https://www.nsf.gov/news/nsf-leadership-new-golden-age-science",
+          "error": "原站暂未允许读取正文，请在原站阅读。"
+        }
+      ],
+      "notes": "Only complete article-body text with a verified body container, end-to-end character preservation and SHA-256 is marked full-article. Failed pages are metadata only, never replaced by RSS summaries. Images/scripts are not included. MIT articles retain title, subtitle, byline, source link and required footer in the reader."
+    },
+    "actualElectronFullText": {
+      "passed": true,
+      "checks": [
+        "Full-text IPC requires a signed-in local account",
+        "Actual NASA full article renders all 43 paragraphs including exact final text at 390px and 1280px without overflow",
+        "Real HTTPS full-page download and packaged jsdom worker run successfully inside the Windows Electron application",
+        "Pending article automatically opens complete body; MIT title/subtitle/byline/original link and required credit footer present",
+        "Synthetic 120-paragraph long article, paragraph-110 notes/position/bookmark and full encrypted snapshot survive restart; dictionary readiness preserves editing DOM",
+        "Legacy summary is never displayed as full text; restricted publishers retain original full-article link and existing personal notes",
+        "Failed full-text load shows retry and original-site link with zero substituted summary paragraphs"
+      ],
+      "nativeWorker": {
+        "source": "NASA",
+        "paragraphs": 43,
+        "sha256": "df8fca005a05227084663a418ca407764f7eeb9a49c52bf0517a3c3c9e68e84d"
+      },
+      "testedAt": "2026-11-09T16:16:42.682Z"
+    },
+    "executable": {
+      "version": "3.9.32-preview",
+      "passed": true,
+      "iconFrames": 10,
+      "groups": 1,
+      "fileVersion": "3.9.32.0",
+      "productVersion": "3.9.32-preview",
+      "signature": "NotSigned",
+      "obsoleteCertificatesRemoved": 0,
+      "sha256": "0A76308B3E70E2F66D819F67DC127B824C4D42C9CFE8B9E4DFCDC695D822CE42",
+      "checkedAt": "2026-11-10T00:19:59.2886705+08:00"
+    },
+    "versionDisplay": {
+      "passed": true,
+      "version": "3.9.32-preview",
+      "checks": [
+        "Real app info IPC and settings show packaged version 3.9.32-preview",
+        "Old public update list cannot replace or downgrade running version",
+        "Version survives encrypted account reload"
+      ],
+      "testedAt": "2026-11-09T16:21:20.663Z"
+    },
+    "readingFlowAndNativeAI": {
+      "passed": true,
+      "checks": [
+        "150 complete external articles plus 52 original/classic materials accessible offline, with 14 pending links; automatic RSS check does not block reader",
+        "difficulty, topic and full-text search; native article entry",
+        "same-page reference translation, automatic notes, contextual saved word without replacing study plan",
+        "persisted comprehension quiz and matching sounds; explicit completion deduplicates daily calendar",
+        "encrypted reload restores paragraph, bookmarks, notes, quiz, font, night theme and audio rate",
+        "article saved words enter real contextual practice",
+        "personal clipping and real offline Hy-MT2 translation plus Qwen explanation",
+        "reader history and private clippings isolated between accounts"
+      ],
+      "translationCharacters": 29,
+      "explanationCharacters": 290,
+      "testedAt": "2026-11-09T16:18:38.697Z"
+    },
+    "readingDataRetention": {
+      "passed": true,
+      "checks": [
+        "point lookup saves contextual word from personal clipping",
+        "personal clipping exposes real word review entry",
+        "native confirmation progress reset retains clippings, notes and bookmarks",
+        "native confirmation removes one clipping with its annotations"
+      ],
+      "testedAt": "2026-11-09T16:20:13.787Z"
+    },
+    "guideAndSound": {
+      "passed": true,
+      "checks": [
+        "new-account guide starts on first entry",
+        "four-step guide and real plan choices",
+        "optional practice does not affect learning statistics",
+        "guide completion persists",
+        "skip and Escape persist per account",
+        "settings can replay guide",
+        "correct and wrong choice handlers trigger distinct sounds",
+        "duplicate answers do not replay sound",
+        "quiet and sound-off preserve visual feedback while muted",
+        "two offline waveforms have distinct nonzero unclipped output",
+        "volume and sound preference persist",
+        "390 and 1280 guide layouts"
+      ],
+      "waveforms": [
+        {
+          "kind": "correct",
+          "energy": 8.980007522713992,
+          "peak": 0.07500464469194412
+        },
+        {
+          "kind": "wrong",
+          "energy": 4.202079824520955,
+          "peak": 0.05205892398953438
+        }
+      ],
+      "testedAt": "2026-11-09T16:20:16.516Z"
+    }
+  },
+  "additionalRegressions": [
+    "bounded reader backup and notes validation",
+    "cross-book study checkpoints and 11-stage review",
+    "version comparisons: invalid lists, timeouts and older public releases"
+  ],
+  "checkedAt": "2026-11-10T00:21:55.7305461+08:00",
+  "environment": "Windows x64; isolated synthetic accounts; 150 actual complete article bodies and 14 failed links; real NASA HTTPS fetch and packaged jsdom Electron worker; controlled synthetic 120-paragraph long article for notes, position and encrypted restart; genuine local Hy-MT2 translation and Qwen explanation."
+}

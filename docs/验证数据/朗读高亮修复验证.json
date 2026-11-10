@@ -1,0 +1,112 @@
+{
+  "version": "3.9.33-preview",
+  "passed": true,
+  "suites": {
+    "layoutAndPlayback": {
+      "passed": true,
+      "checks": [
+        "First word has a 14px clear gutter beside 3px marker in paper/white/night themes at 390/768/1280/1856px",
+        "Highlight and seek preserve paragraph width, wrapping and first-word position; no horizontal clipping",
+        "Native play, pause, resume and stop work at maximum font size; paragraph notes remain editable"
+      ],
+      "layouts": [
+        {
+          "width": 390,
+          "theme": "paper",
+          "gutter": 14,
+          "textShift": 0
+        },
+        {
+          "width": 390,
+          "theme": "white",
+          "gutter": 14,
+          "textShift": 0
+        },
+        {
+          "width": 390,
+          "theme": "night",
+          "gutter": 14,
+          "textShift": 0
+        },
+        {
+          "width": 768,
+          "theme": "paper",
+          "gutter": 14,
+          "textShift": 0
+        },
+        {
+          "width": 768,
+          "theme": "white",
+          "gutter": 14,
+          "textShift": 0
+        },
+        {
+          "width": 768,
+          "theme": "night",
+          "gutter": 14,
+          "textShift": 0
+        },
+        {
+          "width": 1280,
+          "theme": "paper",
+          "gutter": 14,
+          "textShift": 0
+        },
+        {
+          "width": 1280,
+          "theme": "white",
+          "gutter": 14,
+          "textShift": 0
+        },
+        {
+          "width": 1280,
+          "theme": "night",
+          "gutter": 14,
+          "textShift": 0
+        },
+        {
+          "width": 1856,
+          "theme": "paper",
+          "gutter": 14,
+          "textShift": 0
+        },
+        {
+          "width": 1856,
+          "theme": "white",
+          "gutter": 14,
+          "textShift": 0
+        },
+        {
+          "width": 1856,
+          "theme": "night",
+          "gutter": 14,
+          "textShift": 0
+        }
+      ],
+      "testedAt": "2026-11-09T16:27:00.566Z"
+    },
+    "executable": {
+      "version": "3.9.33-preview",
+      "passed": true,
+      "iconFrames": 10,
+      "groups": 1,
+      "fileVersion": "3.9.33.0",
+      "productVersion": "3.9.33-preview",
+      "signature": "NotSigned",
+      "obsoleteCertificatesRemoved": 0,
+      "sha256": "0112CAAFFDEF671D537DE1E34934373922295D001110CDF321197FA2BBEFFE0D",
+      "checkedAt": "2026-11-10T00:29:08.5771849+08:00"
+    },
+    "versionDisplay": {
+      "passed": true,
+      "version": "3.9.33-preview",
+      "checks": [
+        "Real app info IPC and settings show packaged version 3.9.33-preview",
+        "Old public update list cannot replace or downgrade running version",
+        "Version survives encrypted account reload"
+      ],
+      "testedAt": "2026-11-09T16:29:10.779Z"
+    }
+  },
+  "checkedAt": "2026-11-10T00:29:18.4526695+08:00"
+}

@@ -1,0 +1,38 @@
+/* 借鉴系统交互的连续性与轻反馈，沿用词屿自己的色彩与原创素材。 */
+:root{--motion-ease:cubic-bezier(.2,.7,.2,1);--motion-spring:cubic-bezier(.22,1,.36,1)}
+body.youth.motion-ui .view,body.youth.motion-ui .view.enter,body.youth.motion-ui.lg .view.enter,body.youth.motion-ui .view.enter>*,body.youth.motion-ui .panel,body.youth.motion-ui .word-card,body.youth.motion-ui .reading-card,body.youth.motion-ui .reveal,body.youth.motion-ui .opts,body.youth.motion-ui .feedback{animation:none !important}
+body.youth.motion-ui .panel,body.youth.motion-ui .word-card,body.youth.motion-ui .book-card,body.youth.motion-ui .reading-card{border-radius:22px;box-shadow:0 3px 14px #17274405;transition:border-color .18s var(--motion-ease),box-shadow .18s var(--motion-ease)}
+body.youth.motion-ui .panel:hover{box-shadow:0 4px 18px #17274407}
+body.youth.motion-ui .btn,body.youth.motion-ui.lg .btn{border-radius:13px;box-shadow:0 2px 6px #1727440c,inset 0 1px 0 #ffffff70;transition:transform .2s var(--motion-spring),background-color .16s var(--motion-ease),border-color .16s var(--motion-ease),box-shadow .2s var(--motion-ease)}
+body.youth.motion-ui .btn.primary,body.youth.motion-ui.lg .btn.primary{box-shadow:0 3px 10px #7a99401c,inset 0 1px 0 #ffffff80}
+body.youth.motion-ui .btn.ghost{box-shadow:none}
+body.youth.motion-ui :is(.btn,.icon-btn,.opt,.dict-row,.youth-link-card,.book-daily button,.seg button,.youth-moods button,.youth-quiet-toggle){-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+body.youth.motion-ui .btn:hover:not(:disabled){transform:none;box-shadow:0 3px 10px #17274412}
+body.youth.motion-ui :is(.btn,.icon-btn,.opt,.dict-row,.youth-link-card,.book-daily button,.seg button,.youth-moods button,.youth-quiet-toggle):active:not(:disabled){transform:scale(.975);transition-duration:70ms}
+body.youth.motion-ui :is(.icon-btn,.opt,.dict-row,.book-daily button,.youth-quiet-toggle){transition:transform .2s var(--motion-spring),background-color .16s var(--motion-ease),border-color .16s var(--motion-ease)}
+body.youth.motion-ui :is(input:not([type=checkbox]):not([type=range]),textarea,select){border-radius:13px;transition:border-color .16s var(--motion-ease),box-shadow .16s var(--motion-ease)}
+body.youth.motion-ui :is(input:not([type=checkbox]):not([type=range]),textarea,select):focus-visible{border-color:#7ca99a;box-shadow:0 0 0 3px #75d1bf22}
+body.youth.motion-ui .word-card{border-top-width:3px}
+body.youth.motion-ui .nav{position:relative;isolation:isolate}
+body.youth.motion-ui .nav button{position:relative;z-index:1;transition:color .16s var(--motion-ease),background-color .16s var(--motion-ease),transform .16s var(--motion-spring)}
+body.youth.motion-ui .nav button:hover{transform:none}
+body.youth.motion-ui .nav.motion-ready button.on{background:transparent !important;border-color:transparent}
+body.youth.motion-ui .nav.motion-ready button.on::before{display:none}
+.motion-nav-pill,.motion-seg-pill{display:block;position:absolute;left:0;top:0;z-index:0;pointer-events:none;transform-origin:0 0;box-sizing:border-box;border-radius:12px}
+.motion-nav-pill{background:#d5f56818;border:1px solid #d5f5682b;box-shadow:inset 0 1px 0 #ffffff09}
+.motion-seg-pill{background:#fff;border:1px solid #dbe4de;box-shadow:0 2px 6px #17274410;border-radius:10px}
+body.youth.motion-ui .seg,body.youth.motion-ui .book-daily>div{position:relative;isolation:isolate}
+body.youth.motion-ui .seg button,body.youth.motion-ui .book-daily button{position:relative;z-index:1}
+body.youth.motion-ui .seg.motion-ready button.on{background:transparent !important;color:#172744 !important}
+body.youth.motion-ui .seg.motion-ready button.on>span{color:#577b69}
+body.youth.motion-ui .book-daily>div>.motion-seg-pill{background:#d5f568;box-shadow:inset 0 1px 0 #ffffff70;border:1px solid #c4dc88;border-radius:12px}
+body.youth.motion-ui .book-daily>div.motion-ready button.on{background:transparent;border-color:transparent}
+body.youth.motion-ui .bar>i{transition:width .24s var(--motion-ease)}
+body.youth.motion-ui .study-head .bar>i{transition:none;transform-origin:left center}
+body.youth.motion-ui .toast,body.youth.motion-ui .youth-feedback{background:#172744f2 !important;border-radius:18px;box-shadow:0 10px 35px #17274425;backdrop-filter:blur(12px)}
+body.youth.motion-ui .toast{animation:motion-toast-in .18s var(--motion-ease)}
+@keyframes motion-toast-in{from{opacity:0;translate:0 6px}to{opacity:1;translate:0 0}}
+@media(hover:hover) and (pointer:fine){body.youth.motion-ui .btn:hover:not(:disabled){transform:translateY(-1px)}body.youth.motion-ui .book-card:hover{border-color:#a9c2b9;box-shadow:0 7px 22px #1727440d}body.youth.motion-ui .youth-link-card:hover{transform:translateY(-2px);box-shadow:0 6px 16px #1727440d}}
+body.youth.motion-ui.motion-off :is(.btn,.icon-btn,.opt,.dict-row,.youth-link-card,.book-daily button,.seg button,.youth-moods button,.youth-quiet-toggle):active{transform:none !important}
+body.youth.motion-ui.motion-off *,body.youth.motion-ui.motion-off *::before,body.youth.motion-ui.motion-off *::after{animation:none !important;transition:none !important;scroll-behavior:auto !important}
+@media(prefers-reduced-motion:reduce){body.youth.motion-ui *,body.youth.motion-ui *::before,body.youth.motion-ui *::after{animation:none !important;transition:none !important;scroll-behavior:auto !important}}

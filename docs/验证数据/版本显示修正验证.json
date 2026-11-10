@@ -1,0 +1,20 @@
+{
+  "version": "3.9.22-preview",
+  "checks": {
+    "mainUpdateHandler": "PASS",
+    "versionComparison": "PASS",
+    "nativeAppInfoMatchesPackage": "PASS",
+    "oldManifestReproduction": "PASS",
+    "offlineVersionDisplay": "PASS",
+    "newerSameOlderStatuses": "PASS",
+    "noDowngradeLink": "PASS",
+    "restartAndResponsiveUI": "PASS",
+    "syntax": "PASS"
+  },
+  "simulatedManifestVersion": "3.9.3",
+  "layoutWidths": [
+    390,
+    1280
+  ],
+  "profile": "独立测试目录，未修改真实学习记录"
+}

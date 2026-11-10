@@ -1,0 +1,117 @@
+{
+  "version": "3.9.28-preview",
+  "passed": true,
+  "suites": {
+    "guideAndAudio": {
+      "passed": true,
+      "checks": [
+        "new-account guide starts on first entry",
+        "four-step guide and real plan choices",
+        "optional practice does not affect learning statistics",
+        "guide completion persists",
+        "skip and Escape persist per account",
+        "settings can replay guide",
+        "correct and wrong choice handlers trigger distinct sounds",
+        "duplicate answers do not replay sound",
+        "quiet and sound-off preserve visual feedback while muted",
+        "two offline waveforms have distinct nonzero unclipped output",
+        "volume and sound preference persist",
+        "390 and 1280 guide layouts"
+      ],
+      "waveforms": [
+        {
+          "kind": "correct",
+          "energy": 2.3269399657120498,
+          "peak": 0.06224323436617851
+        },
+        {
+          "kind": "wrong",
+          "energy": 1.9331517204062,
+          "peak": 0.06275800615549088
+        }
+      ],
+      "testedAt": "2026-11-09T10:26:01.142Z"
+    },
+    "upgrade": {
+      "passed": true,
+      "checks": [
+        "real previous-version account upgrades without automatic guide",
+        "existing progress, goal and quiet setting preserved",
+        "older users may replay voluntarily",
+        "new-account skip remains after progress reset and relogin"
+      ],
+      "testedAt": "2026-11-09T10:23:59.047Z"
+    },
+    "executable": {
+      "version": "3.9.28-preview",
+      "passed": true,
+      "iconFrames": 10,
+      "groups": 1,
+      "fileVersion": "3.9.28.0",
+      "productVersion": "3.9.28-preview",
+      "signature": "NotSigned",
+      "obsoleteCertificatesRemoved": 0,
+      "sha256": "8CFACBB28B5BA3E60624F5A20828D9095F104A20A185B1757AF8B29AB9365F13",
+      "checkedAt": "2026-11-09T18:23:51.6420718+08:00"
+    },
+    "productFlow": {
+      "passed": true,
+      "checks": [
+        "single prominent home action above fold",
+        "plan controls progressively disclosed",
+        "42-book and daily plan compatibility",
+        "10-word unit supports smaller remaining quota",
+        "focused study and keyboard input",
+        "cross-book restart resume with partial answer",
+        "no duplicate grading after restart",
+        "mixed-stage resume retains committed schedule",
+        "card self-rating not mislabeled as accuracy",
+        "exact word-to-reading matching",
+        "return from companion to unfinished lesson",
+        "390/960/1280 layouts",
+        "no renderer errors"
+      ],
+      "testedAt": "2026-11-09T10:25:57.034Z"
+    },
+    "offlineTools": {
+      "passed": true,
+      "checks": [
+        "real offline in-context word explanation",
+        "help hidden before answer reveal",
+        "late AI result does not appear under another word",
+        "AI explanation not silently persisted as dictionary fact",
+        "focused lesson returns from AI companion",
+        "listening controls remain available with progressive instructions",
+        "real native audio recognition still works",
+        "390 and 1280 listening layouts"
+      ],
+      "aiAnswerCharacters": 141,
+      "recognizedCharacters": 106,
+      "testedAt": "2026-11-09T10:26:19.19Z"
+    },
+    "accountBackend": {
+      "passed": true,
+      "checks": [
+        "registration validation",
+        "random IDs and salts",
+        "ordered atomic encrypted persistence",
+        "locked reads and stale sessions denied",
+        "account and attachment isolation",
+        "password change",
+        "recovery key rotation",
+        "encrypted backup round trip",
+        "duplicate import protection",
+        "AES authentication tamper rejection",
+        "plaintext absence",
+        "process restart persistence"
+      ],
+      "testedAt": "2026-11-09T10:21:37.701Z"
+    }
+  },
+  "additionalRegressions": [
+    "checkpoint cross-book keys, partial answers, counters and committed scheduling",
+    "11-stage time-based review, early review and date boundaries"
+  ],
+  "checkedAt": "2026-11-09T18:29:33.9049228+08:00",
+  "environment": "Windows x64; isolated synthetic accounts; actual native model and recognition; offline waveform rendering; responsive layout checks. No physical listening study."
+}

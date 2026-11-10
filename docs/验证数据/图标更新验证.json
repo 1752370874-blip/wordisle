@@ -1,0 +1,57 @@
+{
+  "version": "3.9.25-preview",
+  "passed": true,
+  "suites": {
+    "executable": {
+      "version": "3.9.25-preview",
+      "passed": true,
+      "iconFrames": 10,
+      "groups": 1,
+      "fileVersion": "3.9.25.0",
+      "productVersion": "3.9.25-preview",
+      "signature": "NotSigned",
+      "obsoleteCertificatesRemoved": 1,
+      "sha256": "85285220CF2A737AD432630CCA4B463333B7D4945DBB05A6E1B2715A3759F843",
+      "checkedAt": "2026-11-08T23:52:20.9206661+08:00"
+    },
+    "ui": {
+      "version": "3.9.25-preview",
+      "passed": true,
+      "checks": [
+        "modified Windows executable launches normally",
+        "login page icon and favicon loaded",
+        "sidebar logo and favicon loaded",
+        "original learning home remains usable",
+        "native running version agrees with file version",
+        "9-character password rule retained",
+        "390 and 1280 layouts without overflow",
+        "startup splash renders new icon",
+        "no renderer exceptions"
+      ],
+      "testedAt": "2026-11-08T15:53:34.66Z"
+    },
+    "code": {
+      "version": "3.9.25-preview",
+      "passed": true,
+      "unchangedSections": [
+        ".text",
+        ".rdata",
+        ".data",
+        ".pdata",
+        ".eh_fram",
+        ".fptable",
+        ".rodata",
+        ".tls",
+        "CPADinfo",
+        "LZMADEC",
+        "_RDATA",
+        "malloc_h",
+        "prot",
+        ".reloc"
+      ],
+      "checkedAt": "2026-11-08T15:55:26.439Z"
+    }
+  },
+  "nativeIconExtraction": "Windows ExtractIconEx returned both large and small executable icons",
+  "checkedAt": "2026-11-08T23:57:40.8531904+08:00"
+}

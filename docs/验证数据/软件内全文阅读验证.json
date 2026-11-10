@@ -1,0 +1,205 @@
+{
+  "version": "3.9.35-preview",
+  "passed": true,
+  "testedAt": "2026-11-10T04:58:31.337Z",
+  "scope": "Windows desktop WordIsle.exe; existing article cards open in-app instead of the system browser",
+  "onlineReader": {
+    "passed": true,
+    "application": "Windows WordIsle.exe 3.9.35-preview",
+    "checks": [
+      "Authenticated ID-only native article open; unknown or arbitrary URL requests rejected",
+      "Actual ScienceDaily and NPR full pages load in an app-owned native view, with real article body visible and no app/Node bridge",
+      "Trusted toolbar navigation, original-page status and text zoom work",
+      "Closing original reader destroys its remote web contents and returns to existing bookshelf",
+      "Account lock closes online reading and removes remote renderer targets"
+    ],
+    "realPages": [
+      {
+        "source": "sciencedaily-society",
+        "url": "https://www.sciencedaily.com/releases/2026/11/261108202703.htm",
+        "title": "DNA on the Shroud of Turin reveals centuries of hidden secrets | ScienceDaily",
+        "h1": "DNA on the Shroud of Turin reveals centuries of hidden secrets",
+        "paragraphs": 36,
+        "bodyCharacters": 12723,
+        "node": "undefined",
+        "applicationBridge": "undefined",
+        "toolbarBridge": "undefined"
+      },
+      {
+        "source": "npr",
+        "url": "https://text.npr.org/g-s1-151625",
+        "title": "California voters defeat billionaire tax proposal that divided Democrats",
+        "h1": "California voters defeat billionaire tax proposal that divided Democrats",
+        "paragraphs": 16,
+        "bodyCharacters": 2014,
+        "node": "undefined",
+        "applicationBridge": "undefined",
+        "toolbarBridge": "undefined"
+      }
+    ],
+    "testedAt": "2026-11-10T04:57:52.804Z"
+  },
+  "existingFeatures": {
+    "passed": true,
+    "application": "WordIsle.exe, Windows desktop 3.9.35-preview",
+    "checks": [
+      "The actual Windows executable displays real article entries under all 16 source filters, offline",
+      "Screenshot case reproduced: choosing NPR from the full-text tab with stale topic/difficulty now displays 10 articles with native in-app reading buttons",
+      "Desktop subscription count distinguishes feed entries from full bodies; direct channel button works",
+      "Legacy desktop NPR notes/bookmarks survive encrypted reload; old summary never becomes full body",
+      "Native full reader still renders final paragraph and preserved unobstructed speaking highlight"
+    ],
+    "channels": [
+      {
+        "id": "nasa",
+        "visibleCards": 24,
+        "totalLabel": "108 篇 · 精读正文与在线原文分开标注 重置筛选"
+      },
+      {
+        "id": "noaa",
+        "visibleCards": 11,
+        "totalLabel": "11 篇 · 精读正文与在线原文分开标注 重置筛选"
+      },
+      {
+        "id": "nsf",
+        "visibleCards": 7,
+        "totalLabel": "7 篇 · 精读正文与在线原文分开标注 重置筛选"
+      },
+      {
+        "id": "npr",
+        "visibleCards": 10,
+        "totalLabel": "10 篇 · 精读正文与在线原文分开标注 重置筛选"
+      },
+      {
+        "id": "npr-world",
+        "visibleCards": 10,
+        "totalLabel": "10 篇 · 精读正文与在线原文分开标注 重置筛选"
+      },
+      {
+        "id": "npr-books",
+        "visibleCards": 10,
+        "totalLabel": "10 篇 · 精读正文与在线原文分开标注 重置筛选"
+      },
+      {
+        "id": "npr-education",
+        "visibleCards": 10,
+        "totalLabel": "10 篇 · 精读正文与在线原文分开标注 重置筛选"
+      },
+      {
+        "id": "smithsonian",
+        "visibleCards": 10,
+        "totalLabel": "10 篇 · 精读正文与在线原文分开标注 重置筛选"
+      },
+      {
+        "id": "smithsonian-culture",
+        "visibleCards": 4,
+        "totalLabel": "4 篇 · 精读正文与在线原文分开标注 重置筛选"
+      },
+      {
+        "id": "smithsonian-history",
+        "visibleCards": 16,
+        "totalLabel": "16 篇 · 精读正文与在线原文分开标注 重置筛选"
+      },
+      {
+        "id": "smithsonian-travel",
+        "visibleCards": 13,
+        "totalLabel": "13 篇 · 精读正文与在线原文分开标注 重置筛选"
+      },
+      {
+        "id": "mit",
+        "visibleCards": 24,
+        "totalLabel": "50 篇 · 精读正文与在线原文分开标注 重置筛选"
+      },
+      {
+        "id": "sn-explores",
+        "visibleCards": 20,
+        "totalLabel": "20 篇 · 精读正文与在线原文分开标注 重置筛选"
+      },
+      {
+        "id": "sciencedaily-society",
+        "visibleCards": 24,
+        "totalLabel": "50 篇 · 精读正文与在线原文分开标注 重置筛选"
+      },
+      {
+        "id": "sciencedaily-health",
+        "visibleCards": 24,
+        "totalLabel": "50 篇 · 精读正文与在线原文分开标注 重置筛选"
+      },
+      {
+        "id": "sciencedaily-mind",
+        "visibleCards": 24,
+        "totalLabel": "50 篇 · 精读正文与在线原文分开标注 重置筛选"
+      }
+    ],
+    "testedAt": "2026-11-10T04:56:23.747Z"
+  },
+  "urlPolicy": {
+    "passed": true,
+    "testedAt": "2026-11-10T04:56:20.823Z",
+    "accepted": 2,
+    "rejected": 9,
+    "checks": [
+      "Official HTTPS pages accepted",
+      "Other publishers, lookalike domains, credentials, custom ports, local files, executable schemes and unknown sources rejected"
+    ]
+  },
+  "executable": {
+    "version": "3.9.35-preview",
+    "passed": true,
+    "iconFrames": 10,
+    "groups": 1,
+    "fileVersion": "3.9.35.0",
+    "productVersion": "3.9.35-preview",
+    "signature": "NotSigned",
+    "obsoleteCertificatesRemoved": 0,
+    "sha256": "8A6DECE9B3532D9ABEDB43B225762682CA6CD39352E874AEE1C4B4628947CEEB",
+    "checkedAt": "2026-11-10T12:44:00.3022816+08:00"
+  },
+  "limits": [
+    "Online original pages require a working network and remain subject to publisher access/subscription conditions",
+    "The 16-channel check verifies entries and their in-app reading routes; live full-page bodies were verified on ScienceDaily and NPR",
+    "150 previously cached full articles retain offline precision reading; online access is not marked as a full-text download"
+  ],
+  "files": [
+    {
+      "file": "article-reader-main.js",
+      "sha256": "3d904f23f6bff2760ab87216bd3caa2a53d9bcdc4cfd2e2495f5dcf263179566"
+    },
+    {
+      "file": "article-reader-preload.js",
+      "sha256": "34e47a88801a55c00b80c441b5eba17487579b161a8879221c2f1e4fe4f7d70e"
+    },
+    {
+      "file": "article-reader.html",
+      "sha256": "2f245399201473ad8076b7e0bbeec4b25113b57d0e40ac938584772b8d51dd72"
+    },
+    {
+      "file": "article-reader.css",
+      "sha256": "52af7f0141da4b713af0ad12c850e0d69579c64f31ca7cec84bac6e23b50ab0c"
+    },
+    {
+      "file": "article-reader.js",
+      "sha256": "48558bebcbfbf1246280cec30c4743575ce7b0a6f7584806c7aaf0892c9cca9f"
+    },
+    {
+      "file": "main.js",
+      "sha256": "9770f57d0ebcfaf92331e7c7bcadf4faec0ef16c0412418569af68f9fffb2b9c"
+    },
+    {
+      "file": "preload.js",
+      "sha256": "a4d5ca8d3a890f3affa1587ba77e3bce1f6da775cfcb2e8cc47d75f57fe76c49"
+    },
+    {
+      "file": "reading-club.js",
+      "sha256": "48b8ac2ed1a776101ab6b94d85c43ce85370da829e86e160616d16f36d0c20dc"
+    },
+    {
+      "file": "reading-news.js",
+      "sha256": "a966c479273bad2d579f9567a25f6a1f948ce444bf0294ac45b07ef30bb8f961"
+    },
+    {
+      "file": "reading-source-state.js",
+      "sha256": "44e79534be68ea03464c68c235dd09ecb62c0343444e0f7c625415f6068b09f7"
+    }
+  ]
+}

@@ -1,0 +1,23 @@
+{
+  "version": "3.9.21-preview",
+  "checks": {
+    "motionInteraction": "PASS",
+    "fastNavigationAndInterruptions": "PASS",
+    "pointerPress": "PASS",
+    "inputFocusCaretAndComposition": "PASS",
+    "detailsAndScroll": "PASS",
+    "backgroundAndReducedMotion": "PASS",
+    "studyProgress": "PASS",
+    "bookPlan": "PASS",
+    "memoryCoach": "PASS",
+    "youthUI": "PASS",
+    "speechUIWithRealWavAndFakeMicrophone": "PASS",
+    "syntax": "PASS"
+  },
+  "profiles": "独立测试数据目录；不使用真实用户学习记录",
+  "layoutWidths": [
+    390,
+    1280
+  ],
+  "note": "没有进行物理设备帧率或长期学习收益评估"
+}

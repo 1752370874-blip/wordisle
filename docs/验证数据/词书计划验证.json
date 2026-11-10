@@ -1,0 +1,28 @@
+{
+  "version": "3.9.20-preview",
+  "bookCount": 42,
+  "bookEntries": 74278,
+  "uniqueWordForms": 16521,
+  "tests": [
+    "test-book-plan.cjs: PASS",
+    "test-review-curve.cjs: PASS",
+    "test-memory-coach.cjs: PASS",
+    "test-youth-ui.cjs: PASS",
+    "All root JavaScript and books-expanded.js syntax: PASS"
+  ],
+  "verifiedNewWords": 300,
+  "batchesOfNewWords": [
+    60,
+    60,
+    60,
+    60,
+    60
+  ],
+  "layoutWidths": [
+    390,
+    960,
+    1280
+  ],
+  "profile": "独立验证目录，不使用真实用户学习记录",
+  "note": "验证实现行为，未验证长期记忆收益"
+}

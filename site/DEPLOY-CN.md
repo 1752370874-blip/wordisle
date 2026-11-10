@@ -37,7 +37,7 @@ python scripts/publish_github.py --site-only
 站点里所有下载按钮的 `href` 由 `site/config.js` 决定：
 
 ```js
-winDownload: 'https://github.com/1752370874-blip/wordisle/releases/latest/download/WordIsle-Enhanced-Setup-3.9.3.exe'
+winDownload: 'https://github.com/1752370874-blip/wordisle/releases/latest/download/WordIsle-3.9.35-preview-win-x64.zip'
 ```
 
 - `releases/latest/download/<文件名>` 是 GitHub 的固定跳转链接，永远指向最新正式 Release；
@@ -48,9 +48,9 @@ winDownload: 'https://github.com/1752370874-blip/wordisle/releases/latest/downlo
 发新版本：
 
 1. 打包安装包；
-2. 新建 Release（tag 例如 `v3.9.4`）并上传安装包；
+2. 新建 Release（tag 例如 `v3.9.35-preview`）并上传安装包；
 3. 如果文件名变了，改 `site/config.js` 的 `version` 与 `winDownload`；
-4. 改 `site/index.html` 里的版本/体积文字（搜索 `127 MB`、`v3.9.3`）；
+4. 改 `site/index.html` 里的版本/体积文字（搜索 `293 MB`、`v3.9.35`）；
 5. 发布 `gh-pages`。
 
 ---

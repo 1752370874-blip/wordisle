@@ -1,0 +1,13 @@
+{
+  "name": "word-master",
+  "productName": "词屿",
+  "version": "3.9.35-preview",
+  "description": "词屿 · 完整英文正文、离线精读与 AI 伴学",
+  "author": "词屿",
+  "license": "UNLICENSED",
+  "main": "main.js",
+  "private": true,
+  "dependencies": {
+    "@andresaya/edge-tts": "^1.9.1"
+  }
+}

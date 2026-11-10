@@ -1,0 +1,90 @@
+{
+  "version": "3.9.23-preview",
+  "passed": true,
+  "suites": {
+    "backend": {
+      "passed": true,
+      "checks": [
+        "registration validation",
+        "random IDs and salts",
+        "ordered atomic encrypted persistence",
+        "locked reads and stale sessions denied",
+        "account and attachment isolation",
+        "password change",
+        "recovery key rotation",
+        "encrypted backup round trip",
+        "duplicate import protection",
+        "AES authentication tamper rejection",
+        "plaintext absence",
+        "process restart persistence"
+      ],
+      "testedAt": "2026-11-08T15:31:15.82Z"
+    },
+    "ui": {
+      "passed": true,
+      "checks": [
+        "real registration and login forms",
+        "password error keeps username",
+        "native IPC unauthorized access denied",
+        "42 books and study grading",
+        "encrypted store without localStorage",
+        "name and gender editing",
+        "lock and relogin restore progress",
+        "AI and listening draft restoration",
+        "two accounts isolated",
+        "all main views",
+        "390 and 1280 layouts",
+        "no renderer errors"
+      ],
+      "testedAt": "2026-11-08T15:31:23.793Z"
+    },
+    "lifecycle": {
+      "passed": true,
+      "checks": [
+        "isolated actual legacy localStorage migration",
+        "legacy background encrypted and served",
+        "legacy personal model encrypted",
+        "old migrated copies removed after commit",
+        "Windows lock event flushes and locks",
+        "login blocked while screen locked",
+        "graceful window close saves unsaved draft",
+        "fresh process requires login",
+        "restart restores progress"
+      ],
+      "testedAt": "2026-11-08T15:31:19.114Z"
+    },
+    "cancellation": {
+      "passed": true,
+      "checks": [
+        "pending API request aborted on cancel",
+        "no following network chunk after cancel",
+        "model startup interrupted and disposed",
+        "model can reload for following session"
+      ],
+      "testedAt": "2026-11-08T15:29:25.918Z"
+    },
+    "native-backup": {
+      "passed": true,
+      "checks": [
+        "native encrypted export IPC writes encrypted file",
+        "native import IPC restores on separate profile",
+        "backup retains account ID and learning data",
+        "personal boundary model reloads from encrypted adapter",
+        "restore writes encrypted choice",
+        "another account gets baseline model"
+      ],
+      "testedAt": "2026-11-08T15:33:15.388Z"
+    }
+  },
+  "regressions": [
+    "42 books and daily goal plan",
+    "memory practice and notes",
+    "11-stage review schedule",
+    "motion and keyboard interactions",
+    "current version and update state",
+    "translation context and accuracy checks",
+    "real offline model inference and reload"
+  ],
+  "checkedAt": "2026-11-08T23:35:06.4307724+08:00",
+  "environment": "Windows x64; isolated test profiles; synthetic accounts only"
+}

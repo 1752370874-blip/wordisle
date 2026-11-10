@@ -1,0 +1,150 @@
+{
+  "version": "3.9.29-preview",
+  "passed": true,
+  "suites": {
+    "reading": {
+      "passed": true,
+      "checks": [
+        "52 original and classic articles accessible offline; news not fetched without request",
+        "difficulty, topic and full-text search; native article entry",
+        "same-page reference translation, automatic notes, contextual saved word without replacing study plan",
+        "persisted comprehension quiz and matching sounds; explicit completion deduplicates daily calendar",
+        "encrypted reload restores paragraph, bookmarks, notes, quiz, font, night theme and audio rate",
+        "article saved words enter real contextual practice",
+        "personal clipping and real offline Hy-MT2 translation plus Qwen explanation",
+        "reader history and private clippings isolated between accounts"
+      ],
+      "translationCharacters": 29,
+      "explanationCharacters": 290,
+      "testedAt": "2026-11-09T10:55:30.66Z"
+    },
+    "soundAndLayout": {
+      "passed": true,
+      "checks": [
+        "paper and night themes fit 390 and 1280 widths",
+        "reader play controls remain connected to existing playback",
+        "full-length original harmonic cues render without clipping",
+        "live settings preview plays cue"
+      ],
+      "waves": [
+        {
+          "kind": "correct",
+          "energy": 8.987195482214842,
+          "peak": 0.07500464469194412,
+          "duration": 0.743015873015873
+        },
+        {
+          "kind": "wrong",
+          "energy": 4.209526751563317,
+          "peak": 0.05205892398953438,
+          "duration": 0.7380045351473923
+        }
+      ],
+      "testedAt": "2026-11-09T10:55:33.422Z"
+    },
+    "readerResetAndLookup": {
+      "passed": true,
+      "checks": [
+        "point lookup saves contextual word from personal clipping",
+        "personal clipping exposes real word review entry",
+        "native confirmation progress reset retains clippings, notes and bookmarks",
+        "native confirmation removes one clipping with its annotations"
+      ],
+      "testedAt": "2026-11-09T10:54:56.453Z"
+    },
+    "executable": {
+      "version": "3.9.29-preview",
+      "passed": true,
+      "iconFrames": 10,
+      "groups": 1,
+      "fileVersion": "3.9.29.0",
+      "productVersion": "3.9.29-preview",
+      "signature": "NotSigned",
+      "obsoleteCertificatesRemoved": 0,
+      "sha256": "E1D2C3B19BA3556B872D86F496751E7EAED4B8F7C3107D7582C3AA9949A3E30A",
+      "checkedAt": "2026-11-09T18:54:01.7932597+08:00"
+    },
+    "guideAndAudio": {
+      "passed": true,
+      "checks": [
+        "new-account guide starts on first entry",
+        "four-step guide and real plan choices",
+        "optional practice does not affect learning statistics",
+        "guide completion persists",
+        "skip and Escape persist per account",
+        "settings can replay guide",
+        "correct and wrong choice handlers trigger distinct sounds",
+        "duplicate answers do not replay sound",
+        "quiet and sound-off preserve visual feedback while muted",
+        "two offline waveforms have distinct nonzero unclipped output",
+        "volume and sound preference persist",
+        "390 and 1280 guide layouts"
+      ],
+      "waveforms": [
+        {
+          "kind": "correct",
+          "energy": 8.980007540373832,
+          "peak": 0.07500464469194412
+        },
+        {
+          "kind": "wrong",
+          "energy": 4.202079830102823,
+          "peak": 0.05205892398953438
+        }
+      ],
+      "testedAt": "2026-11-09T10:48:30.146Z"
+    },
+    "accountUpgrade": {
+      "passed": true,
+      "checks": [
+        "real previous-version account upgrades without automatic guide",
+        "existing progress, goal and quiet setting preserved",
+        "older users may replay voluntarily",
+        "new-account skip remains after progress reset and relogin"
+      ],
+      "testedAt": "2026-11-09T10:52:18.093Z"
+    },
+    "productFlow": {
+      "passed": true,
+      "checks": [
+        "single prominent home action above fold",
+        "plan controls progressively disclosed",
+        "42-book and daily plan compatibility",
+        "10-word unit supports smaller remaining quota",
+        "focused study and keyboard input",
+        "cross-book restart resume with partial answer",
+        "no duplicate grading after restart",
+        "mixed-stage resume retains committed schedule",
+        "card self-rating not mislabeled as accuracy",
+        "exact word-to-reading matching",
+        "return from companion to unfinished lesson",
+        "390/960/1280 layouts",
+        "no renderer errors"
+      ],
+      "testedAt": "2026-11-09T10:50:49.101Z"
+    },
+    "offlineTools": {
+      "passed": true,
+      "checks": [
+        "real offline in-context word explanation",
+        "help hidden before answer reveal",
+        "late AI result does not appear under another word",
+        "AI explanation not silently persisted as dictionary fact",
+        "focused lesson returns from AI companion",
+        "listening controls remain available with progressive instructions",
+        "real native audio recognition still works",
+        "390 and 1280 listening layouts"
+      ],
+      "aiAnswerCharacters": 141,
+      "recognizedCharacters": 106,
+      "testedAt": "2026-11-09T10:52:14.916Z"
+    }
+  },
+  "additionalRegressions": [
+    "bounded reading backup validation; safe keys and URLs; changed-text note anchoring and retention",
+    "checkpoint cross-book keys, partial answers and committed scheduling",
+    "11-stage time-based review curve"
+  ],
+  "checkedAt": "2026-11-09T18:56:32.3872270+08:00",
+  "environment": "Windows x64; isolated synthetic accounts; native Hy-MT2 and Qwen inference and audio recognition; full-length offline cue rendering; 390 and 1280 viewport checks; not a long-term learning or physical listening study."
+}

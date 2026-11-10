@@ -1,0 +1,2 @@
+'use strict';const {contextBridge,ipcRenderer}=require('electron');
+contextBridge.exposeInMainWorld('articleReader',{state:()=>ipcRenderer.invoke('article-reader:state'),command:command=>ipcRenderer.invoke('article-reader:command',String(command||'')),onState:callback=>{const listener=(e,state)=>callback(state);ipcRenderer.on('article-reader:state',listener);return ()=>ipcRenderer.removeListener('article-reader:state',listener);}});

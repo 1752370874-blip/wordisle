@@ -15,8 +15,8 @@ bash build-macos.sh
 ```
 
 3. 产物在 `desktop/macos-build/dist-mac/`：
-   - `词屿-3.9.2-arm64.dmg`（Apple Silicon）
-   - `词屿-3.9.2-x64.dmg`（Intel）
+   - `词屿-3.9.35-arm64.dmg`（Apple Silicon）
+   - `词屿-3.9.35-x64.dmg`（Intel）
    - 同名 `.zip`（可直接解压运行）
 
 ## 方案二：没有 Mac，用 GitHub Actions（免费 macOS 机器）

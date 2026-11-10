@@ -1,0 +1,22 @@
+{
+  "old": {
+    "sentences": 1683,
+    "precision": 0.808972503617945,
+    "recall": 0.4089246525237747,
+    "f1": 0.543245869776482,
+    "truePositive": 559,
+    "falsePositive": 132,
+    "falseNegative": 808,
+    "threshold": 0.7750000000000001
+  },
+  "current": {
+    "sentences": 1683,
+    "precision": 0.8942731277533039,
+    "recall": 0.4455010972933431,
+    "f1": 0.5947265625000001,
+    "truePositive": 609,
+    "falsePositive": 72,
+    "falseNegative": 758,
+    "threshold": 0.8250000000000002
+  }
+}

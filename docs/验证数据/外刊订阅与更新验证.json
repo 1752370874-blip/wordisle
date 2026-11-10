@@ -1,0 +1,342 @@
+{
+  "version": "3.9.30-preview",
+  "passed": true,
+  "suites": {
+    "verifiedSeed": {
+      "passed": true,
+      "version": 1,
+      "fetchedAt": "2026-11-09T11:12:57.385Z",
+      "count": 114,
+      "counts": {
+        "NASA": 100,
+        "NOAA": 7,
+        "NSF": 7
+      },
+      "sources": [
+        {
+          "id": "nasa",
+          "name": "NASA",
+          "topic": "航天科技",
+          "url": "https://www.nasa.gov/feed/",
+          "home": "https://www.nasa.gov/",
+          "level": "CET-6",
+          "policy": "https://www.nasa.gov/nasa-brand-center/images-and-media/"
+        },
+        {
+          "id": "noaa",
+          "name": "NOAA",
+          "topic": "自然环境",
+          "url": "https://www.noaa.gov/rss.xml",
+          "home": "https://www.noaa.gov/",
+          "level": "CET-6",
+          "policy": "https://www.noaa.gov/rss-feeds"
+        },
+        {
+          "id": "nsf",
+          "name": "NSF",
+          "topic": "科学研究",
+          "url": "https://www.nsf.gov/rss/rss_www_news.xml",
+          "home": "https://www.nsf.gov/",
+          "level": "TOEFL",
+          "policy": "https://www.nsf.gov/"
+        }
+      ],
+      "requests": [
+        {
+          "source": "nasa",
+          "url": "https://www.nasa.gov/feed/",
+          "items": 10
+        },
+        {
+          "source": "nasa",
+          "url": "https://www.nasa.gov/feed/?paged=2",
+          "items": 10
+        },
+        {
+          "source": "nasa",
+          "url": "https://www.nasa.gov/feed/?paged=3",
+          "items": 10
+        },
+        {
+          "source": "nasa",
+          "url": "https://www.nasa.gov/feed/?paged=4",
+          "error": "不支持包含实体声明的订阅"
+        },
+        {
+          "source": "nasa",
+          "url": "https://www.nasa.gov/feed/?paged=5",
+          "items": 10
+        },
+        {
+          "source": "nasa",
+          "url": "https://www.nasa.gov/feed/?paged=6",
+          "error": "不支持包含实体声明的订阅"
+        },
+        {
+          "source": "nasa",
+          "url": "https://www.nasa.gov/feed/?paged=7",
+          "items": 10
+        },
+        {
+          "source": "nasa",
+          "url": "https://www.nasa.gov/feed/?paged=8",
+          "items": 10
+        },
+        {
+          "source": "nasa",
+          "url": "https://www.nasa.gov/feed/?paged=9",
+          "items": 10
+        },
+        {
+          "source": "nasa",
+          "url": "https://www.nasa.gov/feed/?paged=10",
+          "items": 9
+        },
+        {
+          "source": "nasa",
+          "url": "https://www.nasa.gov/feed/?paged=11",
+          "items": 10
+        },
+        {
+          "source": "nasa",
+          "url": "https://www.nasa.gov/feed/?paged=12",
+          "items": 10
+        },
+        {
+          "source": "nasa",
+          "url": "https://www.nasa.gov/feed/?paged=13",
+          "items": 10
+        },
+        {
+          "source": "nasa",
+          "url": "https://www.nasa.gov/feed/?paged=14",
+          "items": 10
+        },
+        {
+          "source": "nasa",
+          "url": "https://www.nasa.gov/feed/?paged=15",
+          "items": 10
+        },
+        {
+          "source": "noaa",
+          "url": "https://www.noaa.gov/rss.xml",
+          "items": 7
+        },
+        {
+          "source": "noaa",
+          "url": "https://www.noaa.gov/rss.xml?page=1",
+          "items": 7
+        },
+        {
+          "source": "noaa",
+          "url": "https://www.noaa.gov/rss.xml?page=2",
+          "items": 7
+        },
+        {
+          "source": "nsf",
+          "url": "https://www.nsf.gov/rss/rss_www_news.xml",
+          "items": 7
+        },
+        {
+          "source": "noaa",
+          "url": "https://www.noaa.gov/rss.xml?page=4",
+          "items": 7
+        },
+        {
+          "source": "noaa",
+          "url": "https://www.noaa.gov/rss.xml?page=3",
+          "items": 7
+        }
+      ],
+      "notes": "Official RSS-provided English excerpts and summaries only; original dates, source URLs and source credit retained; no photos, audio, full-page scraping or paywall access."
+    },
+    "service": {
+      "passed": true,
+      "checks": [
+        "114 attributed dated seed articles load offline",
+        "safe RSS parsing, CDATA, entities, canonical links and domain allowlist",
+        "new links append and changed links update without duplicate IDs",
+        "concurrent refresh shares one request per source",
+        "conditional GET and 6-hour due-time boundary",
+        "partial failures and offline reload preserve cache",
+        "oversized feed and off-domain redirect rejected",
+        "cancel prevents stale results from being applied",
+        "600-item rolling cache cap",
+        "per-account scheduler preferences, due-time and 15-minute failure backoff"
+      ],
+      "seeded": 114,
+      "calls": 17,
+      "testedAt": "2026-11-09T11:27:02.775Z"
+    },
+    "actualRSS": {
+      "passed": true,
+      "checked": true,
+      "count": 114,
+      "added": 0,
+      "changed": 0,
+      "sources": [
+        {
+          "id": "nasa",
+          "count": 10,
+          "lastSuccess": "2026-11-09T11:20:36.009Z",
+          "error": ""
+        },
+        {
+          "id": "noaa",
+          "count": 7,
+          "lastSuccess": "2026-11-09T11:20:36.009Z",
+          "error": ""
+        },
+        {
+          "id": "nsf",
+          "count": 7,
+          "lastSuccess": "2026-11-09T11:20:36.009Z",
+          "error": ""
+        }
+      ],
+      "checks": [
+        "actual official RSS requests, parse and atomic cache persistence",
+        "live source results reported separately",
+        "deduplicated by canonical original URL"
+      ],
+      "testedAt": "2026-11-09T11:20:36.014Z"
+    },
+    "nativeInterface": {
+      "passed": true,
+      "checks": [
+        "RSS IPC is unavailable before authentication",
+        "at least 166 offline materials and 24-card incremental browsing",
+        "automatic startup check reaches native RSS service",
+        "provider filter and original full-text search",
+        "auto-check toggle, 12-hour interval and source selection persist",
+        "at least one source retained",
+        "390 and 1280 update-settings layouts",
+        "manual background refresh leaves reading DOM, text and private note intact",
+        "synthetic article revision can be adopted while retaining old notes",
+        "saved source metadata survives snapshot and is not misclassified as personal clipping",
+        "public cache shared while private notes and preferences remain account-specific"
+      ],
+      "testedAt": "2026-11-09T11:29:12.978Z"
+    },
+    "executable": {
+      "version": "3.9.30-preview",
+      "passed": true,
+      "iconFrames": 10,
+      "groups": 1,
+      "fileVersion": "3.9.30.0",
+      "productVersion": "3.9.30-preview",
+      "signature": "NotSigned",
+      "obsoleteCertificatesRemoved": 0,
+      "sha256": "A69E30FA0E260A6C2D9ED71626DA8B24505B5D67E36B9626E79E403AADF48244",
+      "checkedAt": "2026-11-09T19:25:44.9360341+08:00"
+    },
+    "fullReadingFlow": {
+      "passed": true,
+      "checks": [
+        "166 materials accessible offline; automatic RSS check does not block reader",
+        "difficulty, topic and full-text search; native article entry",
+        "same-page reference translation, automatic notes, contextual saved word without replacing study plan",
+        "persisted comprehension quiz and matching sounds; explicit completion deduplicates daily calendar",
+        "encrypted reload restores paragraph, bookmarks, notes, quiz, font, night theme and audio rate",
+        "article saved words enter real contextual practice",
+        "personal clipping and real offline Hy-MT2 translation plus Qwen explanation",
+        "reader history and private clippings isolated between accounts"
+      ],
+      "translationCharacters": 29,
+      "explanationCharacters": 540,
+      "testedAt": "2026-11-09T11:24:06.335Z"
+    },
+    "readingDataRetention": {
+      "passed": true,
+      "checks": [
+        "point lookup saves contextual word from personal clipping",
+        "personal clipping exposes real word review entry",
+        "native confirmation progress reset retains clippings, notes and bookmarks",
+        "native confirmation removes one clipping with its annotations"
+      ],
+      "testedAt": "2026-11-09T11:30:13.035Z"
+    },
+    "guideAndSound": {
+      "passed": true,
+      "checks": [
+        "new-account guide starts on first entry",
+        "four-step guide and real plan choices",
+        "optional practice does not affect learning statistics",
+        "guide completion persists",
+        "skip and Escape persist per account",
+        "settings can replay guide",
+        "correct and wrong choice handlers trigger distinct sounds",
+        "duplicate answers do not replay sound",
+        "quiet and sound-off preserve visual feedback while muted",
+        "two offline waveforms have distinct nonzero unclipped output",
+        "volume and sound preference persist",
+        "390 and 1280 guide layouts"
+      ],
+      "waveforms": [
+        {
+          "kind": "correct",
+          "energy": 8.98000753075363,
+          "peak": 0.07500464469194412
+        },
+        {
+          "kind": "wrong",
+          "energy": 4.202079826522685,
+          "peak": 0.05205892398953438
+        }
+      ],
+      "testedAt": "2026-11-09T11:24:15.255Z"
+    },
+    "accountUpgrade": {
+      "passed": true,
+      "checks": [
+        "real previous-version account upgrades without automatic guide",
+        "existing progress, goal and quiet setting preserved",
+        "older users may replay voluntarily",
+        "new-account skip remains after progress reset and relogin"
+      ],
+      "testedAt": "2026-11-09T11:30:24.68Z"
+    },
+    "productFlow": {
+      "passed": true,
+      "checks": [
+        "single prominent home action above fold",
+        "plan controls progressively disclosed",
+        "42-book and daily plan compatibility",
+        "10-word unit supports smaller remaining quota",
+        "focused study and keyboard input",
+        "cross-book restart resume with partial answer",
+        "no duplicate grading after restart",
+        "mixed-stage resume retains committed schedule",
+        "card self-rating not mislabeled as accuracy",
+        "exact word-to-reading matching",
+        "return from companion to unfinished lesson",
+        "390/960/1280 layouts",
+        "no renderer errors"
+      ],
+      "testedAt": "2026-11-09T11:24:11.159Z"
+    },
+    "nativeOfflineTools": {
+      "passed": true,
+      "checks": [
+        "real offline in-context word explanation",
+        "help hidden before answer reveal",
+        "late AI result does not appear under another word",
+        "AI explanation not silently persisted as dictionary fact",
+        "focused lesson returns from AI companion",
+        "listening controls remain available with progressive instructions",
+        "real native audio recognition still works",
+        "390 and 1280 listening layouts"
+      ],
+      "aiAnswerCharacters": 141,
+      "recognizedCharacters": 106,
+      "testedAt": "2026-11-09T11:30:21.435Z"
+    }
+  },
+  "additionalRegressions": [
+    "reader backup validation, safe links, note version retention and progress reset",
+    "cross-book checkpoint and committed scheduling",
+    "11-stage time-based review"
+  ],
+  "checkedAt": "2026-11-09T19:33:46.4109483+08:00",
+  "environment": "Windows x64; isolated synthetic accounts; real official RSS requests and Electron UI checks; controlled fixtures for failures, elapsed-time boundaries and article-revision edge cases; native offline AI and recognition regression."
+}

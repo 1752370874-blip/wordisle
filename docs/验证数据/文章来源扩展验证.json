@@ -1,0 +1,752 @@
+{
+  "version": "3.9.31-preview",
+  "passed": true,
+  "suites": {
+    "sourceCatalogAndService": {
+      "passed": true,
+      "publishers": 8,
+      "channels": 16,
+      "seed": 241,
+      "offlineTotal": 293,
+      "parsedCounts": {
+        "nasa": 10,
+        "noaa": 7,
+        "nsf": 7,
+        "npr": 8,
+        "npr-world": 10,
+        "npr-books": 9,
+        "npr-education": 10,
+        "smithsonian": 9,
+        "smithsonian-culture": 4,
+        "smithsonian-history": 15,
+        "smithsonian-travel": 13,
+        "mit": 45,
+        "sn-explores": 17,
+        "sciencedaily-society": 50,
+        "sciencedaily-health": 50,
+        "sciencedaily-mind": 50
+      },
+      "checks": [
+        "16 real captured feeds parse with correct provenance",
+        "publisher-provided summaries only; full encoded article ignored",
+        "220-character headlines, authors, copyright and channel membership retained",
+        "default legacy subscription migrates once; custom selection and auto-off preserved",
+        "concurrent refresh coalesces with at most four active feed requests",
+        "conditional requests and partial-source failure keep cache intact",
+        "cancel stops active requests and does not start queued feeds",
+        "same article across channels remains one item and filters by both",
+        "1500-item cache retains a base from quieter channels",
+        "6/12/24-hour scheduling and auto-off"
+      ],
+      "testedAt": "2026-11-09T12:25:14.657Z"
+    },
+    "actual16Channels": {
+      "passed": true,
+      "channels": 16,
+      "publishers": 8,
+      "available": 378,
+      "added": 137,
+      "retried": [],
+      "sources": [
+        {
+          "id": "nasa",
+          "provider": "nasa",
+          "count": 10,
+          "lastSuccess": "2026-11-09T12:25:28.87Z",
+          "error": ""
+        },
+        {
+          "id": "noaa",
+          "provider": "noaa",
+          "count": 7,
+          "lastSuccess": "2026-11-09T12:25:28.87Z",
+          "error": ""
+        },
+        {
+          "id": "nsf",
+          "provider": "nsf",
+          "count": 7,
+          "lastSuccess": "2026-11-09T12:25:28.87Z",
+          "error": ""
+        },
+        {
+          "id": "npr",
+          "provider": "npr",
+          "count": 8,
+          "lastSuccess": "2026-11-09T12:25:28.87Z",
+          "error": ""
+        },
+        {
+          "id": "npr-world",
+          "provider": "npr",
+          "count": 10,
+          "lastSuccess": "2026-11-09T12:25:28.87Z",
+          "error": ""
+        },
+        {
+          "id": "npr-books",
+          "provider": "npr",
+          "count": 9,
+          "lastSuccess": "2026-11-09T12:25:28.87Z",
+          "error": ""
+        },
+        {
+          "id": "npr-education",
+          "provider": "npr",
+          "count": 10,
+          "lastSuccess": "2026-11-09T12:25:28.87Z",
+          "error": ""
+        },
+        {
+          "id": "smithsonian",
+          "provider": "smithsonian",
+          "count": 9,
+          "lastSuccess": "2026-11-09T12:25:28.87Z",
+          "error": ""
+        },
+        {
+          "id": "smithsonian-culture",
+          "provider": "smithsonian",
+          "count": 4,
+          "lastSuccess": "2026-11-09T12:25:28.87Z",
+          "error": ""
+        },
+        {
+          "id": "smithsonian-history",
+          "provider": "smithsonian",
+          "count": 15,
+          "lastSuccess": "2026-11-09T12:25:28.87Z",
+          "error": ""
+        },
+        {
+          "id": "smithsonian-travel",
+          "provider": "smithsonian",
+          "count": 13,
+          "lastSuccess": "2026-11-09T12:25:28.87Z",
+          "error": ""
+        },
+        {
+          "id": "mit",
+          "provider": "mit",
+          "count": 45,
+          "lastSuccess": "2026-11-09T12:25:28.87Z",
+          "error": ""
+        },
+        {
+          "id": "sn-explores",
+          "provider": "explores",
+          "count": 17,
+          "lastSuccess": "2026-11-09T12:25:28.87Z",
+          "error": ""
+        },
+        {
+          "id": "sciencedaily-society",
+          "provider": "sciencedaily",
+          "count": 50,
+          "lastSuccess": "2026-11-09T12:25:28.87Z",
+          "error": ""
+        },
+        {
+          "id": "sciencedaily-health",
+          "provider": "sciencedaily",
+          "count": 50,
+          "lastSuccess": "2026-11-09T12:25:28.87Z",
+          "error": ""
+        },
+        {
+          "id": "sciencedaily-mind",
+          "provider": "sciencedaily",
+          "count": 50,
+          "lastSuccess": "2026-11-09T12:25:28.87Z",
+          "error": ""
+        }
+      ],
+      "checks": [
+        "16 official feeds fetched and parsed over actual HTTPS",
+        "8 distinct publishers or institutions",
+        "cross-channel article deduplication and source credit",
+        "new runtime-only publisher content not bundled into release seed"
+      ],
+      "testedAt": "2026-11-09T12:25:28.884Z"
+    },
+    "desktopPreferencesAndReading": {
+      "passed": true,
+      "checks": [
+        "16 subscription channels grouped into four topics",
+        "publisher and topic search narrows subscription choices",
+        "one-click recommended sources preserves auto-off preference",
+        "24-card discovery and expanded source filter",
+        "legacy default migrates once while custom choices, auto-off and notes remain intact",
+        "publisher summaries clearly distinguished from full articles",
+        "source membership, bookmark and note survive encrypted reload",
+        "auto-off, 24-hour interval and catalog version persist",
+        "background source refresh preserves active reader DOM",
+        "390 and 1280 layouts fit viewport"
+      ],
+      "testedAt": "2026-11-09T12:28:07.514Z"
+    },
+    "expandedOfflineSeed": {
+      "passed": true,
+      "version": 2,
+      "fetchedAt": "2026-11-09T12:14:29.814Z",
+      "count": 241,
+      "previousCount": 114,
+      "added": 127,
+      "offlineTotal": 293,
+      "counts": {
+        "ScienceDaily": 127,
+        "NASA": 100,
+        "NOAA": 7,
+        "NSF": 7
+      },
+      "catalogChannels": 16,
+      "publishers": 8,
+      "sources": [
+        {
+          "credit": "NASA",
+          "domains": [
+            "nasa.gov"
+          ],
+          "home": "https://www.nasa.gov/",
+          "policy": "https://www.nasa.gov/nasa-brand-center/images-and-media/",
+          "mode": "excerpt",
+          "id": "nasa",
+          "provider": "nasa",
+          "name": "NASA",
+          "topic": "航天科技",
+          "group": "science",
+          "url": "https://www.nasa.gov/feed/",
+          "level": "CET-6",
+          "recommended": true
+        },
+        {
+          "credit": "NOAA",
+          "domains": [
+            "noaa.gov"
+          ],
+          "home": "https://www.noaa.gov/",
+          "policy": "https://www.noaa.gov/rss-feeds",
+          "mode": "excerpt",
+          "id": "noaa",
+          "provider": "noaa",
+          "name": "NOAA",
+          "topic": "自然环境",
+          "group": "science",
+          "url": "https://www.noaa.gov/rss.xml",
+          "level": "CET-6",
+          "recommended": true
+        },
+        {
+          "credit": "NSF",
+          "domains": [
+            "nsf.gov"
+          ],
+          "home": "https://www.nsf.gov/",
+          "policy": "https://www.nsf.gov/",
+          "mode": "excerpt",
+          "id": "nsf",
+          "provider": "nsf",
+          "name": "NSF",
+          "topic": "科学研究",
+          "group": "science",
+          "url": "https://www.nsf.gov/rss/rss_www_news.xml",
+          "level": "TOEFL",
+          "recommended": true
+        },
+        {
+          "credit": "NPR",
+          "domains": [
+            "npr.org"
+          ],
+          "home": "https://www.npr.org/",
+          "policy": "https://www.npr.org/about-npr/179876898/terms-of-use",
+          "mode": "summary",
+          "id": "npr",
+          "provider": "npr",
+          "name": "NPR · 综合新闻",
+          "topic": "综合新闻",
+          "group": "news",
+          "url": "https://feeds.npr.org/1001/rss.xml",
+          "level": "CET-6",
+          "recommended": true
+        },
+        {
+          "credit": "NPR",
+          "domains": [
+            "npr.org"
+          ],
+          "home": "https://www.npr.org/",
+          "policy": "https://www.npr.org/about-npr/179876898/terms-of-use",
+          "mode": "summary",
+          "id": "npr-world",
+          "provider": "npr",
+          "name": "NPR · 世界",
+          "topic": "世界新闻",
+          "group": "news",
+          "url": "https://feeds.npr.org/1004/rss.xml",
+          "level": "CET-6",
+          "recommended": true
+        },
+        {
+          "credit": "NPR",
+          "domains": [
+            "npr.org"
+          ],
+          "home": "https://www.npr.org/",
+          "policy": "https://www.npr.org/about-npr/179876898/terms-of-use",
+          "mode": "summary",
+          "id": "npr-books",
+          "provider": "npr",
+          "name": "NPR · 图书",
+          "topic": "图书文化",
+          "group": "culture",
+          "url": "https://feeds.npr.org/1032/rss.xml",
+          "level": "CET-6",
+          "recommended": true
+        },
+        {
+          "credit": "NPR",
+          "domains": [
+            "npr.org"
+          ],
+          "home": "https://www.npr.org/",
+          "policy": "https://www.npr.org/about-npr/179876898/terms-of-use",
+          "mode": "summary",
+          "id": "npr-education",
+          "provider": "npr",
+          "name": "NPR · 教育",
+          "topic": "教育学习",
+          "group": "learning",
+          "url": "https://feeds.npr.org/1013/rss.xml",
+          "level": "CET-6",
+          "recommended": true
+        },
+        {
+          "credit": "Smithsonian Magazine",
+          "domains": [
+            "smithsonianmag.com"
+          ],
+          "home": "https://www.smithsonianmag.com/",
+          "policy": "https://www.smithsonianmag.com/rss/",
+          "mode": "summary",
+          "id": "smithsonian",
+          "provider": "smithsonian",
+          "name": "Smithsonian · 精选",
+          "topic": "文化见闻",
+          "group": "culture",
+          "url": "https://www.smithsonianmag.com/rss/latest_articles/",
+          "level": "CET-6",
+          "recommended": true
+        },
+        {
+          "credit": "Smithsonian Magazine",
+          "domains": [
+            "smithsonianmag.com"
+          ],
+          "home": "https://www.smithsonianmag.com/",
+          "policy": "https://www.smithsonianmag.com/rss/",
+          "mode": "summary",
+          "id": "smithsonian-culture",
+          "provider": "smithsonian",
+          "name": "Smithsonian · 艺术",
+          "topic": "艺术文化",
+          "group": "culture",
+          "url": "https://www.smithsonianmag.com/rss/arts-culture/",
+          "level": "CET-6",
+          "recommended": true
+        },
+        {
+          "credit": "Smithsonian Magazine",
+          "domains": [
+            "smithsonianmag.com"
+          ],
+          "home": "https://www.smithsonianmag.com/",
+          "policy": "https://www.smithsonianmag.com/rss/",
+          "mode": "summary",
+          "id": "smithsonian-history",
+          "provider": "smithsonian",
+          "name": "Smithsonian · 历史",
+          "topic": "历史人文",
+          "group": "culture",
+          "url": "https://www.smithsonianmag.com/rss/history/",
+          "level": "CET-6",
+          "recommended": true
+        },
+        {
+          "credit": "Smithsonian Magazine",
+          "domains": [
+            "smithsonianmag.com"
+          ],
+          "home": "https://www.smithsonianmag.com/",
+          "policy": "https://www.smithsonianmag.com/rss/",
+          "mode": "summary",
+          "id": "smithsonian-travel",
+          "provider": "smithsonian",
+          "name": "Smithsonian · 旅行",
+          "topic": "旅行生活",
+          "group": "culture",
+          "url": "https://www.smithsonianmag.com/rss/travel/",
+          "level": "CET-6",
+          "recommended": true
+        },
+        {
+          "credit": "MIT News",
+          "domains": [
+            "news.mit.edu"
+          ],
+          "home": "https://news.mit.edu/",
+          "policy": "https://news.mit.edu/rss",
+          "mode": "summary",
+          "id": "mit",
+          "provider": "mit",
+          "name": "MIT News",
+          "topic": "大学与创新",
+          "group": "learning",
+          "url": "https://news.mit.edu/rss/feed",
+          "level": "CET-6",
+          "recommended": true
+        },
+        {
+          "credit": "Science News Explores",
+          "domains": [
+            "snexplores.org"
+          ],
+          "home": "https://www.snexplores.org/",
+          "policy": "https://www.snexplores.org/feed",
+          "mode": "summary",
+          "id": "sn-explores",
+          "provider": "explores",
+          "name": "Science News Explores",
+          "topic": "青少年科普",
+          "group": "learning",
+          "url": "https://www.snexplores.org/feed",
+          "level": "CET-4",
+          "recommended": true
+        },
+        {
+          "credit": "ScienceDaily",
+          "domains": [
+            "sciencedaily.com"
+          ],
+          "home": "https://www.sciencedaily.com/",
+          "policy": "https://www.sciencedaily.com/terms.htm",
+          "mode": "summary",
+          "bundleSummary": true,
+          "id": "sciencedaily-society",
+          "provider": "sciencedaily",
+          "name": "ScienceDaily · 社会",
+          "topic": "社会与学习",
+          "group": "news",
+          "url": "https://www.sciencedaily.com/rss/top/society.xml",
+          "level": "CET-6",
+          "recommended": true
+        },
+        {
+          "credit": "ScienceDaily",
+          "domains": [
+            "sciencedaily.com"
+          ],
+          "home": "https://www.sciencedaily.com/",
+          "policy": "https://www.sciencedaily.com/terms.htm",
+          "mode": "summary",
+          "bundleSummary": true,
+          "id": "sciencedaily-health",
+          "provider": "sciencedaily",
+          "name": "ScienceDaily · 健康",
+          "topic": "健康生活",
+          "group": "culture",
+          "url": "https://www.sciencedaily.com/rss/top/health.xml",
+          "level": "CET-6",
+          "recommended": true
+        },
+        {
+          "credit": "ScienceDaily",
+          "domains": [
+            "sciencedaily.com"
+          ],
+          "home": "https://www.sciencedaily.com/",
+          "policy": "https://www.sciencedaily.com/terms.htm",
+          "mode": "summary",
+          "bundleSummary": true,
+          "id": "sciencedaily-mind",
+          "provider": "sciencedaily",
+          "name": "ScienceDaily · 心智",
+          "topic": "心理与认知",
+          "group": "science",
+          "url": "https://www.sciencedaily.com/rss/mind_brain.xml",
+          "level": "CET-6",
+          "recommended": true
+        }
+      ],
+      "additionalSummaryRequests": [
+        {
+          "id": "sciencedaily-society",
+          "url": "https://www.sciencedaily.com/rss/top/society.xml",
+          "fetchedAt": "2026-11-09T12:01:28.562Z",
+          "providedSummaries": 50,
+          "sha256": "d262b472eb8faefe395d90126d2e900754f73d7bfc58b799299ca14b0ff53c69",
+          "policy": "https://www.sciencedaily.com/terms.htm"
+        },
+        {
+          "id": "sciencedaily-health",
+          "url": "https://www.sciencedaily.com/rss/top/health.xml",
+          "fetchedAt": "2026-11-09T12:01:29.299Z",
+          "providedSummaries": 50,
+          "sha256": "9c1c4aa8e214653c6d6b9288ab87fc5b1d3a8e4df27d82c5e364545c3cfca070",
+          "policy": "https://www.sciencedaily.com/terms.htm"
+        },
+        {
+          "id": "sciencedaily-mind",
+          "url": "https://www.sciencedaily.com/rss/mind_brain.xml",
+          "fetchedAt": "2026-11-09T12:01:29.928Z",
+          "providedSummaries": 50,
+          "sha256": "0df9d93c3b9992964535ac908f9670d0bb213904194348b1bd26348ed4b50442",
+          "policy": "https://www.sciencedaily.com/terms.htm"
+        }
+      ],
+      "previousManifest": {
+        "version": 1,
+        "fetchedAt": "2026-11-09T11:12:57.385Z",
+        "count": 114,
+        "counts": {
+          "NASA": 100,
+          "NOAA": 7,
+          "NSF": 7
+        },
+        "sources": [
+          {
+            "id": "nasa",
+            "name": "NASA",
+            "topic": "航天科技",
+            "url": "https://www.nasa.gov/feed/",
+            "home": "https://www.nasa.gov/",
+            "level": "CET-6",
+            "policy": "https://www.nasa.gov/nasa-brand-center/images-and-media/"
+          },
+          {
+            "id": "noaa",
+            "name": "NOAA",
+            "topic": "自然环境",
+            "url": "https://www.noaa.gov/rss.xml",
+            "home": "https://www.noaa.gov/",
+            "level": "CET-6",
+            "policy": "https://www.noaa.gov/rss-feeds"
+          },
+          {
+            "id": "nsf",
+            "name": "NSF",
+            "topic": "科学研究",
+            "url": "https://www.nsf.gov/rss/rss_www_news.xml",
+            "home": "https://www.nsf.gov/",
+            "level": "TOEFL",
+            "policy": "https://www.nsf.gov/"
+          }
+        ],
+        "requests": [
+          {
+            "source": "nasa",
+            "url": "https://www.nasa.gov/feed/",
+            "items": 10
+          },
+          {
+            "source": "nasa",
+            "url": "https://www.nasa.gov/feed/?paged=2",
+            "items": 10
+          },
+          {
+            "source": "nasa",
+            "url": "https://www.nasa.gov/feed/?paged=3",
+            "items": 10
+          },
+          {
+            "source": "nasa",
+            "url": "https://www.nasa.gov/feed/?paged=4",
+            "error": "不支持包含实体声明的订阅"
+          },
+          {
+            "source": "nasa",
+            "url": "https://www.nasa.gov/feed/?paged=5",
+            "items": 10
+          },
+          {
+            "source": "nasa",
+            "url": "https://www.nasa.gov/feed/?paged=6",
+            "error": "不支持包含实体声明的订阅"
+          },
+          {
+            "source": "nasa",
+            "url": "https://www.nasa.gov/feed/?paged=7",
+            "items": 10
+          },
+          {
+            "source": "nasa",
+            "url": "https://www.nasa.gov/feed/?paged=8",
+            "items": 10
+          },
+          {
+            "source": "nasa",
+            "url": "https://www.nasa.gov/feed/?paged=9",
+            "items": 10
+          },
+          {
+            "source": "nasa",
+            "url": "https://www.nasa.gov/feed/?paged=10",
+            "items": 9
+          },
+          {
+            "source": "nasa",
+            "url": "https://www.nasa.gov/feed/?paged=11",
+            "items": 10
+          },
+          {
+            "source": "nasa",
+            "url": "https://www.nasa.gov/feed/?paged=12",
+            "items": 10
+          },
+          {
+            "source": "nasa",
+            "url": "https://www.nasa.gov/feed/?paged=13",
+            "items": 10
+          },
+          {
+            "source": "nasa",
+            "url": "https://www.nasa.gov/feed/?paged=14",
+            "items": 10
+          },
+          {
+            "source": "nasa",
+            "url": "https://www.nasa.gov/feed/?paged=15",
+            "items": 10
+          },
+          {
+            "source": "noaa",
+            "url": "https://www.noaa.gov/rss.xml",
+            "items": 7
+          },
+          {
+            "source": "noaa",
+            "url": "https://www.noaa.gov/rss.xml?page=1",
+            "items": 7
+          },
+          {
+            "source": "noaa",
+            "url": "https://www.noaa.gov/rss.xml?page=2",
+            "items": 7
+          },
+          {
+            "source": "nsf",
+            "url": "https://www.nsf.gov/rss/rss_www_news.xml",
+            "items": 7
+          },
+          {
+            "source": "noaa",
+            "url": "https://www.noaa.gov/rss.xml?page=4",
+            "items": 7
+          },
+          {
+            "source": "noaa",
+            "url": "https://www.noaa.gov/rss.xml?page=3",
+            "items": 7
+          }
+        ],
+        "notes": "Official RSS-provided English excerpts and summaries only; original dates, source URLs and source credit retained; no photos, audio, full-page scraping or paywall access."
+      },
+      "notes": "Original government RSS excerpts retained; additional bundled material is only the publisher-provided ScienceDaily RSS summary with source and canonical link. Other new publishers are directly subscribed at runtime; their article content is not bundled."
+    },
+    "executable": {
+      "version": "3.9.31-preview",
+      "passed": true,
+      "iconFrames": 10,
+      "groups": 1,
+      "fileVersion": "3.9.31.0",
+      "productVersion": "3.9.31-preview",
+      "signature": "NotSigned",
+      "obsoleteCertificatesRemoved": 0,
+      "sha256": "D046E33F49FA8F6873F31A0DC91A469DAFAF803715649282CF2DA0F47AE45D9F",
+      "checkedAt": "2026-11-09T20:27:50.3841241+08:00"
+    },
+    "readingFlowAndNativeAI": {
+      "passed": true,
+      "checks": [
+        "293 materials accessible offline; automatic RSS check does not block reader",
+        "difficulty, topic and full-text search; native article entry",
+        "same-page reference translation, automatic notes, contextual saved word without replacing study plan",
+        "persisted comprehension quiz and matching sounds; explicit completion deduplicates daily calendar",
+        "encrypted reload restores paragraph, bookmarks, notes, quiz, font, night theme and audio rate",
+        "article saved words enter real contextual practice",
+        "personal clipping and real offline Hy-MT2 translation plus Qwen explanation",
+        "reader history and private clippings isolated between accounts"
+      ],
+      "translationCharacters": 29,
+      "explanationCharacters": 284,
+      "testedAt": "2026-11-09T12:29:24.315Z"
+    },
+    "readingDataRetention": {
+      "passed": true,
+      "checks": [
+        "point lookup saves contextual word from personal clipping",
+        "personal clipping exposes real word review entry",
+        "native confirmation progress reset retains clippings, notes and bookmarks",
+        "native confirmation removes one clipping with its annotations"
+      ],
+      "testedAt": "2026-11-09T12:29:34.979Z"
+    },
+    "guideAndSound": {
+      "passed": true,
+      "checks": [
+        "new-account guide starts on first entry",
+        "four-step guide and real plan choices",
+        "optional practice does not affect learning statistics",
+        "guide completion persists",
+        "skip and Escape persist per account",
+        "settings can replay guide",
+        "correct and wrong choice handlers trigger distinct sounds",
+        "duplicate answers do not replay sound",
+        "quiet and sound-off preserve visual feedback while muted",
+        "two offline waveforms have distinct nonzero unclipped output",
+        "volume and sound preference persist",
+        "390 and 1280 guide layouts"
+      ],
+      "waveforms": [
+        {
+          "kind": "correct",
+          "energy": 8.98000753136969,
+          "peak": 0.07500464469194412
+        },
+        {
+          "kind": "wrong",
+          "energy": 4.202079833465484,
+          "peak": 0.05205892398953438
+        }
+      ],
+      "testedAt": "2026-11-09T12:29:33.34Z"
+    },
+    "productFlow": {
+      "passed": true,
+      "checks": [
+        "single prominent home action above fold",
+        "plan controls progressively disclosed",
+        "42-book and daily plan compatibility",
+        "10-word unit supports smaller remaining quota",
+        "focused study and keyboard input",
+        "cross-book restart resume with partial answer",
+        "no duplicate grading after restart",
+        "mixed-stage resume retains committed schedule",
+        "card self-rating not mislabeled as accuracy",
+        "exact word-to-reading matching",
+        "return from companion to unfinished lesson",
+        "390/960/1280 layouts",
+        "no renderer errors"
+      ],
+      "testedAt": "2026-11-09T12:29:29.175Z"
+    }
+  },
+  "additionalRegressions": [
+    "safe reader backups, long headlines and channel provenance",
+    "old preference migration and private note retention",
+    "cross-book checkpoint, partial answers and committed scheduling",
+    "11-stage time-based review"
+  ],
+  "checkedAt": "2026-11-09T20:32:33.6758200+08:00",
+  "environment": "Windows x64; isolated synthetic accounts; actual HTTPS fetch of all 16 official feeds and real Electron UI; controlled fixtures for concurrency, cancellation, partial failures and cache retention; real offline AI reading regression."
+}

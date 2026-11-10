@@ -1,0 +1,39 @@
+{
+  "continuous": [
+    {
+      "start": 0.966,
+      "end": 24.434,
+      "emittedAt": 25.2,
+      "boundary": "pause"
+    }
+  ],
+  "variedPauses": [
+    {
+      "start": 0.966,
+      "end": 6.866,
+      "emittedAt": 7.7,
+      "boundary": "pause"
+    },
+    {
+      "start": 7.878,
+      "end": 13.746,
+      "emittedAt": 14.5,
+      "boundary": "pause"
+    },
+    {
+      "start": 15.59,
+      "end": 21.49,
+      "emittedAt": 22.3,
+      "boundary": "pause"
+    }
+  ],
+  "finish": [
+    {
+      "start": 0.966,
+      "end": 18.415,
+      "boundary": "finish"
+    }
+  ],
+  "recognitionParts": 2,
+  "transcript": "After early nightfall, the yellow lamps would light up here and there, the squalid quarter of the brothels. After early nightfall, the yellow lamps would light up here and there, the squalid quarter of the brothels After early nightfall, the yellow lamps would light up here and there, the squalid quarter of the brothels. After early nightfall, the yellow lamps would light up here and there, the squalid quarter of the brothels."
+}

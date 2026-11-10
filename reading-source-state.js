@@ -1,0 +1,9 @@
+'use strict';
+(function(root,factory){const api=factory();if(typeof module==='object'&&module.exports)module.exports=api;else root.WordIsleSourceState=api;})(globalThis,()=>{
+ function merge(existing,incoming){const all=new Map();for(const r of [...existing,...incoming]){if(!r?.sourceUrl)continue;const old=all.get(r.sourceUrl),ids=[...new Set([...(old?.sourceIds||[old?.sourceId]),...(r.sourceIds||[r.sourceId])].filter(Boolean))];all.set(r.sourceUrl,old?.fulltext?.complete&&!r.fulltext?.complete?{...old,sourceIds:ids}:{...old,...r,id:old?.id||r.id,sourceIds:ids});}return [...all.values()].sort((a,b)=>(Date.parse(b.date)||0)-(Date.parse(a.date)||0)||a.id.localeCompare(b.id)).slice(0,1500);}
+ const belongs=(r,id)=>(r.sourceIds||[r.sourceId]).includes(id);
+ function counts(items,id){const list=items.filter(r=>belongs(r,id));return {count:list.length,fullCount:list.filter(r=>r.fulltext?.complete&&r.contentKind==='full-article').length,linkCount:list.filter(r=>!r.fulltext?.complete).length};}
+ function readUrl(r){try{const u=new URL(r.sourceUrl);if(u.protocol!=='https:'||u.username||u.password)return '';if(r.provider==='npr'||r.sourceId?.startsWith('npr')){const id=u.pathname.match(/\/((?:nx|g)-s\d+-[a-z0-9]+|\d{6,})(?:\/|$)/i)?.[1];if(id&&(u.hostname==='npr.org'||u.hostname.endsWith('.npr.org')))return 'https://text.npr.org/'+id;}return u.href;}catch(_){return '';}}
+ function status(source){const count=Number(source.count)||0,full=Number(source.fullCount)||0,links=Math.max(0,count-full),parts=['栏目 '+count+' 篇','站内全文 '+full+' 篇','在线全文入口 '+links+' 篇'];if(source.error)parts.push('本次检查未成功，保留已有条目');else if(source.lastSuccess)parts.push('文章索引已检查');else if(source.indexAt)parts.push('已载入内置文章索引');else parts.push('等待检查');return parts.join(' · ');}
+ return {merge,belongs,counts,readUrl,status};
+});

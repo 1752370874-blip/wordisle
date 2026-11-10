@@ -1,8 +1,8 @@
 {
     "name":  "word-master",
     "productName":  "词屿",
-    "version":  "3.9.3",
-    "description":  "词屿 · 离线背英语单词（六本考试词库 + 每日英语新闻 + 外刊阅读）",
+    "version":  "3.9.35",
+    "description":  "词屿 · 完整英文正文、离线精读与 AI 伴学",
     "author":  "词屿",
     "license":  "UNLICENSED",
     "main":  "app/main.js",

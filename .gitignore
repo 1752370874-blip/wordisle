@@ -24,6 +24,10 @@ site/downloads/*.dmg
 *.pem
 *.key
 
+# 本地 AI 模型（3.9.35）：2.4 GB，走 GitHub Releases 的模型包，不进 Git 历史
+models/
+*.gguf
+
 # 缓存
 __pycache__/
 .pytest_cache/

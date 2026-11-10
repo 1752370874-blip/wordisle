@@ -1,0 +1,17 @@
+{
+  "version": "3.9.24-preview",
+  "passed": true,
+  "checks": [
+    "8-character registration rejected",
+    "9-character registration accepted without character class rules",
+    "8-character password change rejected",
+    "9-character password change and login accepted",
+    "8-character recovery rejected",
+    "9-character Chinese recovery and login accepted",
+    "existing longer passwords compatible",
+    "desktop registration and recovery fields minimum 9",
+    "desktop password change fields minimum 9",
+    "real desktop 9-character registration, change and login"
+  ],
+  "testedAt": "2026-11-08T15:40:14.458Z"
+}

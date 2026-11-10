@@ -35,7 +35,7 @@
       var url = urlFor(key);
       if (url) {
         // 直链走 GitHub Releases：点击后告诉用户正在下载什么
-        if (key === 'win') showTip('正在从 GitHub Releases 下载安装包（约 127 MB）…');
+        if (key === 'win') showTip('正在从 GitHub Releases 下载主包（约 ' + (cfg.winSize || '293 MB') + '）…');
         return;
       }
       e.preventDefault();
@@ -46,6 +46,25 @@
         if (cfg.winDownloadFallback) window.open(cfg.winDownloadFallback, '_blank', 'noopener');
       }
     });
+  });
+
+  // 主包体积文字
+  document.querySelectorAll('[data-win-size]').forEach(function (el) {
+    if (cfg.winSize) el.textContent = cfg.winSize;
+  });
+
+  // 可选模型包
+  document.querySelectorAll('[data-model]').forEach(function (el) {
+    var key = el.getAttribute('data-model');
+    var item = cfg.models && cfg.models[key];
+    if (!item || !item.url) {
+      el.setAttribute('aria-disabled', 'true');
+      return;
+    }
+    el.setAttribute('href', item.url);
+    el.setAttribute('rel', 'noopener');
+    var sizeEl = el.querySelector('[data-model-size]');
+    if (sizeEl && item.size) sizeEl.textContent = item.size;
   });
 
   // 联系邮箱

@@ -1,0 +1,9 @@
+{
+  "name": "wordisle-local-runtime",
+  "private": true,
+  "version": "1.0.0",
+  "dependencies": {
+    "node-llama-cpp": "3.22.3",
+    "@node-llama-cpp/win-x64": "3.22.3"
+  }
+}
