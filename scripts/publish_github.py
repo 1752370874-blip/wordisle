@@ -1,24 +1,27 @@
 #!/usr/bin/env python3
-"""把词屿仓库 / 官网 / 安装包发布到 GitHub。
+"""把词屿仓库 / 官网 / 发布资产传到 GitHub。
 
 三种用法：
 
     python scripts/publish_github.py --all
-        建仓库（如果不存在）→ 推送 main 分支 → 建 Release 并上传安装包 → 开启 GitHub Pages
+        建仓库（如果不存在）→ 推送 main 分支 → 建 Release 并上传资产 → 开启 GitHub Pages
 
     python scripts/publish_github.py --site-only
         只把 site/ 目录推到 gh-pages 分支（官网更新用这个）
 
-    python scripts/publish_github.py --release-only
-        只建 Release 并上传安装包
+    python scripts/publish_github.py --release-only [--asset a.zip --asset b.zip ...]
+        只建 Release 并上传资产；不传 --asset 时按 ASSET_NAMES 在 dist/ 里找
+        （3.9.35 起一个版本 3 个资产：主包 + Qwen3 模型包 + Hy-MT2 模型包）
+
+版本号、资产名都从仓库根的 package.json 推导；Release 正文优先取仓库根的
+RELEASE_NOTES.md，没有就现场生成（含每个资产的 SHA256）。
 
 凭据优先级：
   1. 环境变量 GH_TOKEN / GITHUB_TOKEN
   2. Windows 凭据管理器里 GitHub Desktop / Git Credential Manager 保存的登录凭据
      （用 `git push` 时弹过浏览器登录的话一般就有）
 
-不依赖 requests，只用标准库。所有写操作都走 GitHub REST API，
-因为某些环境下 `git push` 会因为子进程管道/凭据助手不可用而失败。
+不依赖 requests，只用标准库。
 """
 
 from __future__ import annotations
@@ -42,21 +45,26 @@ from pathlib import Path
 
 OWNER = "1752370874-blip"
 REPO = "wordisle"
-DESCRIPTION = "词屿 Word Isle · 离线可用的英语学习桌面应用（九本词库 + 65k 词典 + 外刊阅读 + 文章词汇地图）"
+DESCRIPTION = "词屿 Word Isle · 离线可用的英语学习桌面应用（42 本词书 + 65k 词典 + 150 篇外刊全文 + 本地 AI 伴学）"
 HOMEPAGE = f"https://{OWNER.lower()}.github.io/{REPO}/"
 SITE_URL = HOMEPAGE
 
-VERSION = "3.9.3"
-TAG = f"v{VERSION}"
-ASSET_NAME = f"WordIsle-Enhanced-Setup-{VERSION}.exe"
-# 安装包不进 Git 历史，默认从桌面或 outputs 目读取，可用 --asset 覆盖
-DEFAULT_ASSET_CANDIDATES = [
-    Path.home() / "Desktop" / ASSET_NAME,
-    Path(r"C:\Users\17523\Documents\Codex\2026-11-03\ka\outputs") / ASSET_NAME,
-]
-
 REPO_ROOT = Path(__file__).resolve().parents[1]
 SITE_DIR = REPO_ROOT / "site"
+
+# 版本号以仓库根的 package.json 为准，避免脚本里写死
+VERSION = json.loads((REPO_ROOT / "package.json").read_text(encoding="utf-8"))["version"]
+TAG = f"v{VERSION}"
+# 3.9.35 起一个版本有 3 个资产：主包 + 两个可选本地模型包
+ASSET_NAMES = [
+    f"WordIsle-{VERSION}-win-x64.zip",
+    f"WordIsle-{VERSION}-models-qwen3-1.7b.zip",
+    f"WordIsle-{VERSION}-models-hy-mt2.zip",
+]
+RELEASE_NOTES = REPO_ROOT / "RELEASE_NOTES.md"
+SUMS_FILE = REPO_ROOT / "SHA256SUMS.txt"
+# 资产不进 Git 历史，默认从仓库相邻的 dist/ 或桌面读取，可用 --asset 覆盖
+DEFAULT_ASSET_DIRS = [REPO_ROOT / "dist", Path.home() / "Desktop"]
 
 SKIP_DIRS = {"node_modules", "__pycache__", ".pytest_cache", ".git", ".idea", "dist", "win-unpacked"}
 SKIP_SUFFIX = {".exe", ".dmg", ".zip", ".7z", ".msi", ".log", ".asar", ".pfx", ".p12", ".pyc"}
@@ -188,7 +196,8 @@ def upload_asset(release_id: int, path: Path) -> dict:
     size = path.stat().st_size
     name = urllib.parse.quote(path.name)
     target = f"/repos/{OWNER}/{REPO}/releases/{release_id}/assets?name={name}"
-    conn = http.client.HTTPSConnection(UPLOAD_HOST, timeout=1800, context=ssl.create_default_context())
+    print(f"  上传 {path.name}（{size / 1048576:.1f} MiB）…")
+    conn = http.client.HTTPSConnection(UPLOAD_HOST, timeout=3600, context=ssl.create_default_context())
     conn.putrequest("POST", target)
     conn.putheader("Authorization", f"Bearer {token}")
     conn.putheader("Accept", "application/vnd.github+json")
@@ -197,7 +206,6 @@ def upload_asset(release_id: int, path: Path) -> dict:
     conn.putheader("Content-Type", "application/octet-stream")
     conn.putheader("Content-Length", str(size))
     conn.endheaders()
-    print(f"  上传 {path.name}（{size / 1048576:.1f} MiB）…")
     sent = 0
     with path.open("rb") as handle:
         while True:
@@ -335,48 +343,65 @@ def enable_pages() -> None:
     _ = request
 
 
-def find_asset(cli_asset: str | None) -> Path:
-    if cli_asset:
-        path = Path(cli_asset)
-        if not path.is_file():
-            raise SystemExit(f"安装包不存在：{path}")
-        return path
-    for candidate in DEFAULT_ASSET_CANDIDATES:
-        if candidate.is_file():
-            return candidate
-    raise SystemExit("找不到安装包，请用 --asset <路径> 指定：" + "、".join(str(p) for p in DEFAULT_ASSET_CANDIDATES))
+def find_assets(cli_assets: list[str]) -> list[Path]:
+    """定位本版本要上传的资产：--asset 指定的优先，否则按约定文件名在 dist/ 里找。"""
+    if cli_assets:
+        paths = [Path(p) for p in cli_assets]
+        missing = [p for p in paths if not p.is_file()]
+        if missing:
+            raise SystemExit("资产不存在：" + "、".join(str(p) for p in missing))
+        return paths
+    found = []
+    for name in ASSET_NAMES:
+        for base in DEFAULT_ASSET_DIRS:
+            candidate = base / name
+            if candidate.is_file():
+                found.append(candidate)
+                break
+    if not found:
+        raise SystemExit(
+            "找不到发布资产，请用 --asset 指明（可重复），或把以下文件放到仓库相邻的 dist/ 目录：\n  "
+            + "\n  ".join(ASSET_NAMES)
+        )
+    return found
 
 
-def publish_release(asset: Path) -> None:
-    digest = hashlib.sha256(asset.read_bytes()).hexdigest()
-    size_mb = asset.stat().st_size / 1048576
-    body = f"""## 词屿 3.9.3 Enhanced
+def sha256_of(path: Path) -> str:
+    digest = hashlib.sha256()
+    with path.open("rb") as handle:
+        for chunk in iter(lambda: handle.read(4 << 20), b""):
+            digest.update(chunk)
+    return digest.hexdigest()
 
-在 3.9.2 基础上新增 **文章词汇地图**，其余功能不变。
 
-- 粘贴英文文章 → 「生成词汇地图」：绿色 = 该词形有练习记录，橙色 = 没有记录，并给出练习记录覆盖率。
-- 按原词形精确匹配，不推断词形变化；「练过」≠「已掌握」，「没记录」≠「不认识」。
-- 文章只在内存中分析，关闭程序即丢弃；单次最多 20,000 字符。
-- 其余：导航、样式与桌面主进程同步更新；`data/` 词库数据与 3.9.2 一致。
+def release_body(assets: list[Path]) -> str:
+    if RELEASE_NOTES.is_file():
+        return RELEASE_NOTES.read_text(encoding="utf-8")
+    rows = "\n".join(f"| `{a.name}` | {a.stat().st_size / 1048576:.1f} MiB |" for a in assets)
+    sums = "\n".join(f"{sha256_of(a)}  {a.name}" for a in assets)
+    return f"""## 词屿 {VERSION}
 
-### 下载
+| 文件 | 大小 |
+| --- | --- |
+{rows}
 
-- 安装包：`{ASSET_NAME}`（{size_mb:.1f} MiB）
 - 官网下载入口：{SITE_URL}#download
 - 源码与说明：https://github.com/{OWNER}/{REPO}
 
 ### 校验（SHA256）
 
 ```
-{digest}
+{sums}
 ```
 
 ### 须知
 
-- 本版本为重新打包的修改版，**未使用受信任的代码签名证书**；Windows SmartScreen 可能提示「未知发布者」，点「更多信息 → 仍要运行」。
-- 沿用原程序的数据路径，可能读取/修改原有学习数据，升级前请先在原程序里导出备份。
-- 独立安装包，不会自动替换桌面原有快捷方式。
+- 可执行文件**未使用受信任的代码签名证书**；Windows SmartScreen 可能提示「未知发布者」，点「更多信息 → 仍要运行」。
+- 竞赛体验版使用独立数据目录，不与旧安装版共用学习记录。
 """
+
+
+def publish_release(assets: list[Path]) -> None:
     existed = api("GET", f"/repos/{OWNER}/{REPO}/releases/tags/{TAG}", ok_errors=(404,))
     if existed.get("_status") != 404:
         release = existed
@@ -385,19 +410,60 @@ def publish_release(asset: Path) -> None:
         release = api("POST", f"/repos/{OWNER}/{REPO}/releases", {
             "tag_name": TAG,
             "target_commitish": "main",
-            "name": f"词屿 {VERSION} Enhanced",
-            "body": body,
+            "name": f"词屿 {VERSION}",
+            "body": release_body(assets),
             "draft": False,
             "prerelease": False,
         })
         print(f"已创建 Release {TAG}：{release['html_url']}")
-    assets = api("GET", f"/repos/{OWNER}/{REPO}/releases/{release['id']}/assets")
-    if any(a["name"] == ASSET_NAME for a in assets):
-        print(f"  安装包已在 Release 里，跳过上传")
-        return
-    uploaded = upload_asset(release["id"], asset)
-    print(f"  上传完成：{uploaded['browser_download_url']}")
-    print(f"  SHA256 {digest}")
+    uploaded = {a["name"]: a for a in api("GET", f"/repos/{OWNER}/{REPO}/releases/{release['id']}/assets")}
+    for asset in assets:
+        done = uploaded.get(asset.name)
+        if done and done.get("state") == "uploaded":
+            print(f"  {asset.name} 已在 Release 里，跳过上传")
+            continue
+        if done:  # 上次中断留下的 starter 占位，删掉再重传
+            api("DELETE", f"/repos/{OWNER}/{REPO}/releases/assets/{done['id']}", ok_errors=(404,))
+        result = upload_asset(release["id"], asset)
+        print(f"  上传完成：{result['browser_download_url']}")
+
+
+def main(argv: list[str]) -> None:
+    mode = "all"
+    asset_args: list[str] = []
+    i = 0
+    while i < len(argv):
+        arg = argv[i]
+        if arg in ("--all", "--site-only", "--release-only"):
+            mode = arg[2:]
+        elif arg == "--asset":
+            i += 1
+            asset_args.append(argv[i])
+        elif arg in ("-h", "--help"):
+            print(__doc__)
+            return
+        else:
+            raise SystemExit(f"未知参数：{arg}")
+        i += 1
+
+    who = api("GET", "/user")
+    print(f"登录身份：{who['login'] or who.get('name')}")
+
+    if mode in ("all", "release"):
+        ensure_repo()
+        if mode == "all":
+            bootstrap_empty_repo()
+            files = collect_files(REPO_ROOT)
+            push_branch("main", files, f"release: 词屿 {VERSION}", orphan=True)
+        publish_release(find_assets(asset_args))
+    if mode in ("all", "site-only"):
+        publish_site()
+
+    info = api("GET", f"/repos/{OWNER}/{REPO}")
+    print("\n完成：")
+    print("  仓库：", info["html_url"])
+    print("  官网：", SITE_URL)
+    print("  下载：", f"https://github.com/{OWNER}/{REPO}/releases/latest/download/{ASSET_NAMES[0]}")
 
 
 def main(argv: list[str]) -> None:
