@@ -14,7 +14,7 @@ Add-Type -AssemblyName System.Windows.Forms | Out-Null
 Add-Type -AssemblyName System.IO.Compression.FileSystem | Out-Null
 
 $TITLE = '词屿一键部署'
-$BASE = 'https://github.com/1752370874-blip/wordisle/releases/latest/download/'
+$BASE = 'https://github.com/1752370874-blip/wordisle/releases/download/v3.9.56-preview/'
 $PARTS = @(
   @{ Name = 'WordIsle-3.9.56-enhance-models.zip.001'; Sha256 = 'db6c957590e26bceb4d4d4954681c1c4f73608fe33d93769357aab495c51a139'; Size = 1572864000 },
   @{ Name = 'WordIsle-3.9.56-enhance-models.zip.002'; Sha256 = '9c68428d8be6bfb0407d0e5006eeb5f0c64d8de2d6414330adcf59632114f3cc'; Size = 1572864000 },
