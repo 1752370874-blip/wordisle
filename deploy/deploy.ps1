@@ -20,7 +20,7 @@ $PARTS = @(
   @{ Name = 'WordIsle-3.9.56-enhance-models.zip.002'; Sha256 = '9c68428d8be6bfb0407d0e5006eeb5f0c64d8de2d6414330adcf59632114f3cc'; Size = 1572864000 },
   @{ Name = 'WordIsle-3.9.56-enhance-models.zip.003'; Sha256 = 'd1edeb3a9a9e1473062d0fd8a0ee9ed4e2bf66a3b319176d9b5170e3522d21b5'; Size = 855507768 }
 )
-$SETUP = @{ Name = 'WordIsle-3.9.56-preview-Setup-x64.exe'; Sha256 = '14d0c0cb9991c4a8b45c43e9ca99cfb1eff6f78a7ce8ab0086c9e65c59934d64' }
+$SETUP = @{ Name = 'WordIsle-3.9.56-preview-Setup-x64.exe'; Sha256 = '14d0c0cb9991c4a8b45c43e9ca99cfb1eff6f78a7ce8ab0086c9e65c59934d64'; Size = 515758205 }
 
 function Info($text) { Write-Host "  $text" -ForegroundColor Cyan }
 function Ok($text) { Write-Host "  $text" -ForegroundColor Green }
@@ -138,7 +138,7 @@ if (-not $app) {
     $work = Join-Path $env:LOCALAPPDATA 'WordIsle-Deploy'
     New-Item -ItemType Directory -Force -Path $work | Out-Null
     $setupPath = Join-Path $work $SETUP.Name
-    Get-File ($BASE + $SETUP.Name) $setupPath $SETUP.Sha256 0
+    Get-File ($BASE + $SETUP.Name) $setupPath $SETUP.Sha256 $SETUP.Size
     Info '正在安装词屿（约需 1-3 分钟，会保留已有的本机账号和学习记录）...'
     $proc = Start-Process -FilePath $setupPath -ArgumentList '/VERYSILENT', '/SUPPRESSMSGBOXES', '/NORESTART' -Wait -PassThru
     $app = Join-Path $env:LOCALAPPDATA 'Programs\WordIsle'

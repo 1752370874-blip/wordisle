@@ -14,6 +14,7 @@ exit /b
 ::BASE64::
 $b64
 "@
+$cmd = $cmd -replace "`r?`n", "`r`n"
 $out = Join-Path $here 'WordIsle-OneClick-Deploy.cmd'
 [IO.File]::WriteAllText($out, $cmd, (New-Object Text.UTF8Encoding $false))
 Write-Output ("OK " + $out + " " + [math]::Round((Get-Item $out).Length/1KB,1) + " KB")
