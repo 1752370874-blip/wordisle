@@ -166,6 +166,15 @@
       <h2>安装版或绿色版，离线也能用</h2>
       <p class="section-sub">安装包与绿色版已内置全部词书、全文数据与轻量语音 / 翻译模型，核心功能完全离线。生成式伴学、自由对话等按需下载「词屿离线增强包」。所有文件统一由 <a href="https://github.com/1752370874-blip/wordisle/releases/latest">GitHub Releases</a> 分发。</p>
     </div>
+    <div class="oneclick">
+      <div class="oneclick-copy">
+        <p class="kicker">新手一键部署</p>
+        <h3>不想手动解压三个分卷？让脚本替你完成</h3>
+        <p>下载「一键部署」脚本（约 14 KB），双击运行：自动检查词屿是否已安装（没装会帮你装）、下载 3 个分卷并逐个校验、合并解压、放到正确位置，最后帮你打开词屿。仅支持 Windows 10 / 11 x64，需要约 10 GB 空闲空间，下载量与手动安装相同（约 4.6 GB）。</p>
+      </div>
+      <a class="btn btn-primary oneclick-btn" href="https://github.com/1752370874-blip/wordisle/releases/latest/download/WordIsle-OneClick-Deploy.cmd">下载一键部署脚本</a>
+    </div>
+
     <div class="grid download-grid">
       <article class="card download-card">
         <div class="dl-head"><span class="os">Windows · 安装包</span><span class="badge">推荐</span></div>
@@ -239,6 +248,10 @@
       <details>
         <summary>为什么 Windows 提示「未知发布者」？</summary>
         <p>可执行文件没有购买 CA 代码签名证书。选择「更多信息 → 仍要运行」即可；要彻底消除提示需要购买 OV/EV 代码签名证书。</p>
+      </details>
+      <details>
+        <summary>一键部署脚本安全吗？</summary>
+        <p>脚本的源码就在仓库 <code>deploy/</code> 目录（<code>deploy.ps1</code> + 生成脚本），只做四件事：从 GitHub Releases 下载安装包 / 增强包、用 SHA-256 校验、解压到正确位置、启动词屿。它不上传任何本机数据，也不改系统设置，弹出的每个提示都可以取消。不放心脚本的话，仍可用上面的手动步骤。</p>
       </details>
       <details>
         <summary>有 macOS 版吗？</summary>
