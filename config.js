@@ -1,26 +1,26 @@
 // 词屿官网配置：部署前只需要改这里
-// 主包与模型包统一由 GitHub Releases 分发，链接用 latest/download 固定直链，
+// 主包、绿色版与离线增强包统一由 GitHub Releases 分发，链接用 latest/download 固定直链，
 // 以后发新版本时改这里的文件名即可（网站正文里的体积文字同步改一下）。
 window.SITE_CONFIG = {
-  version: '3.9.35-preview',
+  version: '3.9.56-preview',
 
-  // Windows 主包（GitHub Releases 的 latest/download 固定链接）
-  // 形如：https://github.com/<owner>/<repo>/releases/latest/download/<文件名>
-  winDownload: 'https://github.com/1752370874-blip/wordisle/releases/latest/download/WordIsle-3.9.35-preview-win-x64.zip',
-  winSize: '293 MB',
+  // Windows 安装包（推荐，GitHub Releases 的 latest/download 固定链接）
+  installDownload: 'https://github.com/1752370874-blip/wordisle/releases/latest/download/WordIsle-3.9.56-preview-Setup-x64.exe',
+  installSize: '492 MB',
 
-  // 可选本地模型包（不下载也能正常背词、查词、阅读）
-  models: {
-    qwen: {
-      label: 'Qwen3-1.7B · 伴学 / 讲解',
-      size: '1.22 GB',
-      url: 'https://github.com/1752370874-blip/wordisle/releases/latest/download/WordIsle-3.9.35-models-qwen3-1.7b.zip'
-    },
-    hy: {
-      label: 'Hy-MT2-1.8B · 离线翻译',
-      size: '1.08 GB',
-      url: 'https://github.com/1752370874-blip/wordisle/releases/latest/download/WordIsle-3.9.35-models-hy-mt2.zip'
-    }
+  // Windows 绿色版（解压即用）
+  winDownload: 'https://github.com/1752370874-blip/wordisle/releases/latest/download/WordIsle-3.9.56-preview-win-x64.zip',
+  winSize: '527 MB',
+
+  // 可选离线增强包：GitHub 单文件上限 2 GB，按 1.5 GB 分卷上传，需要集齐全部 3 卷
+  enhance: {
+    label: '离线增强包 · Qwen3-4B / Hy-MT2 / Whisper small',
+    totalSize: '3.73 GB',
+    parts: [
+      { name: '第 1 卷', file: 'WordIsle-3.9.56-enhance-models.zip.001', size: '1.46 GB', url: 'https://github.com/1752370874-blip/wordisle/releases/latest/download/WordIsle-3.9.56-enhance-models.zip.001' },
+      { name: '第 2 卷', file: 'WordIsle-3.9.56-enhance-models.zip.002', size: '1.46 GB', url: 'https://github.com/1752370874-blip/wordisle/releases/latest/download/WordIsle-3.9.56-enhance-models.zip.002' },
+      { name: '第 3 卷', file: 'WordIsle-3.9.56-enhance-models.zip.003', size: '816 MB', url: 'https://github.com/1752370874-blip/wordisle/releases/latest/download/WordIsle-3.9.56-enhance-models.zip.003' }
+    ]
   },
 
   // 备用入口：直链失效时跳 Releases 页面，让用户自己选版本

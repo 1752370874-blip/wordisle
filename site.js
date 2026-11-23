@@ -13,11 +13,13 @@
     tip.hidden = false;
   }
   function urlFor(key) {
+    if (key === 'install') return cfg.installDownload || '';
     if (key === 'win') return cfg.winDownload || '';
     if (key === 'mac') return cfg.macDownload || '';
     if (key === 'repo') return cfg.github || '';
     return '';
   }
+  var sizeFor = { install: cfg.installSize, win: cfg.winSize };
   document.querySelectorAll('[data-download]').forEach(function (el) {
     var url = urlFor(el.getAttribute('data-download'));
     if (url) {
@@ -35,7 +37,8 @@
       var url = urlFor(key);
       if (url) {
         // 直链走 GitHub Releases：点击后告诉用户正在下载什么
-        if (key === 'win') showTip('正在从 GitHub Releases 下载主包（约 ' + (cfg.winSize || '293 MB') + '）…');
+        if (key === 'install') showTip('正在从 GitHub Releases 下载安装包（约 ' + (cfg.installSize || '492 MB') + '）…');
+        if (key === 'win') showTip('正在从 GitHub Releases 下载绿色版（约 ' + (cfg.winSize || '527 MB') + '）…');
         return;
       }
       e.preventDefault();
@@ -48,12 +51,34 @@
     });
   });
 
-  // 主包体积文字
+  // 体积文字
+  document.querySelectorAll('[data-install-size]').forEach(function (el) {
+    if (cfg.installSize) el.textContent = cfg.installSize;
+  });
   document.querySelectorAll('[data-win-size]').forEach(function (el) {
     if (cfg.winSize) el.textContent = cfg.winSize;
   });
 
-  // 可选模型包
+  // 离线增强包分卷
+  if (cfg.enhance && Array.isArray(cfg.enhance.parts)) {
+    document.querySelectorAll('[data-enhance]').forEach(function (el) {
+      var index = parseInt(el.getAttribute('data-enhance'), 10);
+      var part = cfg.enhance.parts[index];
+      if (!part || !part.url) {
+        el.setAttribute('aria-disabled', 'true');
+        return;
+      }
+      el.setAttribute('href', part.url);
+      el.setAttribute('rel', 'noopener');
+      var sizeEl = el.querySelector('[data-enhance-size]');
+      if (sizeEl && part.size) sizeEl.textContent = part.size;
+    });
+    document.querySelectorAll('[data-enhance-total]').forEach(function (el) {
+      if (cfg.enhance.totalSize) el.textContent = cfg.enhance.totalSize;
+    });
+  }
+
+  // 可选模型包（兼容旧配置）
   document.querySelectorAll('[data-model]').forEach(function (el) {
     var key = el.getAttribute('data-model');
     var item = cfg.models && cfg.models[key];

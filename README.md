@@ -16,12 +16,13 @@ python -m http.server 8080
 
 ```
 site/
-├─ index.html        首页（含「点击此处下载」下载区）
-├─ styles.css        样式
-├─ config.js         下载链接 / 仓库链接 / 邮箱 / 备案号（只改这里）
-├─ site.js           小脚本（年份、下载按钮、联系方式、备案号）
-├─ assets/           favicon、截图（webp）、OG 分享图
-├─ DEPLOY-CN.md      部署说明（GitHub Pages 主用 + 国内托管备选）
+├─ index.html         首页（含「点击此处下载」下载区）
+├─ styles.css         样式
+├─ config.js          下载链接 / 增强包分卷 / 仓库链接 / 邮箱 / 备案号（只改这里）
+├─ site.js            小脚本（年份、下载按钮、体积文字、增强包分卷、联系方式）
+├─ version.json       软件内「检查更新」读取的版本清单
+├─ assets/            favicon、截图（webp）、OG 分享图
+├─ DEPLOY-CN.md       部署说明（GitHub Pages 主用 + 国内托管备选）
 ├─ robots.txt
 ├─ sitemap.xml
 └─ 404.html
@@ -29,16 +30,18 @@ site/
 
 ## 下载按钮怎么连到 GitHub Releases
 
-`config.js` 里只有一个关键字段：
+`config.js` 里的关键字段：
 
 ```js
-winDownload: 'https://github.com/1752370874-blip/wordisle/releases/latest/download/WordIsle-3.9.35-preview-win-x64.zip',
-winSize: '293 MB',
-models: { qwen: {...}, hy: {...} }   // 可选本地模型包
+installDownload: 'https://github.com/1752370874-blip/wordisle/releases/latest/download/WordIsle-3.9.56-preview-Setup-x64.exe',
+installSize: '492 MB',
+winDownload: 'https://github.com/1752370874-blip/wordisle/releases/latest/download/WordIsle-3.9.56-preview-win-x64.zip',
+winSize: '527 MB',
+enhance: { parts: [ ... .001 / .002 / .003 ... ] }   // 可选离线增强包分卷
 ```
 
 - `latest/download/<文件名>` 是 GitHub 的固定跳转链接：永远指向**最新的正式 Release**，所以页面上的「点击此处下载」不需要跟着版本号改地址。
-- 发新版本时：上传新 Release → 如果文件名变了，只改 `config.js` 的这几行（主包直链 + 模型包直链 + 体积文字） → 重新发布 `gh-pages`。
+- 发新版本时：上传新 Release → 如果文件名变了，只改 `config.js` 的这几行（安装包 / 绿色版 / 增强包直链 + 体积文字）→ 同时更新 `version.json` → 重新发布 `gh-pages`。
 - 直链失效（比如文件名写错）时，`site.js` 会退回到 `winDownloadFallback`（Releases 列表页）。
 
 ## 发布官网到 GitHub Pages
