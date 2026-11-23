@@ -31,6 +31,8 @@
 
 **绿色版**：解压到任意目录（例如 `D:\词屿体验版`）→ 双击 `WordIsle.exe`。请保留整个文件夹，本地模型和运行组件都在 `resources` 里。
 
+**新手一键部署**：不想手动解压三个分卷？下载 [WordIsle-OneClick-Deploy.cmd](https://github.com/1752370874-blip/wordisle/releases/latest/download/WordIsle-OneClick-Deploy.cmd) 双击运行（约 14 KB），脚本会自动检查 / 安装词屿、下载并逐个校验 3 个分卷、合并解压、放到正确位置，最后帮你打开词屿。源码与生成脚本见 [deploy/](deploy/)。
+
 **离线增强包**：下载 `.001`、`.002`、`.003` 三个分卷放在同一目录，用 [7-Zip](https://www.7-zip.org/) 打开 `.001` 解压；把解压出的「词屿离线增强包」文件夹与词屿的程序文件夹放在**同一个父目录**下（例如 `D:\词屿离线增强包` 与 `D:\词屿体验版` 并列），重新打开词屿即可。只背词、查词、阅读、自然语音与英文转写可以不装。
 
 > GitHub 单个发布文件上限 2 GB，所以离线增强包按 1.5 GB 分卷分发；二进制与模型都不进 Git 历史（`.gitignore` 已排除 `*.exe`、`*.zip`、`models/`）。
