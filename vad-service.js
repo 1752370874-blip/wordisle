@@ -19,6 +19,6 @@ function createVadService(root) {
     const samples = new Float32Array(input.samples); for (const sample of samples) if (!Number.isFinite(sample) || Math.abs(sample) > 1.01) return Promise.resolve({ ok: false, error: '人声检测采样无效' });
     return rpc({ type: 'push', token: input.token, samples });
   }
-  return { start: () => rpc({ type: 'start', token: crypto.randomUUID() }), push, flush: token => rpc({ type: 'flush', token: String(token || '') }), stop };
+  return { start: (call) => rpc({ type: 'start', token: crypto.randomUUID(), call }), push, flush: token => rpc({ type: 'flush', token: String(token || '') }), stop };
 }
 module.exports = { createVadService };

@@ -68,6 +68,11 @@ function createAccountVault(base){
   function completeOnboarding(status,expected=epoch){if(!['completed','skipped'].includes(status))throw Error('引导状态无效');return serial(async()=>{const s=active(expected),prior=s.payload.profile;if(prior.onboarding?.status==='completed'||prior.onboarding?.status==='skipped')return {...prior};s.payload.profile={...prior,onboarding:{version:1,status,finishedAt:new Date().toISOString()}};try{await persist(s);}catch(e){s.payload.profile=prior;throw e;}return {...s.payload.profile};});}
   function changePassword(input,expected=epoch){return serial(async()=>{const s=active(expected),newPassword=password(input.password);let oldKey,kek,decoded;try{oldKey=await derive(String(input.oldPassword||''),decode(s.record.salt,32));decoded=open(oldKey,s.record.wrappedKey,'wordisle/password/'+s.record.id);if(decoded.length!==32||!crypto.timingSafeEqual(decoded,s.key))throw Error('invalid');const salt=crypto.randomBytes(32);kek=await derive(newPassword,salt);const prior=s.record;s.record={...prior,salt:salt.toString('base64'),wrappedKey:seal(kek,s.key,'wordisle/password/'+s.record.id)};try{await persist(s);}catch(e){s.record=prior;throw e;}return {ok:true};}catch(e){throw Error('原密码不正确，或密码修改未成功');}finally{oldKey?.fill(0);kek?.fill(0);decoded?.fill(0);}});}
   async function exportAccount(expected=epoch){await queue.catch(()=>{});const s=active(expected),assets={};const folder=path.join(dir,s.record.id+'-assets');if(fs.existsSync(folder))for(const n of fs.readdirSync(folder)){const name=n.replace(/\.vault$/,'');if(ASSET.test(name)&&n.endsWith('.vault'))assets[name]=JSON.parse(fs.readFileSync(path.join(folder,n),'utf8'));}return JSON.stringify({format:'wordisle-account-backup',version:1,account:s.record,assets});}
+  async function autoBackup(expected=epoch){
+    const content=await exportAccount(expected);
+    const id=active(expected).record.id;
+    await atomic(path.join(base,'backups',id+'.wiaccount'),content);
+  }
   async function importAccount(text,pass){return exclusive(async()=>{
     if(unlocked)throw Error('请退出当前账号后导入');const secret=loginSecret(pass);
     if(typeof text!=='string'||Buffer.byteLength(text)>96*1024*1024)throw Error('备份文件过大');
@@ -89,6 +94,6 @@ function createAccountVault(base){
     }catch(e){if(created){await fs.promises.unlink(fileOf(record.id)).catch(()=>{});for(const name of written)await fs.promises.unlink(blobFile(name,record.id)).catch(()=>{});await fs.promises.rmdir(assetDir).catch(()=>{});}throw Error('备份密码不正确，或备份文件无法验证 / 保存');}
     finally{kek?.fill(0);key?.fill(0);}
   });}
-  return {register,login,recover,read,save,lock,updateProfile,completeOnboarding,changePassword,putBlob,getBlob,removeBlob,exportAccount,importAccount,hasAccounts:()=>entries().length>0,status:()=>({authenticated:!!unlocked,hasAccounts:entries().length>0,profile:unlocked?{...unlocked.payload.profile}:null}),isUnlocked:()=>!!unlocked,get epoch(){return epoch;},privateStorage(expected){return {read:name=>getBlob('boundary-'+name,expected)?.toString('utf8')||null,write:(name,text)=>putBlob('boundary-'+name,Buffer.from(text),expected)};}};
+  return {register,login,recover,read,save,lock,updateProfile,completeOnboarding,changePassword,putBlob,getBlob,removeBlob,exportAccount,autoBackup,importAccount,hasAccounts:()=>entries().length>0,status:()=>({authenticated:!!unlocked,hasAccounts:entries().length>0,profile:unlocked?{...unlocked.payload.profile}:null}),isUnlocked:()=>!!unlocked,get epoch(){return epoch;},privateStorage(expected){return {read:name=>getBlob('boundary-'+name,expected)?.toString('utf8')||null,write:(name,text)=>putBlob('boundary-'+name,Buffer.from(text),expected)};}};
 }
 module.exports={createAccountVault};

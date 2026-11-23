@@ -1,5 +1,7 @@
 (function(root,factory){const api=factory();if(typeof module==='object'&&module.exports)module.exports=api;else root.WordIsleVersion=api;})(typeof window!=='undefined'?window:globalThis,function(){
   'use strict';
+  const downloadUrl = 'https://1752370874-blip.github.io/wordisle/#download';
+  const manifestUrl = new URL('version.json', downloadUrl).href;
   // 兼容旧清单的 1—4 段数字，同时区分预发布版与正式版；构建标记不参与排序。
   function parse(input){
     const text=String(input??'').trim();if(!text||text.length>96)return null;
@@ -16,5 +18,5 @@
       const nx=/^\d+$/.test(x),ny=/^\d+$/.test(y);if(nx&&ny){const bx=BigInt(x),by=BigInt(y);if(bx!==by)return bx>by?1:-1;continue;}if(nx!==ny)return nx?-1:1;return x>y?1:-1;
     }return 0;
   }
-  return {parse,compare};
+  return {parse,compare,downloadUrl,manifestUrl};
 });

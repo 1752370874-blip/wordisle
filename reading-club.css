@@ -34,3 +34,7 @@
 
 /* Source counts and direct navigation stay readable on narrow windows. */
 .news-source-row{flex-wrap:wrap}.news-source-row [data-reading-source-jump]{font-size:10px;padding:6px 8px;flex-shrink:0}.club-result-count{flex-wrap:wrap}
+.club-list-controls{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.club-list-controls label{display:flex;align-items:center;gap:8px}
+.club-list-controls select{min-height:36px}
+.club-published{display:block;margin-top:5px;font-variant-numeric:tabular-nums}

@@ -20,7 +20,7 @@ function viewListening() {
   }
   const busy = speechBusy(), disabled = busy ? ' disabled' : '';
   if (!speechState.devicesRequested) { speechState.devicesRequested = true; requestAnimationFrame(() => speechRefreshDevices()); }
-  return '<section class="panel source-panel speech-controls"><h3>听英语，实时看中英对照</h3><p class="muted">听一节课、一段讲座，或导入英语音频。边听边看中英对照，之后还可以修正原文、重新翻译。</p><div class="speech-settings"><label class="source-mode-label">麦克风<select id="speechDevice"' + disabled + '><option value="">系统默认麦克风</option>' + speechState.devices.map((device, i) => '<option value="' + esc(device.deviceId) + '"' + (speechState.device === device.deviceId ? ' selected' : '') + '>' + esc(device.label || '麦克风 ' + (i + 1)) + '</option>').join('') + '</select></label><label class="source-mode-label">中文翻译方式<select id="speechMode"' + disabled + '><option value="model"' + (speechState.mode === 'model' ? ' selected' : '') + '>内置 AI · 离线翻译</option><option value="api"' + (speechState.mode === 'api' ? ' selected' : '') + '>AI API · 自选服务</option></select></label></div><div class="listening-options"><label><input type="checkbox" id="speechSmart"' + (speechState.smart ? ' checked' : '') + disabled + '> 智能断句（按停顿）</label><label><input type="checkbox" id="speechPractice"' + (speechState.practice ? ' checked' : '') + disabled + '> 听力训练：先隐藏字幕</label></div><div class="btn-row speech-actions"><button class="btn primary" data-speech-action="start"' + disabled + '>开始听译</button><button class="btn" data-speech-action="stop"' + (!(speechState.recording || speechState.starting || speechState.fileBusy) ? ' disabled' : '') + '>停止</button><label class="btn" for="speechFile">导入音频<input type="file" id="speechFile" accept="audio/*,.wav,.mp3,.m4a,.ogg,.webm,.flac" hidden' + disabled + '></label><button class="btn ghost" data-speech-action="devices"' + disabled + '>刷新麦克风</button></div><div class="speech-meter" aria-hidden="true"><i id="speechMeter"></i></div><p id="speechStatus" class="muted" role="status">' + esc(speechState.progress || '尚未开始。外置麦克风接入电脑后，可在上方选择。') + '</p><p id="speechNotice" class="source-translation-error"' + (!speechState.notice ? ' hidden' : '') + '>' + esc(speechState.notice) + '</p><details class="product-tool-guide"><summary>收音、离线模式与文件说明</summary><p>默认在本机识别英语、按真实停顿分段，再用内置模型翻译。无需填写 API。可导入 50 MB、30 分钟以内的音频；停止后可重听、修订并重译。切换栏目会停止收音。原音仅在当前会话缓存。</p></details></section>' +
+  return '<section class="panel source-panel speech-controls"><h3>听英语，实时看中英对照</h3><p class="muted">听一节课、一段讲座，或导入英语音频。边听边看中英对照，之后还可以修正原文、重新翻译。</p><div class="speech-settings"><label class="source-mode-label">麦克风<select id="speechDevice"' + disabled + '><option value="">系统默认麦克风</option>' + speechState.devices.map((device, i) => '<option value="' + esc(device.deviceId) + '"' + (speechState.device === device.deviceId ? ' selected' : '') + '>' + esc(device.label || '麦克风 ' + (i + 1)) + '</option>').join('') + '</select></label><label class="source-mode-label">中文翻译方式<select id="speechMode"' + disabled + '><option value="model"' + (speechState.mode === 'model' ? ' selected' : '') + '>内置 AI · 离线翻译</option><option value="api"' + (speechState.mode === 'api' ? ' selected' : '') + '>AI API · 自选服务</option></select></label></div><div class="listening-options"><label><input type="checkbox" id="speechSmart"' + (speechState.smart ? ' checked' : '') + disabled + '> 智能断句（按停顿）</label><label><input type="checkbox" id="speechPractice"' + (speechState.practice ? ' checked' : '') + disabled + '> 听力训练：先隐藏字幕</label></div><div class="btn-row speech-actions"><button class="btn primary" data-speech-action="start"' + disabled + '>开始听译</button><button class="btn" data-speech-action="stop"' + (!(speechState.recording || speechState.starting || speechState.fileBusy) ? ' disabled' : '') + '>停止</button><label class="btn" for="speechFile">导入音频<input type="file" id="speechFile" accept="audio/*,.wav,.mp3,.m4a,.ogg,.webm,.flac" hidden' + disabled + '></label><button class="btn ghost" data-speech-action="devices"' + disabled + '>刷新麦克风</button></div><div class="speech-meter" aria-hidden="true"><i id="speechMeter"></i></div><p id="speechStatus" class="muted" role="status">' + esc(speechState.progress || '尚未开始。外置麦克风接入电脑后，可在上方选择。') + '</p><p id="speechNotice" class="source-translation-error"' + (!speechState.notice ? ' hidden' : '') + '>' + esc(speechState.notice) + '</p><details class="product-tool-guide"><summary>收音、离线模式与文件说明</summary><p>英语识别在本机进行。放入离线增强包后可自动翻译，也可以选择 API；轻量版单独使用时保留识别出的英文。可导入 50 MB、30 分钟以内的音频；停止后可重听、修订并重译。切换栏目会停止收音。原音仅在当前会话缓存。</p></details></section>' +
     '<section class="panel source-panel"><div class="spread"><h3>中英听译记录</h3><label class="speech-follow"><input type="checkbox" id="speechFollow"' + (speechState.follow ? ' checked' : '') + '> 跟随新内容</label></div><div class="btn-row"><button class="btn" data-speech-action="export"' + (busy || !speechState.rows.length ? ' disabled' : '') + '>导出中英 TXT</button><button class="btn" data-speech-action="companion"' + (busy || !speechState.rows.some(row => row.en) ? ' disabled' : '') + '>将英文保存到伴学</button><button class="btn ghost" data-speech-action="clear"' + (busy || !speechState.rows.length ? ' disabled' : '') + '>清空记录</button></div><p class="muted">识别和翻译可能有误，请核对姓名、术语、数字。原音只在本次窗口内缓存，最多约 48 MB。最近听译文字和听写练习按账号保存。</p><div id="speechResults">' + (speechState.rows.map(speechRowHtml).join('') || '<p class="muted">开始听译后，英文和中文会逐段显示在这里。</p>') + '</div></section>' + sourceApiSettingsHtml(speechState.mode, busy) +
     '<details class="panel source-panel source-disclosure"><summary>我的听力练习 <span class="muted">查看文字差异，安排回听</span></summary><div class="source-disclosure-body">' + listeningHistoryHtml() + '</div></details>' + listeningTrainingHtml() + translationPreferencesHtml(busy);
 }
@@ -74,11 +74,15 @@ class SpeechSegmenter {
   }
 }
 class SpeechNeuralSegmenter {
-  static async create(emit) {
-    const reply = await window.wordIsle.vadStart(); if (!reply?.ok) throw Error(reply?.error || '无法启动智能断句');
+  static async create(emit, mode) {
+    const reply = await window.wordIsle.vadStart(mode); if (!reply?.ok) throw Error(reply?.error || '无法启动智能断句');
     const segmenter = new SpeechNeuralSegmenter(); segmenter.emit = emit; segmenter.token = reply.token; segmenter.cursor = 0; segmenter.chain = Promise.resolve(); segmenter.closed = false; return segmenter;
   }
-  consume(reply) { if (!reply?.ok) throw Error(reply?.error || '智能断句失败'); for (const segment of reply.segments || []) this.emit(segment); }
+  consume(reply) {
+    if (!reply?.ok) throw Error(reply?.error || '智能断句失败');
+    for (const segment of reply.segments || []) this.emit(segment);
+    return reply.detected === true;
+  }
   push(samples) {
     if (this.closed) return this.chain;
     this.cursor += samples.length;
@@ -130,7 +134,9 @@ async function speechProcess(segment, label, config) {
       const before = previous.en.split(/\s+/), after = row.en.split(/\s+/); const clean = text => text.toLowerCase().replace(/[^a-z0-9]/g, '');
       for (let n = Math.min(8, before.length, after.length); n >= 2; n--) { if (before.slice(-n).map(clean).join(' ') === after.slice(0, n).map(clean).join(' ')) { row.en = after.slice(n).join(' '); break; } }
     }
-    if (row.en) await speechTranslateRow(row, config); else row.status = '与上一段重复';
+    if (!row.en) row.status = '与上一段重复';
+    else if (config.mode === 'model' && (speechState.translationInfo ?? await window.wordIsle.translationStatus()).available === false) row.status = '英文已识别';
+    else await speechTranslateRow(row, config);
   } catch (error) { row.error = error.message || '处理失败'; row.status = row.en ? '翻译失败，可修订后重试' : '识别失败'; }
   finally { speechPaint(true); }
 }

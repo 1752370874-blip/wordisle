@@ -1,0 +1,27 @@
+/* Native caption buttons remain visible; only the separate system title strip is removed. */
+.desktop-drag-region{display:none}
+html.desktop-overlay .desktop-drag-region{
+  display:block;
+  position:fixed;
+  top:env(titlebar-area-y,0px);
+  left:env(titlebar-area-x,0px);
+  width:env(titlebar-area-width,calc(100% - 138px));
+  height:env(titlebar-area-height,36px);
+  z-index:1000;
+  background:transparent;
+  -webkit-app-region:drag;
+  app-region:drag;
+  user-select:none;
+}
+html.desktop-overlay body.youth .main>.topbar{padding-top:36px}
+html.desktop-overlay body.youth.product-focus .main{padding-top:54px!important}
+html.desktop-overlay body:not(.youth){padding-top:44px}
+html.desktop-overlay :is(button,input,select,textarea,a,summary,[contenteditable="true"]){
+  -webkit-app-region:no-drag;
+  app-region:no-drag;
+}
+html.desktop-overlay .club-reader-nav{top:48px}
+@media(max-width:900px){
+  html.desktop-overlay body.youth .rail{padding-top:42px}
+  html.desktop-overlay body.youth .main>.topbar{padding-top:18px}
+}

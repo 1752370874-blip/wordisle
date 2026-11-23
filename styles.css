@@ -23,6 +23,37 @@
   --serif: Georgia, "Times New Roman", "Songti SC", serif;
 }
 
+.study-layout.with-details { display:grid; grid-template-columns:minmax(0,1fr) minmax(245px,.44fr); gap:16px; align-items:start; }
+.study-word-details p { margin:8px 0; overflow-wrap:anywhere; }
+.word-reference-ipa { display:flex; gap:6px 16px; flex-wrap:wrap; margin:6px 0; }
+.word-reference-ipa small { margin-left:5px; color:var(--muted); }
+.word-reference-ipa button { margin-left:6px; }
+.word-reference-note,.word-reference-examples { margin:12px 0; padding:12px; border:1px solid var(--line); border-radius:10px; }
+.word-reference-note p,.word-reference-examples p { margin:6px 0; }
+.word-reference-examples > div { padding:8px 0; border-bottom:1px solid var(--line); }
+.exam-pack-list { margin:0; padding:0; list-style:none; }
+.exam-pack-list li { display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; gap:8px; padding:10px 0; border-top:1px solid var(--line); }
+.exam-pack-list small { display:block; color:var(--muted); overflow-wrap:anywhere; }
+.study-stage { display:grid; grid-template-columns:9em minmax(0,1fr) 3em; align-items:center; gap:12px; margin:6px 0; }
+.study-stage meter { width:100%; accent-color:var(--accent); }
+.wordisle-night:root {
+  color-scheme:dark;
+  --bg:#151e25; --panel:#1f2a33; --panel-2:#27343e; --ink:#e1e9e8; --ink-soft:#c6d3d2;
+  --muted:#a4b7bd; --line:#3e5157; --line-strong:#698087; --accent:#94d3c5;
+  --accent-ink:#b5ded4; --accent-soft:#25423e; --good:#a8d9b8; --good-soft:#253c33;
+  --bad:#ffb8aa; --bad-soft:#462f31; --warn:#f0cf96; --warn-soft:#4a3e31;
+}
+.wordisle-night .bg-layer,.wordisle-night .ambient { display:none; }
+.wordisle-night body.youth :is(.panel,.word-card,.product-overview,.product-today,.product-checkpoint) {
+  color:var(--ink); background:var(--panel); border-color:var(--line);
+}
+.wordisle-night body.youth :is(input,select,textarea,.opt,.tile,.product-practice-grid button) {
+  color:var(--ink); background:var(--panel-2); border-color:var(--line);
+}
+.wordisle-night body.youth .btn:not(.primary) { color:var(--ink); background:var(--panel-2); border-color:var(--line); }
+@media(max-width:1100px) { .study-layout.with-details { grid-template-columns:minmax(0,1fr); } }
+@media(max-width:640px) { .study-stage { grid-template-columns:6em minmax(0,1fr) 2em; gap:6px; } }
+
 * { box-sizing: border-box; }
 
 html, body { height: 100%; }

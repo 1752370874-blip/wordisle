@@ -100,7 +100,7 @@ function sourceCompanionHtml() {
     return '<details class="source-companion-turn"' + (i === sourceDraft.aiTurns.length - 1 ? ' open' : '') + '><summary>' + esc(turn.question || '伴学回答') + '</summary><p class="muted">' + esc(turn.engine || 'AI') + ' · 请对照原文核查</p><div class="source-companion-answer">' + esc(turn.answer || '').replace(/\*\*([^*\n]+)\*\*/g, '<strong>$1</strong>') + '</div><details class="source-context"><summary>本次参考原文' + (turn.partial ? '（部分选段）' : '') + '</summary><p class="source-companion-answer">' + esc(turn.excerpt || '') + '</p></details></details>';
   }).join('');
   const scope = parts.length > 1 ? '<label class="source-mode-label">参考范围<select id="sourceAiScope"' + disabled + '><option value="auto">自动选段 · 可手动改选</option>' + parts.slice(0, 80).map(function (part, i) { return '<option value="' + i + '"' + (String(i) === sourceDraft.aiScope ? ' selected' : '') + '>第 ' + (i + 1) + ' 段 · ' + esc(part.slice(0, 44)) + '</option>'; }).join('') + '</select></label>' : '';
-  return '<section id="sourceCompanionPanel" class="panel source-panel"><h3>一起读懂这份资料</h3><label class="source-mode-label">伴学方式<select id="sourceCompanionMode"' + disabled + '><option value="model"' + (sourceDraft.aiMode !== 'api' ? ' selected' : '') + '>本地 AI · 离线伴学</option><option value="api"' + (sourceDraft.aiMode === 'api' ? ' selected' : '') + '>AI API · 自选服务</option></select></label><p class="muted">' + (sourceDraft.aiMode === 'api' ? '使用下方配置的服务，发送前会确认。' : '内置 Qwen3 1.7B，无需密钥，资料在本机处理。') + '可以提问、解释难句或出题自测。长文会选取部分原文；请核对参考范围。</p>' + scope +
+  return '<section id="sourceCompanionPanel" class="panel source-panel"><h3>一起读懂这份资料</h3><label class="source-mode-label">伴学方式<select id="sourceCompanionMode"' + disabled + '><option value="model"' + (sourceDraft.aiMode !== 'api' ? ' selected' : '') + '>本地 AI · 离线伴学</option><option value="api"' + (sourceDraft.aiMode === 'api' ? ' selected' : '') + '>AI API · 自选服务</option></select></label><p class="muted">' + (sourceDraft.aiMode === 'api' ? '使用下方配置的服务，发送前会确认。' : '放入离线增强包后，由 Qwen3 4B 在本机处理资料。') + '可以提问、解释难句或出题自测。长文会选取部分原文；请核对参考范围。</p>' + scope +
     '<label>想问什么？<textarea id="sourceQuestion" maxlength="500" rows="2" placeholder="例如：作者为什么认为间隔练习有效？"' + disabled + '>' + esc(sourceDraft.aiQuestion) + '</textarea></label><div class="btn-row"><button class="btn primary" data-source-action="ask"' + disabled + '>提问</button><button class="btn" data-source-action="explain"' + disabled + '>解释难句</button><button class="btn" data-source-action="quiz"' + disabled + '>出题自测</button></div>' +
     (sourceDraft.aiBusy ? '<p class="muted" role="status">正在生成回答…本地模型首次使用需要加载，请稍候。</p>' : '') + (sourceDraft.aiError ? '<p class="source-translation-error" role="status">' + esc(sourceDraft.aiError) + '</p>' : '') + turns +
     (turns ? '<button class="btn small" data-source-action="answer-note"' + disabled + '>将最新回答放入批注</button>' : '') +
@@ -193,15 +193,6 @@ function sourceSaveNote() {
   if (flushSave()) { render(); toast('批注已保存'); }
 }
 
-function sourceDelete(id) {
-  if (sourceDraft.translationBusy) { toast('请先等待翻译完成或停止翻译'); return; }
-  const s = (store.sources || []).find(function (x) { return x.id === id; }); if (!s) return;
-  if (!window.confirm('删除资料“' + s.title + '”？已生成的词库会保留。')) return;
-  store.sources = store.sources.filter(function (x) { return x.id !== id; });
-  if (sourceDraft.id === id) { sourceDraft.id = ''; sourceDraft.title = ''; sourceDraft.text = ''; sourceDraft.candidates = []; sourceResetTranslations(); }
-  flushSave(); render();
-}
-
 function sourceCollectAiConfig() {
   ['Endpoint', 'Model', 'Key'].forEach(function (n) { const el = document.getElementById('source' + n); if (el) sourceDraft[n.toLowerCase()] = el.value; });
 }
@@ -214,7 +205,6 @@ function sourceCollectDraft() {
   const note = document.getElementById('sourceAiResult'); if (note) sourceDraft.ai = note.value;
   const question = document.getElementById('sourceQuestion'); if (question) sourceDraft.aiQuestion = question.value.slice(0, 500);
   const scope = document.getElementById('sourceAiScope'); if (scope) sourceDraft.aiScope = scope.value;
-  ['Endpoint', 'Model', 'Key'].forEach(function (n) { const el = document.getElementById('source' + n); if (el) sourceDraft[n.toLowerCase()] = el.value; });
   document.querySelectorAll('[data-source-check]').forEach(function (el) { sourceDraft.candidates[+el.dataset.sourceCheck].checked = el.checked; });
   document.querySelectorAll('[data-source-meaning]').forEach(function (el) { sourceDraft.candidates[+el.dataset.sourceMeaning].meaning = el.value; });
   document.querySelectorAll('[data-source-sentence]').forEach(function (el) { sourceDraft.candidates[+el.dataset.sourceSentence].sentence = el.value; });
@@ -275,7 +265,7 @@ async function sourceAsk(kind) {
       }
     }
     if (!reply || !reply.ok || typeof reply.text !== 'string' || !reply.text.trim()) throw Error(reply && reply.error || '未返回回答');
-    sourceDraft.aiTurns.push({ question: question, answer: reply.text.trim().slice(0, 6000), excerpt: text, partial: sourceNormalizedBlocks(text).join('\n\n') !== sourceNormalizedBlocks(sourceDraft.text).join('\n\n'), engine: api ? 'AI API' : '本地 Qwen3 1.7B' });
+    sourceDraft.aiTurns.push({ question: question, answer: reply.text.trim().slice(0, 6000), excerpt: text, partial: sourceNormalizedBlocks(text).join('\n\n') !== sourceNormalizedBlocks(sourceDraft.text).join('\n\n'), engine: api ? 'AI API' : '本地 Qwen3 4B' });
     sourceDraft.aiTurns = sourceDraft.aiTurns.slice(-4); sourceDraft.aiQuestion = '';
     sourceSave(true, true);
   } catch (err) { sourceDraft.aiError = '生成失败：' + (err.message || '请重试'); }

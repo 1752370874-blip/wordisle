@@ -54,6 +54,7 @@ function createAccountController({root,userData,app,ipcMain,BrowserWindow,dialog
   register('auth:recover',(e,input)=>finishAuthentication(async()=>{const r=await vault.recover(input||{});await preferences.clear();return r;}),[authURL]);
   handle('auth:load',async e=>({ok:true,profile:vault.status().profile,raw:await vault.read(e.authEpoch)}));
   handle('auth:save',(e,raw)=>vault.save(raw,e.authEpoch));
+  handle('auth:auto-backup',async e=>{await vault.autoBackup(e.authEpoch);return {ok:true};});
   handle('auth:onboarding',async(e,status)=>({ok:true,profile:await vault.completeOnboarding(status,e.authEpoch)}));
   handle('auth:profile',async(e,input)=>({ok:true,profile:await vault.updateProfile(input||{},e.authEpoch)}));
   handle('auth:password',async(e,input)=>{const r=await vault.changePassword(input||{},e.authEpoch);await preferences.clear();return r;});

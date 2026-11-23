@@ -16,3 +16,30 @@ body.youth.product-focus{display:block}body.youth.product-focus .rail,body.youth
 .topbar-right #streakChip,.topbar-right #todayChip{display:none}body.youth.product-focus #youthFeedback{display:none!important}body.youth.product-focus .grade-row{display:grid;grid-template-columns:repeat(3,minmax(0,1fr))!important}body.youth.product-focus .grade-row>.wide{grid-column:1/-1}.product-tool-guide{margin-top:16px;font-size:12px;color:#859480}.product-tool-guide summary{cursor:pointer}.product-tool-guide p{line-height:1.9;margin-top:12px}#view[data-view=listen] .source-panel:has(#speechResults):not(:has(.speech-row))>.btn-row{display:none}@media(max-width:900px){.product-more-nav summary{display:flex;align-items:center;min-height:44px;white-space:nowrap}.product-more-nav[open]{align-items:center}}
 
 body.youth.product-focus .word{min-width:0;overflow-wrap:anywhere}body.youth.product-focus .word-line{min-width:0}body.youth.product-focus .word-line>.icon-btn{flex-shrink:0}
+
+.expression-practice{display:grid;gap:12px}.expression-practice h3,.expression-practice p{margin:0}.expression-practice p,.expression-practice small{color:#66796d;line-height:1.7}.expression-practice select{margin-left:8px}.expression-practice textarea{width:100%;min-height:90px;padding:12px;border:1px solid #d6e2d6;border-radius:12px;font:inherit;resize:vertical}.expression-practice .btn-row{display:flex;flex-wrap:wrap;gap:8px}#expressionFeedback{white-space:pre-wrap;overflow-wrap:anywhere}
+
+.oral-intro{display:grid;gap:14px}.oral-intro h3,.oral-intro p{margin:0}.oral-settings{display:flex;flex-wrap:wrap;gap:12px;align-items:center}.oral-settings label{display:flex;gap:8px;align-items:center}.oral-chat{display:grid;gap:12px;max-height:52vh;overflow:auto;padding:8px 2px}.oral-turn{max-width:min(80%,650px);padding:15px 18px;border-radius:16px;background:#edf3e8;line-height:1.6}.oral-turn.user{justify-self:end;background:#dff0eb}.oral-turn b{font-size:12px;color:#64806b}.oral-turn p{white-space:pre-wrap;overflow-wrap:anywhere;margin:6px 0}.oral-intro textarea{width:100%;padding:12px;border:1px solid #d6e2d6;border-radius:12px;font:inherit;resize:vertical}.oral-intro .btn-row{display:flex;flex-wrap:wrap;gap:8px}.oral-status{color:#567360}.oral-feedback{padding:16px;background:#f2f7ea;border-radius:14px;white-space:pre-wrap;overflow-wrap:anywhere}.oral-feedback p{margin-top:8px}@media(max-width:600px){.oral-turn{max-width:95%}.oral-settings label{width:100%;justify-content:space-between}.oral-settings select{max-width:65%}}
+
+.oral-chat{max-height:30vh;min-height:100px}
+
+.oral-voice-settings{display:flex;flex-wrap:wrap;gap:12px;align-items:center}.oral-voice-settings label{display:flex;gap:8px;align-items:center}@media(max-width:600px){.oral-voice-settings label{width:100%;justify-content:space-between}.oral-voice-settings select{max-width:65%}}
+
+.oral-call{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:16px;padding:18px;border-radius:18px;background:#172744;color:#f5fbf4}
+.oral-call-person,.oral-call-actions{display:flex;align-items:center;gap:12px}
+.oral-call-person{flex:1 1 260px}
+.oral-call-person img{width:58px;height:58px;flex:none;border-radius:16px;border:2px solid #a9c6b062}
+body .panel .oral-call h3{color:#f5fbf4}
+.oral-call[data-call-state="listening"] img{border-color:#d5f568}
+.oral-call[data-call-state="speaking"] img{border-color:#83d5c4}
+.oral-call .oral-status{margin-top:5px;color:#d5e5dc}
+.oral-voice-meter{display:none;align-items:center;gap:3px;color:#d5f568;height:20px}
+.oral-call[data-voice-active="true"] .oral-voice-meter{display:inline-flex}
+.oral-call[data-call-state="speaking"] .oral-voice-meter{color:#83d5c4}
+.oral-voice-meter i{width:3px;height:9px;background:currentColor;border-radius:4px;animation:oral-meter .7s ease-in-out infinite alternate}
+.oral-voice-meter i:nth-child(2){height:17px;animation-delay:-.3s}
+.oral-voice-meter i:nth-child(3){height:12px;animation-delay:-.5s}
+@keyframes oral-meter{from{transform:scaleY(.65)}to{transform:scaleY(1)}}
+@media(prefers-reduced-motion:reduce){.oral-voice-meter i{animation:none}}
+body .oral-call .oral-hangup.btn,body .oral-call .oral-hangup.btn:hover{color:#862b25;background:#fbe3de;border-color:#f4c0b8}
+@media(max-width:600px){.oral-call-actions{flex-wrap:wrap}}

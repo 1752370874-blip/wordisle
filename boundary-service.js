@@ -1,7 +1,7 @@
 'use strict';
 const fs = require('node:fs'); const path = require('node:path'); const { Worker } = require('node:worker_threads'); const core = require('./training/boundary-core');
 function createBoundaryService(root, userData, storage) {
-  const baseline = path.join(root, 'models', 'sentence-boundary', 'model.json'), dir = path.join(userData, 'sentence-boundary'), custom = path.join(dir, 'model.json'), choice = path.join(dir, 'choice.json');
+  const baseline = path.join(root, 'models', 'sentence-boundary', 'model.json'), dir = path.join(userData, 'sentence-boundary');
   let model = null, customActive = false, task;
   const privateRead = name => storage ? storage.read(name) : (fs.existsSync(path.join(dir, name)) ? fs.readFileSync(path.join(dir, name), 'utf8') : null);
   const privateWrite = (name, text) => { if (storage) storage.write(name, text); else { fs.mkdirSync(dir, { recursive: true }); fs.writeFileSync(path.join(dir, name), text); } };

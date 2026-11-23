@@ -4,7 +4,7 @@ const core=require('./translation-core'),memoryCore=require('./training/translat
 function createTranslationService(root,{translator,fallback,fetchImpl=(...args)=>fetch(...args)}){
   let retriever,report,active=false,generation=0;const requests=new Set();
   function loadMemory(){if(retriever!==undefined)return;try{const model=JSON.parse(fs.readFileSync(path.join(root,'models/translation-memory/model.json'),'utf8'));retriever=memoryCore.createRetriever(model);report=model.report}catch(_){retriever=null;report=null}}
-  const status=()=>{loadMemory();return {name:translator.status().available?translator.status().name:fallback.status().name,memoryReport:report,busy:active}};
+  const status=()=>{loadMemory();const primary=translator.status(),model=primary.available?primary:fallback.status();return {name:model.available?model.name:'尚未安装离线增强包',available:model.available,memoryReport:report,busy:active}};
   async function api(input,prepared){
     const endpoint=new URL(input.endpoint);if(endpoint.protocol!=='https:'||endpoint.username||endpoint.password)throw Error('接口必须是 HTTPS 地址');
     const model=String(input.model||'').trim().slice(0,100),key=String(input.key||'').trim().slice(0,500);if(!model||!key)throw Error('请填写 API 模型和密钥');

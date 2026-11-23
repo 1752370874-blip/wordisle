@@ -1,6 +1,6 @@
 'use strict';
 
-const { app, BrowserWindow, WebContentsView, Menu, dialog, shell, ipcMain, net, clipboard, session, powerMonitor, safeStorage } = require('electron');
+const { app, BrowserWindow, Menu, dialog, shell, ipcMain, net, clipboard, session, powerMonitor, safeStorage } = require('electron');
 const path = require('node:path');
 const fs = require('node:fs');
 const os = require('node:os');
@@ -8,12 +8,13 @@ const crypto = require('node:crypto');
 const { pathToFileURL } = require('node:url');
 const { createLocalModel, createTranslationModel } = require('./local-model');
 const { createTranslationService } = require('./translation-service');
+const { createCompactTranslator } = require('./compact-translator');
 const { createSpeechService } = require('./speech-service');
+const { createNeuralVoice } = require('./neural-voice-service');
 const { createVadService } = require('./vad-service');
 const { createBoundaryService } = require('./boundary-service');
 const versioning = require('./versioning');
 const { createNewsService } = require('./reading-news-service');
-const { createArticleReader } = require('./article-reader-main');
 const { createAccountVault } = require('./account-vault');
 const { createAccountController } = require('./account-main');
 
@@ -46,7 +47,12 @@ function log() {
 }
 
 /* ---------------- 官方 RSS 外刊 ---------------- */
-const newsService = createNewsService({root:__dirname,userData:app.getPath('userData'),log});
+let networkEnhanced = UPDATE_ONLY;
+const offlineReply = () => ({ok:false,error:'当前为离线模式。可在设置中开启联网增强。'});
+const newsService = createNewsService({root:__dirname,userData:app.getPath('userData'),log,fetchImpl:(...args)=>{
+  if (!networkEnhanced) throw Error(offlineReply().error);
+  return fetch(...args);
+}});
 function readNewsCache() { return newsService.status(); }
 function refreshNews() { return newsService.refresh({force:true}); }
 function getNews(force) { return newsService.refresh({force:!!force}); }
@@ -59,6 +65,7 @@ if (!gotLock) {
   app.whenReady().then(async function () {
     try {
       await refreshNews();
+      await newsService.waitForDownloads();
       app.exit(0);
     } catch (e) {
       log('update-news failed: ' + (e && e.message));
@@ -67,50 +74,40 @@ if (!gotLock) {
   });
 } else {
   let win = null;
-  let splash = null;
-  const splashStarted = Date.now();
   const localModel = createLocalModel(__dirname, log);
   const translationModel = createTranslationModel(__dirname, log);
-  const translationService = createTranslationService(__dirname, { translator: translationModel, fallback: localModel });
+  const compactTranslation = createCompactTranslator(__dirname);
+  const translationFallback = {
+    status: () => translationModel.status().available ? translationModel.status() : localModel.status(),
+    request: input => (translationModel.status().available ? translationModel : localModel).request(input)
+  };
+  const translationService = createTranslationService(__dirname, { translator: compactTranslation, fallback: translationFallback });
   const vault = createAccountVault(app.getPath('userData'));
   const lockedStorage = { read: () => null, write: () => { throw Error('请先登录'); } };
   let boundaryService = createBoundaryService(__dirname, app.getPath('userData'), lockedStorage);
   const speechService = createSpeechService(__dirname, text => boundaryService.analyze(text));
+  const neuralVoice = createNeuralVoice(__dirname);
   const vadService = createVadService(__dirname);
   const accountRequests = new Set();
-  let articleReader = null;
   const accounts = createAccountController({ root: __dirname, userData: app.getPath('userData'), app, ipcMain, BrowserWindow, dialog, clipboard, session, powerMonitor, safeStorage, vault, getWindow: () => win,
     onUnlock: async epoch => { boundaryService.stop(); boundaryService = createBoundaryService(__dirname, app.getPath('userData'), vault.privateStorage(epoch)); },
-    onLock: async () => { articleReader?.close(); newsService.cancel(); translationService.cancel(); for (const request of accountRequests) request.abort(); boundaryService.stop(); vadService.stop(); speechService.stop(); await Promise.allSettled([translationModel.stop(), localModel.stop()]); boundaryService = createBoundaryService(__dirname, app.getPath('userData'), lockedStorage); }
+    onLock: async () => { networkEnhanced=false; newsService.cancel(); translationService.cancel(); for (const request of accountRequests) request.abort(); boundaryService.stop(); vadService.stop(); speechService.stop(); await Promise.allSettled([neuralVoice.stopAndWait(), compactTranslation.stop(), translationModel.stop(), localModel.stop()]); boundaryService = createBoundaryService(__dirname, app.getPath('userData'), lockedStorage); }
   });
 
-  articleReader = createArticleReader({root:__dirname,BrowserWindow,WebContentsView,ipcMain,getParent:()=>win,isUnlocked:()=>accounts.isUnlocked(),getArticle:id=>newsService.status().items.find(item=>item.id===id),icon:APP_ICON});
-
-  function createSplash() {
-    splash = new BrowserWindow({
-      width: 520,
-      height: 360,
-      frame: false,
-      resizable: false,
-      movable: true,
-      show: true,
-      backgroundColor: '#172744',
-      title: APP_NAME,
-      icon: APP_ICON,
-      webPreferences: { contextIsolation: true, nodeIntegration: false }
-    });
-    splash.loadFile(path.join(__dirname, 'splash.html'));
-    splash.on('closed', function () { splash = null; });
-  }
 
   function createWindow() {
     win = new BrowserWindow({
       width: 1280,
       height: 920,
-      minWidth: 960,
-      minHeight: 660,
+      minWidth: 580,
+      minHeight: 480,
       backgroundColor: '#f3f6f2',
       title: APP_NAME + ' · 让学习成为你的主场',
+      ...(process.platform === 'win32' ? {
+        titleBarStyle: 'hidden',
+        titleBarOverlay: { color: '#f3f6f2', symbolColor: '#425265', height: 36 },
+        minimizable: true, maximizable: true, closable: true
+      } : {}),
       icon: APP_ICON,
       autoHideMenuBar: true,
       show: false,
@@ -124,6 +121,11 @@ if (!gotLock) {
     });
     // macOS 需要标准应用菜单（Cmd+Q / Cmd+C / Cmd+V）；Windows 去掉菜单栏
     const trustedPage = pathToFileURL(path.join(__dirname, 'index.html')).href;
+    win.webContents.session.webRequest.onBeforeRequest({urls:['http://*/*','https://*/*','ws://*/*','wss://*/*']},
+      (details, callback) => callback({cancel:!networkEnhanced}));
+    win.webContents.on('before-input-event', (event,input) => {
+      if(input.type==='keyDown'&&input.key==='F11'){event.preventDefault();win.setFullScreen(!win.isFullScreen());}
+    });
     win.webContents.session.setPermissionCheckHandler((contents, permission, origin, details) => {
       return accounts.isUnlocked() && contents === win?.webContents && permission === 'media' && contents.getURL() === trustedPage && details.mediaType !== 'video';
     });
@@ -158,11 +160,7 @@ if (!gotLock) {
     });
 
     win.once('ready-to-show', function () {
-      const wait = Math.max(0, 900 - (Date.now() - splashStarted));
-      setTimeout(function () {
-        if (splash) { splash.close(); splash = null; }
-        if (win) win.show();
-      }, wait);
+      win.show();
       log('ready-to-show');
     });
 
@@ -180,29 +178,75 @@ if (!gotLock) {
   }
 
   accounts.handle('news:get', async function (e, force) {
-    try { return await getNews(!!force); } catch (err) { return readNewsCache(); }
+    try { return networkEnhanced ? await getNews(!!force) : readNewsCache(); } catch (err) { return readNewsCache(); }
+  });
+  accounts.handle('app:network', (event, enabled) => {
+    networkEnhanced = enabled === true;
+    if(!networkEnhanced){
+      newsService.cancel();
+      translationService.cancel();
+      for(const request of accountRequests)request.abort();
+      boundaryService.cancel();
+    }
+    return {ok:true};
+  });
+  accounts.handle('vocab:sync', async (event, address) => {
+    if(!networkEnhanced)return offlineReply();
+    const controller=new AbortController();
+    const timeout=setTimeout(()=>controller.abort(),15000);
+    accountRequests.add(controller);
+    try {
+      if(typeof address!=='string'||address.length>1000)throw Error('词库地址无效');
+      const url=new URL(address);
+      if(url.protocol!=='https:'||url.username||url.password)throw Error('请输入公开的 HTTPS 词库地址');
+      const response=await fetch(url,{redirect:'error',signal:controller.signal,headers:{accept:'application/json'}});
+      if(!response.ok)throw Error('词库服务器返回 HTTP '+response.status);
+      const parts=[];
+      let size=0;
+      for await(const part of response.body){
+        size+=part.byteLength;
+        if(size>4*1024*1024){controller.abort();throw Error('词库文件不能超过 4 MB');}
+        parts.push(Buffer.from(part));
+      }
+      const deck=JSON.parse(Buffer.concat(parts).toString('utf8'));
+      const words=Array.isArray(deck)?deck:deck?.words;
+      if(!Array.isArray(words)||!words.length||words.length>10000)throw Error('词库 JSON 需包含 1–10000 个词条');
+      return {ok:true,address:url.href,name:typeof deck.name==='string'?deck.name.slice(0,40):'',words};
+    }catch(error){return {ok:false,error:error.name==='AbortError'?'词库同步已取消或超时':error.message};}
+    finally{clearTimeout(timeout);accountRequests.delete(controller);}
   });
   accounts.handle('news:status', () => newsService.status());
-  accounts.handle('news:refresh', (e,input) => newsService.refresh(input && typeof input === 'object' ? input : {}));
+  accounts.handle('news:download', (e,input) => networkEnhanced ? newsService.download(input) : readNewsCache());
+  accounts.handle('news:progress', () => newsService.progress());
+  accounts.handle('news:refresh', (e,input) => networkEnhanced ? newsService.refresh(input && typeof input === 'object' ? input : {}) : offlineReply());
   accounts.handle('news:article', (e,input) => newsService.article(typeof input?.id==='string'?input.id:'',input?.force===true));
-  accounts.handle('news:read-online', (e,input) => articleReader.open(typeof input?.id==='string'?input.id:''));
-  accounts.handle('news:online-status', () => ({ok:true,...articleReader.status()}));
   accounts.handle('news:cancel', () => { newsService.cancel(); return {ok:true}; });
   accounts.handle('app:info', function () {
     return { version: app.getVersion(), name: APP_NAME, newsUpdatedAt: readNewsCache().updatedAt };
   });
   accounts.handle('speech:transcribe', function (e, input) { return speechService.transcribe(input); });
-  accounts.handle('vad:start', () => vadService.start());
+  accounts.handle('tts:neural-warm', (e, voice) => neuralVoice.warm(voice));
+  accounts.handle('tts:neural', (e, input) => neuralVoice.speak(input));
+  accounts.handle('tts:neural-stop', () => { neuralVoice.stop(); return {ok:true}; });
+  accounts.handle('vad:start', (e, mode) => vadService.start(mode === 'call'));
   accounts.handle('vad:push', (e, input) => vadService.push(input));
   accounts.handle('vad:flush', (e, token) => vadService.flush(token));
   accounts.handle('boundary:status', () => boundaryService.status());
-  accounts.handle('boundary:train', (e, input) => boundaryService.train(input, info => { if (win && !win.isDestroyed()) win.webContents.send('boundary:progress', info); }));
+  accounts.handle('boundary:train', (e, input) => !networkEnhanced&&input?.kind==='public' ? offlineReply() : boundaryService.train(input, info => { if (win && !win.isDestroyed()) win.webContents.send('boundary:progress', info); }));
   accounts.handle('boundary:cancel', () => boundaryService.cancel());
   accounts.handle('boundary:restore', () => boundaryService.restore());
   accounts.handle('local:status', function () { return localModel.status(); });
   accounts.handle('translation:status', () => translationService.status());
-  accounts.handle('local:source', function (e, request) { return request?.kind === 'translate' ? translationService.request({ ...request, mode: 'model' }) : localModel.request(request); });
+  accounts.handle('local:oral-warm', () => Promise.allSettled([
+    localModel.warm(),
+    speechService.warmOral()
+  ]));
+  accounts.handle('local:source', function (e, request) {
+    if (request?.kind === 'translate') return translationService.request({ ...request, mode: 'model' });
+    return localModel.request(request);
+  });
   accounts.handle('ai:source', async function (e, request) {
+    if(!networkEnhanced)return offlineReply();
     const input = request && typeof request === 'object' ? request : {};
     if (input.kind === 'translate') return translationService.request({ ...input, mode: 'api' });
     let endpoint;
@@ -251,7 +295,7 @@ if (!gotLock) {
   });
   // 朗读音频代理：带 UA/Referer 取回 mp3，转 data URL 交给渲染进程播放（绕过热链限制）
   accounts.handle('tts:fetch', async function (e, url) {
-    if (typeof url !== 'string' || !/^https:\/\/(dict\.youdao\.com|fanyi\.baidu\.com)\//.test(url)) return null;
+    if (!networkEnhanced || typeof url !== 'string' || !/^https:\/\/(dict\.youdao\.com|fanyi\.baidu\.com)\//.test(url)) return null;
     try {
       const res = await net.fetch(url, {
         headers: {
@@ -272,14 +316,14 @@ if (!gotLock) {
   // 注意：Edge 服务对并发 WSS 不友好，这里串行化 + 可中断超时，避免多请求互相卡死
   let msQueue = Promise.resolve();
   function msSynthesize(text, voice, epoch) {
-    const task = msQueue.then(function () { return vault.isUnlocked() && vault.epoch === epoch ? msSynthesizeOnce(text, voice, epoch) : null; });
+    const task = msQueue.then(function () { return networkEnhanced && vault.isUnlocked() && vault.epoch === epoch ? msSynthesizeOnce(text, voice, epoch) : null; });
     msQueue = task.catch(function () { /* 保持队列不中断 */ });
     return task;
   }
   async function msSynthesizeOnce(body, voice, epoch) {
     const { EdgeTTS } = require('@andresaya/edge-tts');
     for (let attempt = 0; attempt < 2; attempt++) {
-      if (!vault.isUnlocked() || vault.epoch !== epoch) return null;
+      if (!networkEnhanced || !vault.isUnlocked() || vault.epoch !== epoch) return null;
       const controller = new AbortController();
       accountRequests.add(controller);
       const timer = setTimeout(function () { controller.abort(); }, 15000);
@@ -334,17 +378,18 @@ if (!gotLock) {
   /* ---------------- 更新检查 ----------------
      只拉取一份公开的 version.json，不上传任何本机数据；
      发现新版本也只提示、由用户自己点下载，不自动下载安装器。 */
-  const UPDATE_URL = 'https://wordisle-gnquo3a5428.qoder.website/version.json';
   accounts.handle('update:check', async function () {
+    if(!networkEnhanced)return offlineReply();
     const current = app.getVersion();
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), 12000);
     try {
-      const res = await net.fetch(UPDATE_URL + '?v=' + encodeURIComponent(current), {
+      const res = await net.fetch(versioning.manifestUrl, {
         cache: 'no-store',
         signal: controller.signal,
         headers: { 'user-agent': 'WordIsle/' + current + ' (update check)' }
       });
+      if (res.status === 404) return { ok: false, current: current, error: '下载站暂未提供版本清单，请在下载页查看' };
       if (!res.ok) return { ok: false, current: current, error: 'HTTP ' + res.status };
       const j = await res.json();
       const latest = String(j.version || '').trim();
@@ -354,7 +399,7 @@ if (!gotLock) {
         ok: true, current: current, latest: latest,
         hasUpdate: comparison > 0, comparison: comparison,
         notes: String(j.notes || '').slice(0, 2000),
-        url: /^https:\/\//.test(String(j.url || '')) ? String(j.url) : ''
+        url: versioning.downloadUrl
       };
     } catch (err) {
       log('update check failed ' + (err && err.message));
@@ -365,7 +410,6 @@ if (!gotLock) {
   app.whenReady().then(function () {
     log('app ready');
     accounts.ready();
-    createSplash();
     createWindow();
     app.on('activate', function () {
       if (BrowserWindow.getAllWindows().length === 0) createWindow();
@@ -380,7 +424,7 @@ if (!gotLock) {
   });
 
   app.on('window-all-closed', function () { app.quit(); });
-  app.on('before-quit', function () { articleReader?.close(); boundaryService.stop(); vadService.stop(); speechService.stop(); translationModel.stop().catch(function () {}); localModel.stop().catch(function () {}); log('before-quit'); });
+  app.on('before-quit', function () { boundaryService.stop(); vadService.stop(); speechService.stop(); neuralVoice.stop(); translationModel.stop().catch(function () {}); localModel.stop().catch(function () {}); log('before-quit'); });
 
   process.on('uncaughtException', function (err) {
     log('UNCAUGHT ' + (err && err.stack || err));

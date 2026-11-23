@@ -13,6 +13,7 @@ contextBridge.exposeInMainWorld('wordIsle', {
   accountRecover: input => ipcRenderer.invoke('auth:recover', input),
   accountLoad: () => ipcRenderer.invoke('auth:load'),
   accountSave: raw => ipcRenderer.invoke('auth:save', raw),
+  accountAutoBackup: () => ipcRenderer.invoke('auth:auto-backup'),
   accountCompleteOnboarding: status => ipcRenderer.invoke('auth:onboarding', status),
   accountProfile: input => ipcRenderer.invoke('auth:profile', input),
   accountPassword: input => ipcRenderer.invoke('auth:password', input),
@@ -28,9 +29,11 @@ contextBridge.exposeInMainWorld('wordIsle', {
   newsRefresh: input => ipcRenderer.invoke('news:refresh', input),
   newsCancel: () => ipcRenderer.invoke('news:cancel'),
   newsFullText: input => ipcRenderer.invoke('news:article', input),
-  newsReadOnline: input => ipcRenderer.invoke('news:read-online', input),
-  newsOnlineStatus: () => ipcRenderer.invoke('news:online-status'),
+  newsDownload: input => ipcRenderer.invoke('news:download', input),
+  newsProgress: () => ipcRenderer.invoke('news:progress'),
   info: () => ipcRenderer.invoke('app:info'),
+  setNetworkEnhanced: enabled => ipcRenderer.invoke('app:network', enabled===true),
+  syncVocabulary: address => ipcRenderer.invoke('vocab:sync', address),
   // 朗读音频代理：url -> data URL（失败返回 null，由前端回退系统语音）
   ttsFetch: (url) => ipcRenderer.invoke('tts:fetch', String(url || '')),
   // 微软在线语音（Edge 神经语音）：text -> data URL，失败 null
@@ -45,8 +48,12 @@ contextBridge.exposeInMainWorld('wordIsle', {
   localModelStatus: () => ipcRenderer.invoke('local:status'),
   translationStatus: () => ipcRenderer.invoke('translation:status'),
   localSource: (request) => ipcRenderer.invoke('local:source', request),
+  warmOral: () => ipcRenderer.invoke('local:oral-warm'),
   transcribe: (input) => ipcRenderer.invoke('speech:transcribe', input),
-  vadStart: () => ipcRenderer.invoke('vad:start'),
+  neuralVoiceWarm: (voice) => ipcRenderer.invoke('tts:neural-warm', voice),
+  neuralVoice: (input) => ipcRenderer.invoke('tts:neural', input),
+  neuralVoiceStop: () => ipcRenderer.invoke('tts:neural-stop'),
+  vadStart: (mode) => ipcRenderer.invoke('vad:start', mode),
   vadPush: (input) => ipcRenderer.invoke('vad:push', input),
   vadFlush: (token) => ipcRenderer.invoke('vad:flush', token),
   boundaryStatus: () => ipcRenderer.invoke('boundary:status'),
@@ -55,3 +62,15 @@ contextBridge.exposeInMainWorld('wordIsle', {
   boundaryRestore: () => ipcRenderer.invoke('boundary:restore'),
   onBoundaryProgress: (callback) => { const handler = (event, info) => callback(info); ipcRenderer.on('boundary:progress', handler); return () => ipcRenderer.removeListener('boundary:progress', handler); }
 });
+
+// The page retains native Windows caption controls; this blank area only enables dragging.
+if (process.platform === 'win32') {
+  window.addEventListener('DOMContentLoaded', () => {
+    if (!['index.html', 'account.html'].some(name => location.pathname.endsWith('/' + name))) return;
+    document.documentElement.classList.add('desktop-overlay');
+    const drag = document.createElement('div');
+    drag.className = 'desktop-drag-region';
+    drag.setAttribute('aria-hidden', 'true');
+    document.body.prepend(drag);
+  });
+}

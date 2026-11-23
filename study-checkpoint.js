@@ -1,6 +1,6 @@
 'use strict';
 (function(root,factory){const api=factory();if(typeof module==='object'&&module.exports)module.exports=api;else root.WordIsleCheckpoint=api;})(globalThis,()=>{
-  const modes=new Set(['card','choice','cloze','spell','dictation','mixed','reverse','listenChoice']),verdicts=new Set(['good','hard','again']);
+  const modes=new Set(['sprint','card','choice','cloze','spell','dictation','mixed','reverse','listenChoice']),verdicts=new Set(['good','hard','again']);
   const number=(v,max=10000)=>Number.isFinite(v)?Math.max(0,Math.min(max,Math.floor(v))):0;
   const text=(v,max)=>typeof v==='string'?v.slice(0,max):'';
   function encode(s,draft,filter){if(!s||!Array.isArray(s.words)||s.idx>=s.words.length||s.words.length>180)return null;return {v:1,at:Date.now(),id:text(s.productId,100),startedAt:s.startedAt||Date.now(),mode:s.mode,keys:s.words.map(w=>w.key),idx:s.idx,correct:s.correct,total:s.total,newCount:s.newCount,reviewCount:s.reviewCount,revealed:s.revealed,answered:s.answered,typed:typeof draft==='string'?draft:s.typed,choice:s.choice,feedback:s.feedback,requeued:s.requeued,types:s.types,memory:s.memory?{...s.memory,words:s.memory.words.map(w=>w.key)}:null,memoryHint:s.memoryHint,memoryFocus:s.memoryFocus,filter,youthCombo:s.youthCombo};}

@@ -1,0 +1,28 @@
+词屿 3.9.55 词库资料
+
+英美音标
+内置 42 本词书共有 74,278 个词条位置，去重后为 16,521 个词头。每个词头都有英、美两种音标。词典数据来自 Misaki，优先使用相应口音的 Gold，再使用 Silver。音标由模型使用的符号转换成常见 IPA 写法。缺项使用 eSpeak NG 生成，界面标明「规则生成」。英音 368 项和美音 375 项使用规则。音标为词头的常见读法，同形异音、重音随语境变化及专名读法仍需按例句核对。扩展查词库的其他词头仍使用原有音标资料。
+
+Misaki（Apache-2.0）及音标约定
+https://github.com/hexgrad/misaki
+https://github.com/hexgrad/misaki/blob/main/EN_PHONES.md
+许可见 ../../models/kokoro-english/LICENSE。输入文件 SHA-256 见 vocabulary-audit.json。
+
+21 个同形异音词从 Misaki Gold 提取按词性区分的英美读音，配有用法标签。试听按钮播放词头的常用读音。
+
+规则音标生成工具
+https://github.com/xenova/phonemizer.js
+https://github.com/espeak-ng/espeak-ng
+构建时调用 phonemizer 1.2.1。发布包内保留生成后的音标数据。
+
+考试词库校对
+逐条检查 18 本备考词书的 56,605 个词条位置。全部有中文释义。52,042 个位置在 ECDICT 快照中有对应考试词头标签，4,563 个位置保留为传统词书条目，仍需核实考试归类。其中 8 个位置没有 ECDICT 对应记录。常用排序参考通用语料频次，考卷出现频率与义项需要有出处的真题样本另行验证。
+
+本版为 44 个重点词头写入备考义项、搭配辨析及原创双语例句。这些释义针对相应搭配，其他释义可按词典查阅。词库原有例句保留原标识。
+
+ECDICT（MIT）
+https://github.com/skywind3000/ECDICT
+许可见同目录 LICENSE-ECDICT.txt。各词书的检查结果见 vocabulary-audit.json。
+
+真题例句
+词书广场的「备考资料与授权例句」提供官方入口。将已授权材料按导入格式填写后可仅保存到当前账号。正式分发真题内容时另需核对授权凭据、授权期限和分发范围。

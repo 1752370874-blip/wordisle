@@ -39,12 +39,12 @@ function isTyping(el) {
 }
 
 /* ---------------- 存储 ---------------- */
-const DEFAULTS = { answerSounds: true, answerSoundVolume: 0.35, dailyNew: 20, autoSpeak: true, direction: 'en2zh', deckIds: ['cet4'], practice: 'card', ttsSource: 'youdao-us', ttsRate: 1, ttsSentenceSource: 'baidu', ttsMsVoice: 'en-US-AriaNeural', liquidGlass: true, bg: null, autoUpdate: false, updateSeen: '', aiEndpoint: '', aiModel: '', translationMode: 'model', aiCompanionMode: 'model' };
+const DEFAULTS = { networkEnhanced: false, localAccent: 'us', answerSounds: true, answerSoundVolume: 0.35, dailyNew: 20, autoSpeak: true, direction: 'en2zh', deckIds: ['cet4'], practice: 'card', ttsSource: 'youdao-us', ttsRate: 1, ttsSentenceSource: 'baidu', ttsMsVoice: 'en-US-AriaNeural', liquidGlass: true, bg: null, autoUpdate: false, updateSeen: '', aiEndpoint: '', aiModel: '', translationMode: 'model', aiCompanionMode: 'model' };
 // 网页版把背景图单独存一个键，避免每次自动保存都重新序列化几 MB 的 data URL
 const BG_DATA_KEY = 'wordisle.bgdata';
 
 function blankStore() {
-  return { v: 3, settings: Object.assign({}, DEFAULTS, {bookCatalogVersion:1}), words: {}, custom: [], days: {}, sources: [], sourcePractice: [], listeningPractice: [], privateDrafts: {}, reading: WordIsleReading.blank(), learningSession: null };
+  return { v: 3, settings: Object.assign({}, DEFAULTS, {bookCatalogVersion:1}), words: {}, custom: [], days: {}, sources: [], sourcePractice: [], listeningPractice: [], examExamplePacks: [], privateDrafts: {}, reading: WordIsleReading.blank(), learningSession: null };
 }
 
 let store = blankStore();
@@ -63,6 +63,7 @@ function loadStore() {
   store.sources = Array.isArray(data.sources) ? data.sources.filter(function (x) { return x && typeof x.id === 'string' && typeof x.text === 'string'; }).slice(0, 50) : [];
   store.sourcePractice = Array.isArray(data.sourcePractice) ? data.sourcePractice.filter(function (x) { return x && typeof x.sourceId === 'string' && typeof x.word === 'string'; }).slice(-2000) : [];
   store.listeningPractice = listeningValidateHistory(data.listeningPractice);
+  store.examExamplePacks = WordReference.validatePacks(data.examExamplePacks);
   store.reading = WordIsleReading.validate(data.reading);
   store.privateDrafts = data.privateDrafts && typeof data.privateDrafts === 'object' ? data.privateDrafts : {};
   store.learningSession = data.learningSession || null;
@@ -73,7 +74,7 @@ function loadStore() {
   store.settings.bg = (bg && typeof bg === 'object' && typeof bg.file === 'string' && bg.file)
     ? { file: bg.file.slice(0, 40), dim: bgDim() }
     : null;
-  store.dictRecent = Array.isArray(data.dictRecent) ? data.dictRecent : [];
+  store.dictRecent = Array.isArray(data.dictRecent) ? data.dictRecent.filter(word=>typeof word==='string').slice(0,12) : [];
 }
 
 let saveTimer = 0;
@@ -242,6 +243,7 @@ function poolWords(decks) {
       seen[k] = 1;
       out.push({
         w: w.w, p: w.p || '', pos: w.pos || '', m: w.m || '', e: w.e || '', t: w.t || '',
+        uk: w.uk, us: w.us, expanded: w.expanded, forms: w.forms,
         deck: d.id, key: d.id + '::' + w.w
       });
     });
@@ -395,6 +397,7 @@ function msVoiceId() {
 let ttsAudio = null;
 let speakToken = 0;
 function stopSpeak() {
+  StudyTools.stop();
   speakToken += 1;
   if (ttsAudio) { try { ttsAudio.pause(); } catch (e) { /* 忽略 */ } ttsAudio = null; }
   try { if (window.speechSynthesis) window.speechSynthesis.cancel(); } catch (e) { /* 忽略 */ }
@@ -418,6 +421,8 @@ function isSingleWord(text) {
   return /^[A-Za-z][A-Za-z'’.-]*(?: [A-Za-z][A-Za-z'’.-]*){0,2}$/.test(String(text || '').trim());
 }
 function pickVoice() {
+  const locale = store.settings.localAccent === 'gb' ? 'en-GB' : 'en-US';
+  if (!store.settings.networkEnhanced) return voices.find(voice=>voice.localService&&voice.lang===locale)||voices.find(voice=>voice.localService&&/^en/i.test(voice.lang));
   const preferred = /(Aria|Jenny|Guy|Sonia|Natural|Neural|Google|Microsoft.*English)/i;
   let v = null;
   for (let i = 0; i < voices.length; i++) { if (/^en[-_]/i.test(voices[i].lang) && preferred.test(voices[i].name)) { v = voices[i]; break; } }
@@ -426,18 +431,19 @@ function pickVoice() {
   return v;
 }
 function speakSystem(text, rate, done) {
-  if (!('speechSynthesis' in window)) { toast('当前环境不支持系统语音'); return; }
+  if (!('speechSynthesis' in window)) { toast('当前环境不支持系统语音'); done?.(); return; }
   try {
     window.speechSynthesis.cancel();
     const u = new SpeechSynthesisUtterance(String(text));
-    u.lang = 'en-US';
+    u.lang = store.settings.localAccent === 'gb' ? 'en-GB' : 'en-US';
     u.rate = rate || 0.95;
     u.pitch = 1;
     const v = pickVoice();
     if (v) u.voice = v;
-    if (done) u.onend = done;
+    else if (!store.settings.networkEnhanced) { toast('Windows 尚未安装离线英语语音'); done?.(); return; }
+    if (done) u.onend = u.onerror = done;
     window.speechSynthesis.speak(u);
-  } catch (e) { toast('朗读失败：' + (e.message || '未知错误')); }
+  } catch (e) { toast('朗读失败：' + (e.message || '未知错误')); done?.(); }
 }
 function youdaoUrl(text, type) {
   return 'https://dict.youdao.com/dictvoice?type=' + type + '&audio=' + encodeURIComponent(text);
@@ -480,9 +486,15 @@ function audioSrc(direct) {
 function playAudioFrom(srcPromise, rate, handlers) {
   handlers = handlers || {};
   const still = handlers.still || function () { return true; };
+  let reportedError = false;
+  function fail() {
+    if(reportedError||!still())return;
+    reportedError=true;
+    handlers.failed?.();
+  }
   srcPromise.then(function (src) {
     if (!still()) return;
-    if (!src) { if (handlers.failed) handlers.failed(); return; }
+    if (!src) { fail(); return; }
     // 保证同一时刻只有一个音频在播
     if (ttsAudio) { try { ttsAudio.pause(); } catch (e) { /* 忽略 */ } }
     const a = new Audio(src);
@@ -491,9 +503,9 @@ function playAudioFrom(srcPromise, rate, handlers) {
     if (handlers.audio) handlers.audio(a);
     if (handlers.time) a.ontimeupdate = function () { if (still()) handlers.time(a.currentTime, a.duration || 0); };
     a.onended = function () { if (still() && handlers.ended) handlers.ended(); };
-    a.onerror = function () { if (still() && handlers.failed) handlers.failed(); };
-    a.play().catch(function () { if (still() && handlers.failed) handlers.failed(); });
-  });
+    a.onerror = fail;
+    return a.play();
+  }).catch(fail);
 }
 function playAudio(direct, rate, handlers) {
   return playAudioFrom(audioSrc(direct), rate, handlers);
@@ -526,26 +538,36 @@ function speakBaidu(text, rate) {
     if (src === 'msedge') {
       msEdgeSrc(chunk).then(function (d) {
         if (token !== speakToken) return;
-        if (!d) { toast('微软在线语音不可用，改用百度整句'); playBaidu(); return; }
+        if (!d) { toast('微软在线语音不可用，改用系统语音'); speakSystem(text, rate); return; }
         playAudioFrom(Promise.resolve(d), rate, {
           still: function () { return token === speakToken; },
           ended: function () { i += 1; next(); },
-          failed: playBaidu
+          failed: function () { if (token === speakToken) { toast('微软在线语音不可用，改用系统语音'); speakSystem(text, rate); } }
         });
       });
     } else playBaidu();
   }
   next();
 }
+function localVoiceSource(text, speed, accent=store.settings.localAccent) {
+  return window.wordIsle.neuralVoice({text, speed, voice:accent==='gb'?21:3}).then(result=>result.ok?result.audio:null);
+}
+
 function speak(text, rate) {
   text = String(text || '').trim();
   if (!text) return;
   if (reader.playing) readerStop(true);
-  const speed = clamp(Number(rate) || Number(store.settings.ttsRate) || 1, 0.6, 1.4);
+  const speed = clamp(Number(rate) || Number(store.settings.ttsRate) || 1, 0.5, 2);
+  if (!store.settings.networkEnhanced) {
+    stopSpeak();
+    const token=speakToken;
+    playAudioFrom(localVoiceSource(text,speed),speed,{still:()=>token===speakToken,failed:()=>speakSystem(text,speed)});
+    return;
+  }
   const sentenceSrc = SENTENCE_SOURCES[store.settings.ttsSentenceSource] ? store.settings.ttsSentenceSource : 'baidu';
   stopSpeak();
   if (isSingleWord(text)) speakWord(text, speed);
-  else if (sentenceSrc === 'baidu') speakBaidu(text, speed);
+  else if (sentenceSrc !== 'system') speakBaidu(text, speed);
   else speakSystem(text, speed);
 }
 
@@ -625,11 +647,16 @@ function readerSystemChunk(ch, idx, token) {
   const speed = ReadingClub.rate;
   reader.system = true;
   const u = new SpeechSynthesisUtterance(ch.text);
-  u.lang = 'en-US';
+  u.lang = store.settings.localAccent==='gb'?'en-GB':'en-US';
   u.rate = speed;
   u.pitch = 1;
   const v = pickVoice();
   if (v) u.voice = v;
+  else if(!store.settings.networkEnhanced){
+    readerStop(true);
+    toast('此段无法用本地语音朗读');
+    return;
+  }
   u.onend = function () {
     if (token !== reader.token) return;
     reader.pos = ch.start + ch.len;
@@ -664,14 +691,14 @@ function readerPlayChunk(idx, token) {
     if (el && el.scrollIntoView) el.scrollIntoView({ block: 'nearest', behavior: 'smooth' });
   }
   const sentenceSrc = SENTENCE_SOURCES[store.settings.ttsSentenceSource] ? store.settings.ttsSentenceSource : 'baidu';
-  if (sentenceSrc === 'system') { readerSystemChunk(ch, idx, token); return; }
+  if (sentenceSrc === 'system' && store.settings.networkEnhanced) { readerSystemChunk(ch, idx, token); return; }
   const speed = ReadingClub.rate;
   reader.system = false;
   reader.pending = true;
   updateReaderUI(true);
   // 预取下一块，连读更顺（微软在线语音合成较慢，预取尤其重要）
   const nextChunk = reader.chunks[idx + 1];
-  if (nextChunk) {
+  if (nextChunk && store.settings.networkEnhanced) {
     try {
       if (sentenceSrc === 'msedge') msEdgeSrc(nextChunk.text);
       else audioSrc(baiduUrl(nextChunk.text)).catch(function () { /* 忽略 */ });
@@ -693,6 +720,10 @@ function readerPlayChunk(idx, token) {
     },
     failed: function () { /* 由各音源覆盖 */ }
   };
+  if (!store.settings.networkEnhanced) {
+    playAudioFrom(localVoiceSource(ch.text,speed),speed,{...handlers,failed:()=>readerSystemChunk(ch,idx,token)});
+    return;
+  }
   const playBaidu = function () {
     playAudioFrom(audioSrc(baiduUrl(ch.text)), speed, Object.assign({}, handlers, {
       failed: function () {
@@ -768,6 +799,7 @@ const VIEW_META = {
   dict: { title: '查词', sub: '离线约 77 万词条 · 中英互查 · 可加入生词本' },
   listen: { title: '实时听译', sub: '听英语，看英文，再读中文译文' },
   companion: { title: 'AI 伴学', sub: '带着资料提问，解释难句，检验理解' },
+  oral: { title: '口语对练', sub: '用英语自由通话，也可以选择场景练习' },
   textmap: { title: '文章词汇地图', sub: '把你的学习记录映射到任意英文文章' },
   wrong: { title: '复习巩固', sub: '反复答错的词会集中在这里' },
   stats: { title: '统计', sub: '看清节奏，比盲目刷词更重要' },
@@ -779,7 +811,9 @@ const PRACTICE = {
   choice: { title: '四选一', sub: '快速辨认，练反应速度' },
   cloze: { title: '例句填空', sub: '把例句里挖掉的词补回来' },
   spell: { title: '拼写', sub: '看中文，把英文敲出来' },
-  dictation: { title: '听写', sub: '只听发音，拼出单词' }
+  dictation: { title: '听写', sub: '只听发音，拼出单词' },
+  listenChoice: { title: '听音选义', sub: '播放发音后选择释义' },
+  sprint: { title: '极速刷词', sub: '隐藏释义，快速逐词回忆' }
 };
 
 const state = { view: 'home', deckId: null, q: '', readingId: null, readingCat: '全部', showZh: false, readingAnswers: {}, news: [], newsUpdatedAt: '', newsLoading: false, dictPop: null, dictQ: '', dictWord: null, dictLoading: false, update: null, updateChecking: false, appVersion: '', appInfoError: false };
@@ -787,10 +821,15 @@ let session = null;
 
 /* ---------------- 渲染 ---------------- */
 function go(view, patch) {
+  if(view!==state.view){
+    if(state.view==='study'||state.view==='dict')stopSpeak();
+    StudyTools.limit(view);
+  }
   if (state.view === 'readings' && view !== 'readings') ReadingClub.leaving();
   ProductFlow.capture();
   const changed = state.view !== view;
   if (state.view === 'companion') sourceCollectDraft();
+  if (state.view === 'oral' && view !== 'oral') OralCoach.leave();
   if (state.view === 'listen' && view !== 'listen') { sourceCollectAiConfig(); speechStop(); }
   if (view === 'source') view = 'companion';
   if (state.view === 'readings' && view !== 'readings' && reader.playing) readerStop(false);
@@ -801,6 +840,7 @@ function go(view, patch) {
 
 function render() {
   if (MotionUi.deferDuringComposition()) return;
+  if (OralCoach.deferDuringPicker()) return;
   renderPoolCache = null;
   renderInProgress = true;
   const motionSnapshot = MotionUi.before();
@@ -812,7 +852,7 @@ function render() {
   for (let i = 0; i < navBtns.length; i++) {
     navBtns[i].classList.toggle('on', navBtns[i].dataset.nav === state.view);
   }
-  const views = { home: viewHome, study: viewStudy, decks: viewDecks, readings: viewReadings, dict: viewDict, listen: viewListening, companion: viewCompanion, textmap: viewTextMap, wrong: viewWrong, stats: viewStats, settings: viewSettings };
+  const views = { home: viewHome, study: viewStudy, decks: viewDecks, readings: viewReadings, dict: viewDict, listen: viewListening, companion: viewCompanion, oral: OralCoach.view, textmap: viewTextMap, wrong: viewWrong, stats: viewStats, settings: viewSettings };
   const fn = views[state.view] || viewHome;
   const viewEl = $('#view');
   viewEl.dataset.view = state.view;
@@ -943,7 +983,7 @@ function viewHome() {
   p.forEach(w => { const st=stOf(w.key); if (!st || st.s==='new') avail++; else if ((st.due||0)<=now) due++; });
   const today=store.days[dayKey()]||{new:0,review:0},dailyNew=bookPlanDaily(),quota=bookPlanQuota();
   const practice=PRACTICE[store.settings.practice]?store.settings.practice:'card';
-  const modes=[['card','翻卡记忆'],['choice','四选一'],['cloze','例句填空'],['spell','拼写'],['dictation','听写']];
+  const modes=[['card','翻卡记忆'],['choice','四选一'],['cloze','例句填空'],['spell','拼写'],['dictation','听写'],['listenChoice','听音选义'],['sprint','极速刷词']];
     return ProductFlow.home({due,avail,quota,today,dailyNew,practice,modes,quizReady:todayLearnedWords().length});
 }
 
@@ -988,7 +1028,7 @@ function startQuiz() {
 function typeOf() {
   if (!session) return 'card';
   if (session.types) return session.types[session.idx] || 'choice';
-  return session.mode;
+  return session.mode==='sprint'?'card':session.mode;
 }
 
 function viewStudy() {
@@ -1012,7 +1052,9 @@ function viewStudy() {
   if (t === 'card') body = cardHtml(w);
   else if (['choice','reverse','listenChoice'].includes(t)) body = choiceHtml(w);
   else body = typedHtml(w, t === 'dictation', t === 'cloze' && !!clozeOf(w));
-  return memoryStageHtml() + head + body + ProductFlow.studyTools();
+  const hasAnswer=session.revealed||session.answered||session.choice?.answered;
+  const details=hasAnswer?StudyTools.details(w):'';
+  return memoryStageHtml()+head+'<div class="study-layout'+(details?' with-details':'')+'"><div>'+body+ProductFlow.studyTools()+'</div>'+details+'</div>';
 }
 
 function modeBadge(w) {
@@ -1040,7 +1082,7 @@ function cardHtml(w) {
         (w.e ? exampleFull(w) : '<div class="example example-missing">这个词暂无例句，可以自己造一句。</div>') +
         (w.t ? '<div class="example cn">' + esc(w.t) + '</div>' : '') +
       '</div>'
-    : exampleFull(w) + '<div class="hint-line">想好意思了吗？按 <span class="kbd">空格</span> 或点下面按钮看释义</div>';
+    : (session.mode==='sprint'?'':exampleFull(w)) + '<div class="hint-line">想好意思了吗？按 <span class="kbd">空格</span> 或点下面按钮看释义</div>';
 
   const actions = gradeArea(session.revealed);
 
@@ -1048,7 +1090,7 @@ function cardHtml(w) {
       '<div class="card-top">' + modeBadge(w) + '<span class="badge soft">' + esc(stateLabel(st)) + '</span></div>' +
       '<div class="word-line"><h2 class="word">' + esc(w.w) + '</h2>' +
         '<button class="icon-btn" data-act="speak" data-text="' + esc(w.w) + '" title="发音 (R)">🔊</button></div>' +
-      (w.p ? '<div class="phon">' + esc(w.p) + '</div>' : '') +
+      WordReference.pronunciationHtml(w,true) +
       revealHtml + (session.revealed ? memoryNoteHtml(w) : '') +
     '</div>' + actions;
 }
@@ -1154,29 +1196,6 @@ function typedHtml(w, dictation, clozeMode) {
     '<div class="btn-row"><button class="btn ' + (answered ? 'primary' : '') + '" data-act="next"' + (answered ? '' : ' disabled') + '>下一个<span class="kbd">回车</span></button></div>';
 }
 
-function viewSummary() {
-  if (session.memory) return memorySummaryHtml();
-  if (session.memoryFocus) return memoryFocusSummaryHtml();
-  const total = session.total || 0;
-  const correct = session.correct || 0;
-  const acc = total ? Math.round(correct / total * 100) : 0;
-  return '<section class="panel youth-summary">' + youthSummaryLead() +
-      '<div class="hero-kicker">本轮完成</div>' +
-      '<h2 class="hero-title">做了 ' + total + ' 题，正确率 <b>' + acc + '%</b></h2>' +
-      '<div class="sum-grid">' +
-        '<div class="tile"><span class="stat-label">新词</span><span class="stat-value">' + session.newCount + '</span></div>' +
-        '<div class="tile"><span class="stat-label">复习</span><span class="stat-value">' + session.reviewCount + '</span></div>' +
-        '<div class="tile"><span class="stat-label">答对</span><span class="stat-value accent">' + correct + '</span></div>' +
-        '<div class="tile"><span class="stat-label">答错</span><span class="stat-value">' + Math.max(0, total - correct) + '</span></div>' +
-      '</div>' +
-      '<div class="btn-row">' +
-        '<button class="btn primary" data-act="goto" data-view="home">回今日学习</button>' +
-        '<button class="btn" data-act="again-mode">再来一组</button>' +
-        '<button class="btn ghost" data-act="goto" data-view="stats">看统计</button>' +
-      '</div>' +
-    '</section>';
-}
-
 /* ---------------- 词库页 ---------------- */
 function viewDecks() {
   if (state.deckId) {
@@ -1184,7 +1203,7 @@ function viewDecks() {
     if (d) return viewDeckDetail(d);
     state.deckId = null;
   }
-  return bookPlanLibrary();
+  return WordReference.libraryHtml()+StudyTools.libraryActions()+bookPlanLibrary();
 }
 
 function viewDeckDetail(d) {
@@ -1198,7 +1217,7 @@ function viewDeckDetail(d) {
     const st = stOf(d.id + '::' + w.w);
     return '<tr>' +
       '<td class="w">' + esc(w.w) + ' <button class="icon-btn" style="width:26px;height:26px;font-size:12px" data-act="speak" data-text="' + esc(w.w) + '">🔊</button></td>' +
-      '<td class="phon">' + esc(w.p) + '</td>' +
+      '<td>' + WordReference.pronunciationHtml(w) + '</td>' +
       '<td class="mn">' + (w.pos ? '<span class="pos">' + esc(w.pos) + '</span>' : '') + esc(w.m) + '</td>' +
       '<td><span class="' + stateClass(st) + '">' + esc(stateLabel(st)) + '</span></td>' +
     '</tr>';
@@ -1212,6 +1231,7 @@ function viewDeckDetail(d) {
         '<div class="row">' +
           '<input class="search" id="deckSearch" placeholder="搜索单词或释义" value="' + esc(state.q) + '">' +
           '<button class="btn small" data-act="train-deck" data-deck="' + esc(d.id) + '">练这个库</button>' +
+          (store.custom.includes(d)?'<button class="btn small ghost" data-act="remove-custom-deck" data-deck="'+esc(d.id)+'">删除个人词库</button>':'')+
           '<button class="btn small ghost" data-act="back-decks">返回</button>' +
         '</div>' +
       '</div>' +
@@ -1306,7 +1326,7 @@ function viewStats() {
       '<td>' + (d.words.length ? Math.round(learned / d.words.length * 100) : 0) + '%</td></tr>';
   }).join('');
 
-  return '<section class="panel">' +
+  return StudyTools.reportHtml()+'<section class="panel">' +
       '<h3>总览</h3>' +
       '<div class="stat-grid">' +
         '<div class="tile"><span class="stat-label">累计答题</span><span class="stat-value">' + (newLearned + reviews) + '</span></div>' +
@@ -1388,11 +1408,6 @@ function currentReading() {
   const all = allReadings();
   for (let i = 0; i < all.length; i++) if (all[i].id === state.readingId) return all[i];
   return null;
-}
-function readingCats() {
-  const out = [];
-  allReadings().forEach(function (r) { if (r.category && out.indexOf(r.category) < 0) out.push(r.category); });
-  return out;
 }
 function wordCountOf(r) {
   return String((r.paragraphs || []).join(' ')).split(/\s+/).filter(Boolean).length;
@@ -1629,6 +1644,7 @@ function dictSearch(q) {
   return exact.concat(prefix, contains).slice(0, 80);
 }
 function openDictWord(word) {
+  stopSpeak();
   state.dictWord = String(word || '');
   state.dictQ = String(word || '');
   const rec = (store.dictRecent || []).filter(function (x) { return x.toLowerCase() !== state.dictWord.toLowerCase(); });
@@ -1636,6 +1652,17 @@ function openDictWord(word) {
   store.dictRecent = rec.slice(0, 12);
   save();
   render();
+}
+function dictDetailEntry(word) {
+  const entry=dictFind(word)||lookupWord(word);
+  if(!entry)return null;
+  const match=norm(entry.w);
+  const names=['uk','us','expanded','forms'];
+  for(const deck of store.custom){
+    const personal=deck.words?.find(item=>item&&typeof item.w==='string'&&norm(item.w)===match&&names.some(name=>item[name]));
+    if(personal)return {...entry,...Object.fromEntries(names.filter(name=>personal[name]).map(name=>[name,personal[name]]))};
+  }
+  return entry;
 }
 function dictAdd(e) {
   const id = 'dict-words';
@@ -1647,7 +1674,11 @@ function dictAdd(e) {
   }
   const key = String(e.w).toLowerCase();
   const exists = deck.words.some(function (w) { return String(w.w).toLowerCase() === key; });
-  if (!exists) deck.words.push({ w: e.w, p: e.p || '', pos: e.pos || '', m: e.m || '', e: e.e || '', t: e.t || '' });
+  if (!exists) {
+    const saved=normalizeWord(e);
+    if(saved)deck.words.push(saved);
+    else deck.words.push({...e});
+  }
   if (store.settings.deckIds.length && store.settings.deckIds.indexOf(id) < 0) store.settings.deckIds.push(id);
   dictDeckMap = null;
   save();
@@ -1665,7 +1696,7 @@ function dictRowHtml(e) {
     '</button>';
 }
 function viewDictWord(word) {
-  const e = dictFind(word) || lookupWord(word);
+  const e = dictDetailEntry(word);
   if (!e) {
     return '<section class="panel"><h3>没有找到这个词</h3><p class="muted">词典未收录「' + esc(word) + '」。</p>' +
       '<div class="btn-row" style="margin-top:12px"><button class="btn" data-act="dict-back">返回搜索</button></div></section>';
@@ -1676,8 +1707,10 @@ function viewDictWord(word) {
       '<div class="dd-head"><h2 class="word">' + esc(e.w) + '</h2>' +
         '<button class="icon-btn" data-act="speak" data-text="' + esc(e.w) + '" title="发音">🔊</button></div>' +
       (e.w.toLowerCase() !== word.toLowerCase() ? '<p class="muted">查询词形：' + esc(word) + ' · 对应原形</p>' : '') +
-      (e.p ? '<div class="phon">' + esc(e.p) + '</div>' : '') +
+      WordReference.pronunciationHtml(e,true) + WordReference.notesHtml(e) +
       '<div class="dd-mean">' + (e.pos ? '<i class="pos">' + esc(e.pos) + '</i>' : '') + esc(e.m) + '</div>' +
+      (e.expanded ? '<p class="muted">拓展释义 · '+esc(e.expanded)+'</p>' : '') +
+      (e.forms ? '<p class="muted">词形 · '+esc(e.forms)+'</p>' : '') +
       (e.e ? '<div class="example">' + esc(e.e) + ' <button class="icon-btn" style="width:24px;height:24px;font-size:11px;vertical-align:1px" data-act="speak" data-text="' + esc(e.e) + '" title="朗读例句">🔊</button></div>' : '') +
       (e.t ? '<div class="example cn">' + esc(e.t) + '</div>' : '') +
       '<div class="btn-row" style="margin-top:14px">' +
@@ -1732,7 +1765,7 @@ function viewDict() {
 function viewSettings() {
   const s = store.settings;
   const u = state.update;
-  return AccountSession.settingsHtml() + youthSettingsHtml() + LearnerExperience.settingsHtml() + '<section class="panel">' +
+  return StudyTools.settingsHtml() + AccountSession.settingsHtml() + youthSettingsHtml() + LearnerExperience.settingsHtml() + '<section class="panel">' +
       '<h3>学习节奏</h3>' +
       '<div class="form">' +
         '<div class="field"><div><div class="field-label">每日新词 · 1—300 个</div><div class="field-note">所有词书共用每日新词目标，到期复习另计。</div></div>' +
@@ -1747,9 +1780,10 @@ function viewSettings() {
       '</div>' +
     '</section>' +
     '<section class="panel">' +
-      '<h3>朗读音源</h3>' +
+      '<h3>本地 AI 朗读</h3>' +
       '<div class="form">' +
-        '<div class="field"><div><div class="field-label">单词发音</div>' +
+        '<div class="field"><label for="localAccent">本地音色</label><select id="localAccent" data-set="localAccent">'+[['us','美式英语'],['gb','英式英语']].map(([id,label])=>'<option value="'+id+'"'+(s.localAccent===id?' selected':'')+'>'+label+'</option>').join('')+'</select></div>'+
+        (s.networkEnhanced ? '<div class="field"><div><div class="field-label">单词发音</div>' +
           '<div class="field-note">有道美音 / 英音只支持单词和短语（需要网络）；断网时自动回退到系统语音。</div></div>' +
           '<select data-set="ttsSource">' + Object.keys(TTS_SOURCES).map(function (k) {
             return '<option value="' + k + '"' + (s.ttsSource === k ? ' selected' : '') + '>' + TTS_SOURCES[k].label + '</option>';
@@ -1764,9 +1798,9 @@ function viewSettings() {
           '<div class="row"><select data-set="ttsMsVoice">' + MS_VOICES.map(function (v) {
             return '<option value="' + v.id + '"' + (msVoiceId() === v.id ? ' selected' : '') + '>' + v.label + '</option>';
           }).join('') + '</select>' +
-          '<button class="btn small" data-act="tts-ms-test">试听</button></div></div>' +
+          '<button class="btn small" data-act="tts-ms-test">试听</button></div></div>' : '') +
         '<div class="field"><div><div class="field-label">语速</div><div class="field-note">0.8 慢速适合精听，1.0 正常。</div></div>' +
-          '<div class="row"><input type="range" min="0.7" max="1.3" step="0.05" value="' + (s.ttsRate || 1) + '" data-set="ttsRate">' +
+          '<div class="row"><input type="range" min="0.5" max="2" step="0.05" value="' + (s.ttsRate || 1) + '" data-set="ttsRate">' +
           '<span class="muted" id="ttsRateLabel">' + Number(s.ttsRate || 1).toFixed(2) + '×</span>' +
           '<button class="btn small" data-act="tts-test">试听</button></div></div>' +
       '</div>' +
@@ -1797,13 +1831,12 @@ function viewSettings() {
       '<h3>更新</h3>' +
       '<div class="form">' +
         '<div class="field"><div><div class="field-label">自动检查更新</div>' +
-          '<div class="field-note">启动时查询公开发布信息，不上传学习记录。发现更高版本只提示，下载和安装由你选择。</div></div>' +
+          '<div class="field-note">联网增强模式下，启动时查询词屿下载站的公开版本清单，发现新版本时提醒。</div></div>' +
           '<label class="switch"><input type="checkbox" data-set="autoUpdate"' + (s.autoUpdate !== false ? ' checked' : '') + '><span class="track"></span></label></div>' +
         '<div class="field"><div><div class="field-label">当前运行版本</div>' +
           '<div class="field-note" id="appCurrentVersion"><b>' + esc(currentRunningVersion() || (state.appInfoError ? '版本信息暂不可用' : '正在读取版本信息…')) + '</b></div>' +
           '<div class="field-note" id="appUpdateStatus" role="status">' + esc(updateStatusText()) + '</div></div>' +
-          '<div class="row"><button class="btn small" data-act="update-check"' + (state.updateChecking ? ' disabled' : '') + '>' + (state.updateChecking ? '检查中…' : '检查更新') + '</button>' +
-          (u && u.ok && u.hasUpdate && u.url ? '<a class="btn small primary" href="' + esc(u.url) + '" target="_blank" rel="noopener">下载新版本</a>' : '') +
+          '<div class="row"><a id="appUpdateLink" class="btn small' + (u?.hasUpdate ? ' primary' : '') + '" href="' + esc(WordIsleVersion.downloadUrl) + '" target="_blank" rel="noopener">' + (u?.hasUpdate ? '下载新版本' : '检查更新') + '</a>' +
           '</div></div>' +
       '</div>' +
       (u && u.ok && u.hasUpdate && u.notes ? '<div class="upd-notes"><b>' + esc(u.latest) + '</b>' + esc(u.notes) + '</div>' : '') +
@@ -1813,8 +1846,8 @@ function viewSettings() {
       '<div class="form">' +
         '<div class="field"><div><div class="field-label">导入词库 / 恢复备份</div>' +
           '<div class="field-note">CSV 每行：单词,音标,词性,释义,例句,例句翻译（至少要有单词和释义）。也可以直接导入本应用导出的 JSON 备份。</div></div>' +
-          '<div class="row"><button class="btn" data-act="import">选择文件</button>' +
-          '<input type="file" id="importFile" accept=".csv,.tsv,.txt,.json" style="display:none"></div></div>' +
+          '<div class="row"><button class="btn" data-act="import">导入 XLSX / TXT / CSV / JSON</button><button class="btn" data-study-tool="notes">导出单词笔记 TXT</button>' +
+          '<input type="file" id="importFile" accept=".xlsx,.csv,.tsv,.txt,.json" style="display:none"></div></div>' +
         '<div class="field"><div><div class="field-label">导出学习 JSON（明文）</div><div class="field-note">用于手动交换学习记录，文件含个人学习内容。换机或备份请优先使用上方「导出加密账号备份」。</div></div>' +
           '<button class="btn" data-act="export">导出 JSON</button></div>' +
         '<div class="field"><div><div class="field-label">清空学习记录</div><div class="field-note">清空所有词的进度和每日统计，自定义词库会保留。</div></div>' +
@@ -1846,6 +1879,7 @@ function requeue(w) {
 
 function advance() {
   if (!session) return;
+  stopSpeak();
   session.idx += 1;
   session.revealed = false;
   session.answered = false;
@@ -1880,7 +1914,7 @@ function chopWord() {
   st.s = 'mastered';
   st.iv = 180;
   st.due = Date.now() + 180 * DAY;
-  st.curve = {version:1,stage:WordIsleCurve.minutes.length-1,lastAdvance:Date.now()};
+  st.curve = {version:2,stage:WordIsleCurve.days.length,lastAdvance:Date.now()};
   save();
   advance();
 }
@@ -1944,31 +1978,19 @@ function normalizeWord(x) {
     pos: String(x.pos || '').trim(),
     m: String(x.m || x.meaning || '').trim(),
     e: String(x.e || x.example || '').trim(),
-    t: String(x.t || x.translation || '').trim()
+    t: String(x.t || x.translation || '').trim().slice(0,1200),
+    uk: String(x.uk||'').trim().slice(0,100),
+    us: String(x.us||'').trim().slice(0,100),
+    expanded: String(x.expanded||'').trim().slice(0,1200),
+    forms: String(x.forms||'').trim().slice(0,300)
   };
 }
 
 function parseDelimited(text) {
-  const lines = text.split(/\r?\n/);
-  const out = [];
-  for (let i = 0; i < lines.length; i++) {
-    const line = lines[i].trim();
-    if (!line) continue;
-    const sep = line.indexOf('\t') >= 0 ? '\t' : ',';
-    const cells = line.split(sep).map(function (c) { return c.trim().replace(/^"|"$/g, ''); });
-    const first = (cells[0] || '').toLowerCase();
-    if (i === 0 && (first === 'word' || first === '单词' || first.indexOf('word,') === 0)) continue;
-    if (cells.length < 2 || !cells[0]) continue;
-    let rec;
-    if (cells.length === 2) rec = { w: cells[0], m: cells[1] };
-    else if (cells.length === 3) rec = { w: cells[0], p: cells[1], m: cells[2] };
-    else rec = { w: cells[0], p: cells[1], pos: cells[2], m: cells[3], e: cells[4] || '', t: cells[5] || '' };
-    out.push(rec);
-  }
-  return out;
+  return WordImport.delimited(text);
 }
 
-function addCustomDeck(name, words) {
+function cleanWords(words) {
   const clean = [];
   const seen = Object.create(null);
   words.forEach(function (x) {
@@ -1981,8 +2003,23 @@ function addCustomDeck(name, words) {
   });
   if (!clean.length) throw new Error('没有解析出有效的词条（每个词至少要有单词和释义）');
 
-  const id = 'custom-' + Date.now().toString(36);
-  store.custom.push({ id: id, name: String(name || '自定义词库').slice(0, 40), desc: '导入的词库', words: clean });
+  return clean;
+}
+
+function addCustomDeck(name, words, address='') {
+  const clean=cleanWords(words);
+  dictDeckMap=null;
+  const existing=address&&store.custom.find(deck=>deck.syncAddress===address);
+  if(existing){
+    const replacement=new Map(existing.words.map(word=>[norm(word.w),word]));
+    for(const word of clean){const key=norm(word.w);replacement.set(key,{...replacement.get(key),...word,w:replacement.get(key)?.w||word.w});}
+    existing.words=[...replacement.values()];
+    bookInvalidateProgress();
+    flushSave();go('decks');toast('已同步 '+clean.length+' 个词');
+    return;
+  }
+  const id = 'custom-' + crypto.randomUUID();
+  store.custom.push({ id: id, name: String(name || '自定义词库').slice(0, 40), desc: address?'联网同步的词库':'个人词库', words: clean, ...address&&{syncAddress:address} });
   if ((store.settings.deckIds || []).length) store.settings.deckIds.push(id);
   flushSave();
   go('decks');
@@ -1998,6 +2035,7 @@ function restoreBackup(data) {
   store.sources = Array.isArray(data.sources) ? data.sources.filter(function (x) { return x && typeof x.id === 'string' && typeof x.text === 'string'; }).slice(0, 50) : [];
   store.sourcePractice = Array.isArray(data.sourcePractice) ? data.sourcePractice.filter(function (x) { return x && typeof x.sourceId === 'string' && typeof x.word === 'string'; }).slice(-2000) : [];
   store.listeningPractice = listeningValidateHistory(data.listeningPractice);
+  store.examExamplePacks = WordReference.validatePacks(data.examExamplePacks);
   store.reading = WordIsleReading.validate(data.reading);
   store.settings = Object.assign({}, DEFAULTS, data.settings || {});
   if (!Array.isArray(store.settings.deckIds)) store.settings.deckIds = [];
@@ -2012,6 +2050,11 @@ function restoreBackup(data) {
 }
 
 function importFile(file) {
+  if(/\.xlsx$/i.test(file.name)){
+    WordImport.xlsx(file).then(words=>addCustomDeck(prettyName(file.name),words)).catch(error=>toast('导入失败：'+error.message));
+    return;
+  }
+  if(file.size>10*1024*1024){toast('词库文件不能超过 10 MB');return;}
   const reader = new FileReader();
   reader.onerror = function () { toast('读取文件失败'); };
   reader.onload = function () {
@@ -2052,12 +2095,14 @@ function exportBackup() {
 function resetProgress() {
   if (!window.confirm('确定清空学习进度统计吗？自定义词库、阅读剪藏和笔记会保留，进度与阅读日历会归零，且不能撤销。')) return;
   const custom = store.custom;
+  const examExamplePacks = store.examExamplePacks;
   const reading = WordIsleReading.resetProgress(store.reading);
   const ids = (store.settings.deckIds || []).filter(function (id) {
     return custom.some(function (d) { return d.id === id; });
   });
   store = blankStore();
   store.custom = custom;
+  store.examExamplePacks = examExamplePacks;
   store.reading = reading;
   store.settings.deckIds = ids;
   session = null;
@@ -2510,6 +2555,7 @@ document.addEventListener('click', function (e) {
   } else if (act === 'dict-open') {
     openDictWord(el.dataset.word);
   } else if (act === 'dict-back') {
+    stopSpeak();
     state.dictWord = null;
     render();
   } else if (act === 'dict-alpha') {
@@ -2517,7 +2563,7 @@ document.addEventListener('click', function (e) {
     state.dictWord = null;
     render();
   } else if (act === 'dict-add') {
-    const de = dictFind(el.dataset.word);
+    const de = dictDetailEntry(el.dataset.word);
     if (de) dictAdd(de);
   } else if (act === 'r-answer') {
     const qi = parseInt(el.dataset.q, 10);
@@ -2528,6 +2574,17 @@ document.addEventListener('click', function (e) {
   } else if (act === 'open-deck') {
     state.deckId = el.dataset.deck;
     state.q = '';
+    render();
+  } else if (act === 'remove-custom-deck') {
+    const deck=store.custom.find(item=>item.id===el.dataset.deck);
+    if(!deck||!window.confirm('删除个人词库「'+deck.name+'」？'))return;
+    store.custom=store.custom.filter(item=>item!==deck);
+    store.settings.deckIds=store.settings.deckIds.filter(id=>id!==deck.id);
+    if(!store.settings.deckIds.length)store.settings.deckIds=['cet4'];
+    dictDeckMap=null;
+    state.deckId=null;
+    bookInvalidateProgress();
+    flushSave();
     render();
   } else if (act === 'back-decks') {
     state.deckId = null;
@@ -2558,8 +2615,6 @@ document.addEventListener('click', function (e) {
   } else if (act === 'import') {
     const input = $('#importFile');
     if (input) input.click();
-  } else if (act === 'update-check') {
-    checkUpdate(true);
   } else if (act === 'bg-pick') {
     bgPick();
   } else if (act === 'bg-clear') {
@@ -2589,7 +2644,22 @@ document.addEventListener('change', function (e) {
     return;
   }
   const set = t.dataset.set;
-  if (set === 'deck') {
+  if (set === 'networkEnhanced') {
+    const enabled=t.checked;
+    window.wordIsle.setNetworkEnhanced(enabled).then(result=>{
+      if(!result.ok){render();toast(result.error);return;}
+      store.settings.networkEnhanced=enabled;stopSpeak();save();render();
+      if(enabled)ReadingNews.tick();
+    }).catch(()=>{render();toast('运行模式切换失败');});
+  } else if (set === 'desktopNight') {
+    store.settings.desktopNight=t.checked;
+    document.documentElement.classList.toggle('wordisle-night',t.checked);
+    save();
+  } else if (set === 'studyLimit') {
+    store.settings.studyLimit=clamp(Math.floor(Number(t.value)||0),0,120);
+    t.value=store.settings.studyLimit;
+    save();
+  } else if (set === 'deck') {
     toggleDeck(t.dataset.deck);
   } else if (set === 'autoSpeak') {
     store.settings.autoSpeak = !!t.checked;
@@ -2615,6 +2685,9 @@ document.addEventListener('change', function (e) {
     store.settings.direction = t.value === 'zh2en' ? 'zh2en' : 'en2zh';
     save();
     render();
+  } else if (set === 'localAccent') {
+    store.settings.localAccent = t.value==='gb'?'gb':'us';
+    stopSpeak();save();
   } else if (set === 'ttsSource') {
     store.settings.ttsSource = TTS_SOURCES[t.value] ? t.value : 'youdao-us';
     save();
@@ -2628,7 +2701,7 @@ document.addEventListener('change', function (e) {
     clearMsEdgeCache();
     save();
   } else if (set === 'ttsRate') {
-    store.settings.ttsRate = clamp(parseFloat(t.value) || 1, 0.7, 1.3);
+    store.settings.ttsRate = clamp(parseFloat(t.value) || 1, 0.5, 2);
     save();
   }
 });
@@ -2747,13 +2820,16 @@ document.addEventListener('keydown', function (e) {
 });
 
 /* ---------------- 登录后启动 ---------------- */
-AccountSession.start(function () {
+AccountSession.start(async function () {
 loadStore();
+document.documentElement.classList.toggle('wordisle-night',store.settings.desktopNight===true);
+const networkReady = window.wordIsle.setNetworkEnhanced(store.settings.networkEnhanced===true);
 ProductFlow.restore();
 if (!PRACTICE[store.settings.practice]) store.settings.practice = 'card';
 applyGlass();
 applyBackground(true);
 render();
 loadAppInfo();
-if (store.settings.autoUpdate !== false) setTimeout(function () { checkUpdate(false); }, 5000);
+await networkReady;
+if (store.settings.networkEnhanced&&store.settings.autoUpdate !== false) setTimeout(function () { checkUpdate(false); }, 5000);
 });

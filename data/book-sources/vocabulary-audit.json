@@ -1,0 +1,209 @@
+{
+  "bookCount": 42,
+  "totalEntries": 74278,
+  "uniqueWords": 16521,
+  "bothAccents": 16521,
+  "pronunciationSources": {
+    "gb": {
+      "g": 15772,
+      "s": 381,
+      "a": 368
+    },
+    "us": {
+      "g": 15826,
+      "s": 320,
+      "a": 375
+    }
+  },
+  "examBooks": [
+    {
+      "id": "cet4-common",
+      "exam": "四级",
+      "words": 2000,
+      "withTag": 2000,
+      "withoutTag": 0,
+      "noCorpusEntry": 0,
+      "withChinese": 2000,
+      "legacyExample": 1976
+    },
+    {
+      "id": "cet4-extension",
+      "exam": "四级",
+      "words": 1849,
+      "withTag": 1849,
+      "withoutTag": 0,
+      "noCorpusEntry": 0,
+      "withChinese": 1849,
+      "legacyExample": 1672
+    },
+    {
+      "id": "cet6-common",
+      "exam": "六级",
+      "words": 1500,
+      "withTag": 1500,
+      "withoutTag": 0,
+      "noCorpusEntry": 0,
+      "withChinese": 1500,
+      "legacyExample": 1486
+    },
+    {
+      "id": "cet6-extension",
+      "exam": "六级",
+      "words": 3907,
+      "withTag": 3907,
+      "withoutTag": 0,
+      "noCorpusEntry": 0,
+      "withChinese": 3907,
+      "legacyExample": 3415
+    },
+    {
+      "id": "ky-common",
+      "exam": "考研",
+      "words": 2000,
+      "withTag": 2000,
+      "withoutTag": 0,
+      "noCorpusEntry": 0,
+      "withChinese": 2000,
+      "legacyExample": 1986
+    },
+    {
+      "id": "ky-extension",
+      "exam": "考研",
+      "words": 2801,
+      "withTag": 2801,
+      "withoutTag": 0,
+      "noCorpusEntry": 0,
+      "withChinese": 2801,
+      "legacyExample": 2698
+    },
+    {
+      "id": "ielts-common",
+      "exam": "雅思",
+      "words": 1500,
+      "withTag": 1500,
+      "withoutTag": 0,
+      "noCorpusEntry": 0,
+      "withChinese": 1500,
+      "legacyExample": 1462
+    },
+    {
+      "id": "ielts-extension",
+      "exam": "雅思",
+      "words": 3540,
+      "withTag": 3540,
+      "withoutTag": 0,
+      "noCorpusEntry": 0,
+      "withChinese": 3540,
+      "legacyExample": 2889
+    },
+    {
+      "id": "toefl-common",
+      "exam": "托福",
+      "words": 2000,
+      "withTag": 2000,
+      "withoutTag": 0,
+      "noCorpusEntry": 0,
+      "withChinese": 2000,
+      "legacyExample": 1975
+    },
+    {
+      "id": "toefl-extension",
+      "exam": "托福",
+      "words": 4974,
+      "withTag": 4974,
+      "withoutTag": 0,
+      "noCorpusEntry": 0,
+      "withChinese": 4974,
+      "legacyExample": 3832
+    },
+    {
+      "id": "gre-common",
+      "exam": "GRE",
+      "words": 2500,
+      "withTag": 2500,
+      "withoutTag": 0,
+      "noCorpusEntry": 0,
+      "withChinese": 2500,
+      "legacyExample": 2359
+    },
+    {
+      "id": "gre-extension",
+      "exam": "GRE",
+      "words": 5004,
+      "withTag": 5004,
+      "withoutTag": 0,
+      "noCorpusEntry": 0,
+      "withChinese": 5004,
+      "legacyExample": 3657
+    },
+    {
+      "id": "cet4",
+      "exam": "四级",
+      "words": 2607,
+      "withTag": 2342,
+      "withoutTag": 265,
+      "noCorpusEntry": 0,
+      "withChinese": 2607,
+      "legacyExample": 2607
+    },
+    {
+      "id": "cet6",
+      "exam": "六级",
+      "words": 2345,
+      "withTag": 2077,
+      "withoutTag": 268,
+      "noCorpusEntry": 0,
+      "withChinese": 2345,
+      "legacyExample": 2345
+    },
+    {
+      "id": "gre",
+      "exam": "GRE",
+      "words": 6513,
+      "withTag": 5175,
+      "withoutTag": 1331,
+      "noCorpusEntry": 7,
+      "withChinese": 6513,
+      "legacyExample": 6513
+    },
+    {
+      "id": "ielts",
+      "exam": "雅思",
+      "words": 3575,
+      "withTag": 2091,
+      "withoutTag": 1483,
+      "noCorpusEntry": 1,
+      "withChinese": 3575,
+      "legacyExample": 3575
+    },
+    {
+      "id": "kaoyan",
+      "exam": "考研",
+      "words": 3726,
+      "withTag": 3559,
+      "withoutTag": 167,
+      "noCorpusEntry": 0,
+      "withChinese": 3726,
+      "legacyExample": 3725
+    },
+    {
+      "id": "toefl",
+      "exam": "托福",
+      "words": 4264,
+      "withTag": 3223,
+      "withoutTag": 1041,
+      "noCorpusEntry": 0,
+      "withChinese": 4264,
+      "legacyExample": 4264
+    }
+  ],
+  "heteronymCount": 21,
+  "inputs": {
+    "work/mt-53/gb_gold.json": "29e62f4b60261c88f7f3c2c7811ca3825978948090b72d2b27d565b729282f71",
+    "work/mt-53/gb_silver.json": "48131e2d92ccc41655f4543e87e0f938e71463eb5a54be7f0693bb712ebb6bce",
+    "work/kokoro-stage-v1/misaki-us_gold.json": "dc414872a49a28ae6c141463d502fd945f3b2fde040484fdc47d00cc4612686f",
+    "work/kokoro-stage-v1/misaki-us_silver.json": "de8f67be911bb6c659187b4a65fd966b6a30e56350e0f790d763210b053ac475",
+    "work/package/assets/ecdict.csv": "d0ce61e560b50d9905d20de3173aa3ca80950ce235bedd21c53e025cf9f38cb0",
+    "work/vocab-54-tools/phonemizer.tgz": "12f9f3582f8b5d557a0577180d83ff0458a4a5c15b2efb625ee71c3ebbee22e9"
+  }
+}

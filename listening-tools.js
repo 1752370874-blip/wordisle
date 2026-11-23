@@ -82,7 +82,7 @@ async function listeningExplain(row) {
   try {
     const request = { kind: 'listening', text: row.en, title: '听力学习解析' };
     const reply = config.mode === 'api' ? await window.wordIsle.aiSource({ ...config, ...request }) : await window.wordIsle.localSource(request);
-    if (!reply?.ok) throw Error(reply?.error || 'AI 未返回结果'); row.coach = reply.text; row.coachEngine = config.mode === 'api' ? 'API · ' + config.model : '内置 Qwen3 1.7B';
+    if (!reply?.ok) throw Error(reply?.error || 'AI 未返回结果'); row.coach = reply.text; row.coachEngine = config.mode === 'api' ? 'API · ' + config.model : '内置 Qwen3 4B';
   } catch (error) { row.coachError = error.message; }
   finally { speechState.coachBusy = false; if (state.view === 'listen') render(); }
 }
